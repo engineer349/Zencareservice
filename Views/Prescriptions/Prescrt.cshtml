@@ -1,0 +1,289 @@
+﻿@using System.Data;
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "CreatePrescription";
+    DataTable dataTable = ViewBag.DataSet;
+    var dataRows = dataTable.AsEnumerable();
+    var selectedValue = ViewBag.SelectedValue;
+}
+@model Zencareservice.Models.Prescs;
+
+<html>
+
+<head>
+    <title>Create Prescription</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Gopi">
+</head>
+
+ <body>
+
+    <form class="prescription" method="POST" asp-action="SaveHeadPrescription" asp-controller="Prescriptions">
+            <section class="content-header">
+                   <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>Prescription</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active">Prescription</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+             <div class="container-fluid">
+               <!-- SELECT2 EXAMPLE -->
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h1 class="card-title">@ViewData["Title"]</h1>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                               @*  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button> *@
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+
+                        <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="AppointmentCode">PrescriptionCategory</label>
+                                        @{
+                                            var mm = ViewBag.YourDataList;
+                                        }
+                                        @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control",Id="DDLPresccategory" })
+                                        <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <div class="squarebox">
+
+                                        </div>
+                                    </div>
+                   
+
+                                </div>
+                                <div class="form-row">
+                     
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatientFirstName">PatientFirstName</label>                                             
+                                        <input asp-for="PatientFirstName" type="text" class="form-control" id="pfname" placeholder="PatientFirstName" readonly />
+                                        <span asp-validation-for="PatientFirstName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatientLastName">Patient LastName</label>
+                                        <input asp-for="PatientLastName" type="text" class="form-control" id="plname" placeholder="PatientLastName" readonly />
+                                        <span asp-validation-for="PatientLastName" class="text-danger"></span>
+                                    </div>                       
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="Patientphoneno">ContactNo</label>
+                                        <input asp-for="Patientphoneno" type="tel" class="form-control" id="patcontact" placeholder="PatientContactNo">
+                                        <span asp-validation-for="Patientphoneno" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatientEmail">Patient Email</label>
+                                        <input asp-for="PatientEmail" type="text" class="form-control" id="patemail" />
+                                        <span asp-validation-for="PatientEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            <div class="form-row">
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatientAge">Age</label>
+                                        <input asp-for="PatientAge" type="text" class="form-control" id="patage" placeholder="Age"/>
+                                        <span asp-validation-for="PatientAge"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatBloodgroup">PatientBloodgroup</label>
+                                       @* <input asp-for="PatBloodgroup" type="text" class="form-control" id="pbloodgroup" placeholder="PatientBloodgroup" /> *@
+                                        @{
+                                            var mma = ViewBag.YourDataList;
+                                        }
+                                        @Html.DropDownListFor(model => model.PatBloodgroup, ViewBag.Bloodgroup as List<SelectListItem>, "Please select", new { @class = "form-control",Id="DDLPresccategory" })
+                                        <span asp-validation-for="PatBloodgroup" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="PatWeight">PatientWeight</label>
+                                        <input asp-for="PatWeight" type="number" class="form-control"  min="0" max="100" id="pweight" placeholder="in Kgs" />
+                                        <span asp-validation-for="PatWeight" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="DoctorFirstName">DoctorFirstName</label>
+                                        <input asp-for="DoctorFirstName" type="text" class="form-control" id="dfname" placeholder="DoctorFirstName" readonly />
+                                        <span asp-validation-for="DoctorLastName" class="text-danger"></span>
+                                    </div>
+                        
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a href="#" onclick="createTable()">
+                                    <ion-icon name="add-circle-outline"></ion-icon> Add Medication
+                            </a>
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>SlNo</th>
+                                        <th>Prescription</th>
+                                        <th>Dosage</th>
+                                        <th>Noofdays</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                
+                        <div class="card-footer">
+                                <button type="submit" class="btn btn-default ">Cancel</button>
+                    <button type="submit" class="btn btn-success float-right" onclick="saveData()">CreatePrescription</button>
+                        </div>
+                    </div>
+             </div>
+         
+    </form>
+
+ 
+ </body>
+
+</html>
+
+
+@section Scripts {
+
+    <script>
+        // Your JavaScript code here
+        var aptcode;
+
+        function createTable() {
+            // Reference to the tbody element
+            var tbody = document.querySelector('#example1 tbody');
+
+            // Create a table row
+            var row = tbody.insertRow();
+
+            // Create cells in the row
+            var slNoCell = row.insertCell(0);
+            var prescriptionCell = row.insertCell(1);
+            var dosageCell = row.insertCell(2);
+            var noofdaysCell = row.insertCell(3);
+            var actionCell = row.insertCell(4);
+
+            // Set default values for each cell (you can make them editable if needed)
+            slNoCell.textContent = tbody.children.length; // SlNo based on the current number of rows
+
+            // Create editable input fields for prescription, dosage, and noofdays
+            prescriptionCell.innerHTML = '<input type="text" >';
+            noofdaysCell.innerHTML = '<input type="number" value="Default Noofdays" min="0" max="100">';
+
+            // Create a range input for dosage
+            var dosageValue = 5; // Default dosage value
+            var maxDosage = 1000; // Maximum dosage value
+            dosageCell.innerHTML = '<input type="range" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + tbody.children.length + ')">';
+            dosageCell.innerHTML += '<span id="dosageIndicator_' + tbody.children.length + '">' + dosageValue + ' mg</span>';
+
+            // Create a delete button
+            var deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-danger btn-sm'; // Bootstrap styling for a small red button
+            deleteButton.innerHTML = '<span class="glyphicon glyphicon-trash"></span> Delete';
+            deleteButton.addEventListener('click', function () {
+                // Add logic to delete the row
+                tbody.removeChild(row);
+                updateSlNo(); // Update SlNo after deleting a row
+            });
+
+            // Append the delete button to the action cell
+            actionCell.appendChild(deleteButton);
+        }
+
+        function updateSlNo() {
+            // Update the SlNo for each row
+            var rows = document.querySelectorAll('#example1 tbody tr');
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].cells[0].textContent = i + 1;
+            }
+        }
+
+        function updateDosageIndicator(value, rowNumber) {
+            // Update the dosage indicator for the specific row
+            var indicator = document.getElementById('dosageIndicator_' + rowNumber);
+            var dosageValue = parseInt(value, 10);
+            var newDosage = dosageValue + 1; // Increment dosage by 1 mg
+            indicator.textContent = newDosage + ' mg';
+        }
+
+
+        function saveData() {
+            var dataToSave = [];
+
+            // Loop through each row in the table
+            $('#example1 tbody tr').each(function () {
+                var row = $(this);
+                var slno = row.find('td:eq(0)').text(); // Get slno from the first column
+                var prescription = row.find('input[type="text"]').val();
+                var dosage = row.find('input[type="range"]').val();
+                var noofdays = row.find('input[type="number"]').val();
+
+                // Add the data to the array
+                dataToSave.push({
+                    slno: slno,
+                    prescription: prescription,
+                    dosage: dosage,
+                    noofdays: noofdays,
+                    aptcode: aptcode
+                });
+            });
+
+            // Send data to the server using AJAX
+            $.ajax({
+                url: '@Url.Action("SaveItemPrescription", "Prescriptions")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(dataToSave),
+                success: function (response) {
+                    alert('Data saved successfully!');
+                },
+                error: function () {
+                    alert('Error saving data. Please try again.');
+                }
+            });
+        }
+    </script>
+
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $("#DDLPresccategory").change(function () {
+             aptcode = $(this).val();
+            $.get("/Prescriptions/GetPrescription", { type: aptcode }, function (resposedata) {
+                    var data = JSON.parse(resposedata);
+                    $('#pfname').val(data[0].PFname)
+                    $('#plname').val(data[0].PLname)
+                    $('#dfname').val(data[0].DFname)
+                    $('#patage').val(data[0].Patage)
+                    $('#patcontact').val(data[0].Patphone)
+                    $('#patemail').val(data[0].PatientEmail)
+                   
+                });
+           
+        });
+    </script>
+    
+   
+
+}

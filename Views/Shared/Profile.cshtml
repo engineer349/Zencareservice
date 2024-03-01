@@ -1,0 +1,124 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Profile";
+}
+@model Zencareservice.Models.Personaldetails;
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/Profile.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-LzQ2BKWz2BDL8Gn1EQ0VG+CTAvCqLT9D/CQDt/cVVhjrNSZ7a/z26duPHmkcQ3Xz" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-Jj1T+AJr2P+N3Jqj2BT2vD/Fk5lQ9ACsC8DScC3vN92K3ww5KS72GGsTtxnkrE+L" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <form asp-action="Profile" asp-controller="Home">
+        <div class="container rounded bg-white mt-5 mb-5">
+            <div class="row">
+                <div class="col-md-3 border-right">
+                    <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">Edogaru</span><span class="text-black-50">edogaru@mail.com.my</span><span> </span></div>
+                </div>        
+                <div class="col-md-5 border-right">
+                    <div class="p-3 py-5">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-right">Profile Settings</h4>
+                        </div>
+                            <div class="row mt-2">
+                                        <div class="col-md-6">
+                                                <label class="labels" asp-for="Firstname"> FirstName </label>
+                                                <input type="text" asp-for="Firstname" id="firstname" placeholder="Your FirstName" class="form-control  minlength="4" maxlength="16" />
+                                                <span asp-validation-for="Firstname" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                                <label class="labels" asp-for="Lastname"> LastName </label>
+                                                <input type="text" asp-for="Lastname" id="lastname" placeholder="Your LastName" class="form-control" minlength="4" maxlength="16" />
+                                                <span asp-validation-for="Lastname" class="text-danger"></span>
+                                        </div>                                                          
+                                        <div class="col-md-6">
+                                            <label class="labels" asp-for="Gender"> Gender </label>
+                                            <select class="form-control">    
+                                                <option value="">-- Please Select Gender --</option>
+                                            </select>
+                                            <span asp-validation-for="Gender" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="labels" asp-for="Email"> Email </label>
+                                            <input type="email" class="form-control" placeholder="Email Address" value="">
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="labels" asp-for="Phoneno"> Phone </label>
+                                            <input type="tel" class="form-control" value="" placeholder="Phone">
+                                            <span asp-validation-for="Phoneno" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="labels" asp-for="AltPhoneno"> Alternate Phone </label>
+                                            <input type="tel"  class="form-control" value="" placeholder="Alt Contact">
+                                            <span asp-validation-for="AltPhoneno" class="text-danger"></span>
+                                        </div>
+                            </div>
+                            <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels" asp-for="Address1"> Address Line 1 </label>
+                                        <input type="text" asp-for="Address1" class="form-control" placeholder="Address Line1" maxlength="255" value="">
+                                        <span asp-validation-for="Address1" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="labels"  asp-for="Address2"> Address Line 2 </label>
+                                        <input type="text" asp-for="Address2" class="form-control" placeholder="Address line2" maxlength="255" value="">
+                                        <span asp-validation-for="Address2" class="text-danger"></span>
+                                    </div>
+                            </div>
+                            <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels" asp-for="State"> State </label>
+                                        <select class="form-control">    <option value="">-- Please Select State --</option></select>
+                                        <span asp-validation-for="State" class="text-danger"></span>
+                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="labels" asp-for="City">City</label>
+                                        <select class="form-control">    <option value="">--  Please Select City --</option></select>
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                            </div>
+                            <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label class="labels" asp-for="Country">Country</label>
+                                        <input type="text" class="form-control" placeholder="Country" >
+                                        <span asp-validation-for="Country" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels" asp-for="Zipcode">ZipCode</label>
+                                        <input type="text" class="form-control" placeholder="Zipcode" >
+                                        <span asp-validation-for="Zipcode" class="text-danger"></span>
+                                    </div>
+                            </div>          
+                                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                            </div>
+                </div>
+                 <div class="col-md-4 border-right">
+                    <div class="p-3 py-5">
+                        <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
+                        <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience" value=""></div> <br>
+                        <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value=""></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+    </form>
+
+
+
+</body>
+
+</html>
