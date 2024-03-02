@@ -14,34 +14,34 @@
 
     <head>
 
-        <style >
-        .upload-container {
-            width: 200px; /* Set the width of the outer box */
-            height: 200px; /* Set the height of the outer box */
-            border: 2px solid #ccc; /* Border style */
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        <style>
+            .upload-container {
+                width: 200px; /* Set the width of the outer box */
+                height: 200px; /* Set the height of the outer box */
+                border: 2px solid #ccc; /* Border style */
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-        .upload-container input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
+            .upload-container input[type="file"] {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                cursor: pointer;
+            }
 
-        .upload-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensure the image covers the entire space without stretching */
-            display: block;
-        }
+            .upload-preview {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* Ensure the image covers the entire space without stretching */
+                display: block;
+            }
         </style>
 
     </head>
@@ -91,11 +91,14 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col-md-3 border-right"> 
-                            <div class="p-3 py-5">                                  
+                            <div class="p-3 py-5"> 
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right" style="color:blue">Bio Details</h4>
+                                    <h5 style="color:red" class="form-title"> @ViewBag.Message</h5>
+                                </div>
                                 <div class="row-mt-2">
                                     <div class="col-md-12"> 
-                                       <div class="upload-container">
-                                              
+                                       <div class="upload-container">                                            
                                                 <img id="previewImage" class="upload-preview" src="#" alt="">
                                                  <input type="file" id="uploadInput" accept="image/*">
                                             </div>
