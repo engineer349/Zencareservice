@@ -28,6 +28,7 @@ using System.Security.Cryptography.Xml;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 
 namespace Zencareservice.Controllers
 {
@@ -38,6 +39,15 @@ namespace Zencareservice.Controllers
         //private readonly TwilioService _twilioService;
         private readonly IDataProtector _dataProtector;
 
+        //private readonly UserManager<Signup> _userManager;
+        //private readonly SignInManager<Signup> _signInManager;
+
+        //public AccountController(UserManager<Signup> userManager,
+        //                              SignInManager<Signup> signInManager)
+        //{
+        //    _userManager = userManager;
+        //    _signInManager = signInManager;
+        //}
 
         private int _generatedOtp;
 
@@ -395,6 +405,44 @@ namespace Zencareservice.Controllers
             tClient.Close();
             return true;
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> Register(Signup model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = new Signup
+        //        {
+        //            Firstname = model.Firstname,
+        //            Lastname = model.Lastname,
+        //            Dob = model.Dob,
+        //            Password = model.Password, 
+        //            CRPassword = model.CRPassword,
+        //            Username = model.Username,
+        //            Email = model.Email,
+        //        };
+
+        //        var result = await _userManager.CreateAsync(user, model.Password);
+
+        //        if (result.Succeeded)
+        //        {
+        //            await _signInManager.SignInAsync(user, isPersistent: false);
+
+        //            return RedirectToAction("Index", "Home");
+        //        }
+
+        //        foreach (var error in result.Errors)
+        //        {
+        //            ModelState.AddModelError("", error.Description);
+        //        }
+
+        //        ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+
+        //    }
+        //    return View(model);
+        //}
+
+
         [HttpPost]
         public IActionResult PatientRegister(Signup Obj, string returnUrl)
         {
@@ -809,9 +857,6 @@ namespace Zencareservice.Controllers
 
         }
 
-
-
-
         private string SendingEmail(Signup Obj)
         {
             string FName = Obj.Firstname;
@@ -908,7 +953,11 @@ namespace Zencareservice.Controllers
             // Deserialize UserData from the JSON string
             var userData = JsonConvert.DeserializeObject<Signup>(userDataJson);
 
-            // Use the userData.UserId, userData.UserName, userData.Role, userData.RCode as needed
+            // Use the
+            //userData.UserId, 
+            //userData.UserName, 
+            //userData.Role, 
+            //userData.RCode 
 
             return View();
         }
@@ -918,8 +967,11 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public IActionResult Login(Login Obj)
         {
-            string username = Obj.Username;
-            string password = Obj.Password;
+            
+             string username = Obj.Username;
+             string password = Obj.Password;
+        
+          
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
@@ -963,18 +1015,18 @@ namespace Zencareservice.Controllers
 
 
 
-                        //var userData = new Signup
-                        //{
-                        //    UserId = UsrId,
-                        //    Rcode = RCode, // Replace with actual user data
-                        //    Email = Email,
-                        //    RoleName = Role,// Replace with actual user data
-                        //    Firstname = Fname
-                        //};
+                        var userData = new Signup
+                        {
+                            UserId = UsrId,
+                            Rcode = RCode,  
+                            Email = Email,
+                            RoleName = Role, 
+                            Firstname = Fname
+                        };
 
-                        //var userDataJson = JsonConvert.SerializeObject(userData);
+                        var userDataJson = JsonConvert.SerializeObject(userData);
 
-                        //var protectedData = _dataProtector.Protect(userDataJson);
+                        var protectedData = _dataProtector.Protect(userDataJson);
 
 
                         var cookieOptions = new CookieOptions
@@ -983,14 +1035,14 @@ namespace Zencareservice.Controllers
                             HttpOnly = true, // Makes the cookie accessible only to the server-side code
                         };
 
-                        //Response.Cookies.Append("EncryptCookie", protectedData, new CookieOptions
-                        //{
-                        //    HttpOnly = true,
-                        //    Secure = true,
-                        //    SameSite = SameSiteMode.None,
-                        //    Expires = DateTimeOffset.Now.AddDays(1)
+                        Response.Cookies.Append("EncryptCookie", protectedData, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.None,
+                            Expires = DateTimeOffset.Now.AddDays(1)
 
-                        //});
+                        });
                         Response.Cookies.Append("MyCookie", "CookieValue", cookieOptions);
 
                         Response.Cookies.Append("UserId", UsrId);
@@ -1009,7 +1061,7 @@ namespace Zencareservice.Controllers
                         CookieOptions options3 = new CookieOptions();
                         options.Expires = DateTime.Now.AddMinutes(5);
 
-                        Response.Cookies.Append("UsrId", UsrId, options1);
+                        Response.Cookies.Append("UsrId", UsrId, options);
                         // Get the cookie value
                         HttpContext.Session.SetString("UsrId", UsrId);
 
@@ -1027,6 +1079,8 @@ namespace Zencareservice.Controllers
                         ViewBag.ShowAlert = true;
                         ViewBag.AlertMessage = "Login successful!";
                         ViewBag.AlertType = "success";
+
+                       
 
                         return RedirectToAction("Dashboard", "Report");
                        
@@ -1056,10 +1110,10 @@ namespace Zencareservice.Controllers
         [ValidateAntiForgeryToken]
 		public IActionResult Logout()
 		{
-			// Implement logout logic
-
-			// Clear authentication cookies
-			HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+          
+            HttpContext.Session.Clear();
+            // Clear authentication cookies
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
 			// Redirect to the home page or another appropriate page
 			return RedirectToAction("Index", "Home");
