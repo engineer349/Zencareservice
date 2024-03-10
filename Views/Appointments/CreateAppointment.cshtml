@@ -148,6 +148,77 @@
     }
     <script>
         $(document).ready(function () {
+            // Function to validate the form
+            function validateForm() {
+                var valid = true;
+
+                // Validate Firstname
+                var firstname = $("#firstname").val();
+                if (!firstname || firstname.length < 4 || firstname.length > 20 || !/^[A-Za-z]+$/.test(firstname)) {
+                    valid = false;
+                    $("#firstname").addClass("is-invalid");
+                } else {
+                    $("#firstname").removeClass("is-invalid");
+                }
+
+                // Validate Lastname
+                var lastname = $("#lastname").val();
+                if (!lastname || lastname.length < 4 || lastname.length > 20 || !/^[A-Za-z]+$/.test(lastname)) {
+                    valid = false;
+                    $("#lastname").addClass("is-invalid");
+                } else {
+                    $("#lastname").removeClass("is-invalid");
+                }
+
+                // Validate Email
+                var email = $("#email").val();
+                var emailRegex = /^[^\s]+[^\s]+\.[^\s]+$/;
+                if (!email || !emailRegex.test(email)) {
+                    valid = false;
+                    $("#email").addClass("is-invalid");
+                } else {
+                    $("#email").removeClass("is-invalid");
+                }
+
+                // Validate Phoneno
+                var phoneno = $("#contactno").val();
+                if (!phoneno || !/^\d{10}$/.test(phoneno)) {
+                    valid = false;
+                    $("#contactno").addClass("is-invalid");
+                } else {
+                    $("#contactno").removeClass("is-invalid");
+                }
+
+                // Validate Age
+                var age = $("#age").val();
+                if (!age || age < 1 || age > 110) {
+                    valid = false;
+                    $("#age").addClass("is-invalid");
+                } else {
+                    $("#age").removeClass("is-invalid");
+                }
+
+                // Validate Reason
+                var reason = $("#reasontype").val();
+                if (!reason) {
+                    valid = false;
+                    $("#reasontype").addClass("is-invalid");
+                } else {
+                    $("#reasontype").removeClass("is-invalid");
+                }
+
+                // Validate Gender
+                var gender = $("#PatientGender").val();
+                if (!gender || gender === "Please select") {
+                    valid = false;
+                    $("#PatientGender").addClass("is-invalid");
+                } else {
+                    $("#PatientGender").removeClass("is-invalid");
+                }
+
+                return valid;
+            }
+
             // Set tomorrow's date to the next available working day
             var tomorrow = new Date();
             var oneYearFromNow = new Date();
@@ -215,19 +286,43 @@
                     }
                 }
             });
+
+            // Attach click event listener to the SaveAppointment button
+            $(".btn-info").click(function (event) {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+
+                // Call the validateForm function to perform form validation
+                if (validateForm()) {
+                    // If the form is valid, submit the form
+                    $("#register-form").submit();
+                }
+            });
+
+            // Alternatively, you can attach the form submission event directly to the form element
+            $("#register-form").submit(function (event) {
+                // Call the validateForm function to perform form validation
+                if (!validateForm()) {
+                    // If the form is invalid, prevent the default form submission behavior
+                    event.preventDefault();
+                }
+            });
         });
     </script>
+
+
+
     <script type="text/javascript">
         $("#DDLAptCategory").change(function () {
             var aptId = $(this).val();
             if (aptId == "self") {
                 $.get("/Appointments/GetAppointment", { type: aptId }, function (resposedata) {
                     var data = JSON.parse(resposedata);
-                    $('#firstname').val(data[0].Fname)
-                    $('#lastname').val(data[0].Lname)
-                    $('#age').val(data[0].Age)
-                    $('#contactno').val(data[0].Phoneno)
-                    $('#email').val(data[0].Email)
+                    $('#firstname').val(data[0].Fname).prop('readonly', true);
+                    $('#lastname').val(data[0].Lname).prop('readonly', true);
+                    $('#age').val(data[0].Age).prop('readonly', true);
+                    $('#contactno').val(data[0].Phoneno).prop('readonly', true);
+                    $('#email').val(data[0].Email).prop('readonly', true);
                 });
             } else {
                 $('#firstname').val('');
@@ -257,6 +352,8 @@
         });
     </script>
 
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   
 
 }
