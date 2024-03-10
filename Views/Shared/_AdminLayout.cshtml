@@ -29,8 +29,6 @@
     <link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Toastr -->
     <link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
-
-    <!-- DataTables -->
   
     <!-- Theme style -->
     <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
@@ -274,11 +272,12 @@
 
                         @foreach (DataRow row in dtlist.Rows)
                         {
-                            @* <li class="nav-item">
-                        <p>
-                        <a class="nav-link text-light" id="register" asp-action="@row["Action"]" asp-controller="@row["Controller"]"><i class="fas fa-user-plus"></i> @row["Modulename"]</a>
-                        </p>
-                        </li> *@
+                                @* <li class="nav-item">
+                                    <p>
+                                    <a class="nav-link text-light" id="register" asp-action="@row["Action"]" asp-controller="@row["Controller"]"><i class="fas fa-user-plus"></i> @row["Modulename"]</a>
+                                    </p>
+                               </li> *@
+                                                     
 
                             <li class="nav-item">
                                 <a asp-action="@row["Action"]" asp-controller="@row["Controller"]" class="nav-link">

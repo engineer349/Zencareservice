@@ -162,6 +162,9 @@
 
     <script>
         // Your JavaScript code here
+
+
+
         var aptcode;
 
         function createTable() {
@@ -260,8 +263,39 @@
         }
     </script>
 
+    <script>
 
+         function validatePatient() {
+            var age = parseInt(document.getElementById("patage").value);
+            var weight = parseInt(document.getElementById("pweight").value);
 
+            if (!isNaN(age) && age > 110) {
+                // If age exceeds 110
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Age should not be more than 110!'
+                });
+                document.getElementById("patage").value = ''; // Clear age field
+                return false;
+            }
+
+            if (!isNaN(weight) && weight > 180) {
+                // If weight exceeds 180
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Weight should not be more than 180 kg!'
+                });
+                document.getElementById("pweight").value = ''; // Clear weight field
+                return false;
+            }
+        }
+
+        // Attach input event listeners to age and weight input fields
+        document.getElementById("patage").addEventListener("input", validatePatient);
+        document.getElementById("pweight").addEventListener("input", validatePatient);
+</script>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -272,12 +306,12 @@
              aptcode = $(this).val();
             $.get("/Prescriptions/GetPrescription", { type: aptcode }, function (resposedata) {
                     var data = JSON.parse(resposedata);
-                    $('#pfname').val(data[0].PFname)
-                    $('#plname').val(data[0].PLname)
-                    $('#dfname').val(data[0].DFname)
-                    $('#patage').val(data[0].Patage)
-                    $('#patcontact').val(data[0].Patphone)
-                    $('#patemail').val(data[0].PatientEmail)
+                $('#pfname').val(data[0].PFname).prop('readonly', true);
+                $('#plname').val(data[0].PLname).prop('readonly', true);
+                $('#dfname').val(data[0].DFname).prop('readonly', true);
+                $('#patage').val(data[0].Patage).prop('readonly', true);
+                $('#patcontact').val(data[0].Patphone).prop('readonly', true);
+                $('#patemail').val(data[0].PatientEmail).prop('readonly', true);
                    
                 });
            

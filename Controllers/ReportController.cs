@@ -13,12 +13,7 @@ namespace Zencareservice.Controllers
 {
     public class ReportController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-
-        }
-
+    
         public IActionResult Report()
         {
             string UsrId = Request.Cookies["UsrId"];

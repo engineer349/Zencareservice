@@ -117,6 +117,8 @@ namespace Zencareservice.Controllers
             return Json(prescdetails);
         }
 
+
+
         [HttpPost]
 
         public IActionResult SaveItemPrescription( [FromBody] Prescs[] medications)

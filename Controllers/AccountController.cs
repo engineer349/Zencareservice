@@ -177,8 +177,10 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("GOTP", out var gotp))
             {
+                 gotp = Request.Cookies["OTP"];
 
-                
+                ViewBag.Message = gotp;
+
 
                 string _genotp = Convert.ToString(ViewBag.Message);
 
@@ -358,6 +360,21 @@ namespace Zencareservice.Controllers
 
             return _generatedOtp.ToString();
 
+        }
+
+
+        public bool VerifyPassword(String password)
+        {
+            if(password != null )
+            {
+               DataAccess dataAccess = new DataAccess();
+
+            }
+            else
+            {
+
+            }
+            return true;
         }
 
         private static byte[] BytesFromString(string str)
@@ -577,6 +594,7 @@ namespace Zencareservice.Controllers
 
 
         }
+
         [HttpPost]
         public IActionResult URegister(Signup Obj, string returnUrl, DateTime userDob)
         {
