@@ -3,26 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing.Template;
 using System.Data;
 using System.Net.Mail;
-using System.Net.Mime;
-using System.Reflection;
-using System.Text;
-using Twilio.TwiML.Messaging;
 using Zencareservice.Models;
 using Zencareservice.Repository;
-using System;
-using System.IO;
-using System.Net;
-using System.Data.SqlTypes;
-using System.Text.RegularExpressions;
-using System.Data.Entity.Infrastructure;
-using System.Globalization;
-using System.CodeDom.Compiler;
+
 using Newtonsoft.Json;
-using System.Drawing;
-using System.Xml.Linq;
-using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
-using Twilio.Rest.Trunking.V1;
+using System.Text;
 
 namespace Zencareservice.Controllers
 {
@@ -313,6 +298,7 @@ namespace Zencareservice.Controllers
                         apts.PatientFirstName = patientname;
 
                         apts.AptId = ((int)row["AptId"]);
+
                         apts.Patientphoneno = row["Patphone"].ToString();
                         apts.PatientEmail = row["PatientEmail"].ToString();
 

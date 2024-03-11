@@ -1,235 +1,153 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Report";
     Layout = "_AdminLayout";
-
 }
- @model Zencareservice.Models.Prescs;
- <html>
 
+@model Zencareservice.Models.Prescs
+
+<html>
 <head>
     <title>Create Prescription</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Gopi">
 </head>
-
- <body>
-
-                <section class="content-header">
-                       <div class="container-fluid">
-                        <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <h1>Report</h1>
-                            </div>                                                                 
-                            <div class="col-sm-6">
-                                <ol class="breadcrumb float-sm-right">
-                                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li class="breadcrumb-item active">Report</li>
-                                </ol>
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-3">                           
-                                @{
-                                    var mm = ViewBag.YourDataList;
-                                }
-                                @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control",Id="DDLPresccategory" })
-                                <span asp-validation-for="AppointmentCode" class="text-danger"></span>
-                            </div>
-                        <div class=" col-sm-3">
-                            <!-- Button with onclick event to trigger the loading animation -->
-                    <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="showPopup()">View Report</button>
-                        </div>
-                    </div>
-                    </div><!-- /.container-fluid -->
-                </section>
-
-            <div id="popup" style="display:none"> 
-                <section class="content-body">
-                     <div class="container-fluid">
-               <!-- SELECT2 EXAMPLE -->
-                    <div class="card card-success">
-
-                        <div class="card-header">
-                            <h1 class="card-title">@ViewData["Title"]</h1>                           
-                        </div>
-                       
-
-                        <div class="card-body">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="form-group col-md-6">
-                                        @* <div class="row no-print">
-                                            <div class="col-12">
-                                                <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                                                <button type="button" class="btn btn-success float-right">
-                                                    <i class="far fa-credit-card"></i> Submit
-                                                    Payment
-                                                </button>
-                                                <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
-                                                    <i class="fas fa-download"></i> Generate PDF
-                                                </button>
-                                            </div>
-                                        </div> *@
-                                    </div>                 
-
-                        </div>
-
-                       <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="callout callout-info">
-                                <h5><i class="fas fa-info"></i> Note:</h5>
-                                This page has been enhanced for printing. Click the print button at the bottom of E-prescription to test.
-                            </div>
-
-
-                            <!-- Main content -->
-                            <div class="invoice p-3 mb-3">
-                                <!-- title row -->
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h4>
-                                            <i class="fas fa-globe"></i> Zencare, Inc.
-                                            <small class="float-right">Date: @DateTime.Now.ToString("d MMMM yyyy")</small>
-                                        </h4>
-                                    </div>
-                                    <!-- /.col -->
-                                </div>
-                                <!-- info row -->
-                                <div class="row invoice-info">
-                                    <div class="col-sm-4 invoice-col">
-                                        Prescriped by
-                                        <address>
-                                             <strong><input type="text" id="dfname" /></strong><br>
-                                            795 Folsom Ave, Suite 600<br>
-                                            San Francisco, CA 94107<br>
-                                            Phone: 888-33-7095<br>
-                                            Email: zenhealthcareservice@gmail.com
-                                        </address>
-                                    </div>
-                                    <!-- /.col -->
-                                    <div class="col-sm-4 invoice-col">
-                                        To
-                                        <address>
-                                            <strong><input id="pfname" /></strong><br>
-                                            795 Folsom Ave, Suite 600<br>
-                                            San Francisco, CA 94107<br>
-                                            Phone: <input  type="text" id="patcontact" /><br>
-                                            Email: <input type="text" id="patemail" />
-                                        </address>
-                                    </div>
-                                    <!-- /.col -->
-                                    <div class="col-sm-4 invoice-col">
-                                        <b>PrescriptionCode :</b><br>
-                                        <br>
-                                        <b>Appointment Code:</b> 4F3S8J<br>
-                                        <b>Prescritpion Date:</b> 2/22/2014<br>
-                                        <b>Account No:</b> 968-34567
-                                    </div>
-                                    <!-- /.col -->
-                                </div>
-                                <!-- /.row -->
-                                <!-- Table row -->
-                                <div class="row">
-                                    <div class="col-12 table-responsive">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>SlNo</th>
-                                                    <th>Prescription</th>
-                                                    <th>Dosage</th>
-                                                    <th>No of Days</th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                @if (Model != null)
-                                                {
-                                                    @foreach (var prescription in Model.showlist1)
-                                                    {
-                                                        <tr>
-                                                            <td>@prescription.SlNo</td>
-                                                            <td>@prescription.Prescription</td>
-                                                            <td>@prescription.Dosage</td>mg
-                                                            <td>@prescription.NoOfDays</td>
-
-                                                        </tr>
-                                                    }
-                                                }
-                                                else
-                                                {
-
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!-- /.col -->
-                                </div>
-                                <!-- /.row -->
-
-
-                            </div>
-
-
-                        </div>
-                        <!-- /.invoice -->
-                    </div><!-- /.col -->
+<body>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Report</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Report</li>
+                    </ol>
                 </div>
             </div>
-
-        </div>
-                </section>
+            <div class="row mb-2">
+                <div class="col-sm-3">
+                    @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id="DDLPresccategory" })
+                    <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="showPopup()">View Report</button>
+                </div>
             </div>
+        </div>
+    </section>
 
-</body>
-</html>
+    <div id="popup" style="display:none">
+        <section class="content-body">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h1 class="card-title">@ViewData["Title"]</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="callout callout-info">
+                                        <h5><i class="fas fa-info"></i> Note:</h5>
+                                        This page has been enhanced for printing. Click the print button at the bottom of E-prescription to test.
+                                    </div>
+                                    <div class="invoice p-3 mb-3">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4>
+                                                    <i class="fas fa-globe"></i> Zencare, Inc.
+                                                    <small class="float-right">Date: @DateTime.Now.ToString("d MMMM yyyy")</small>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <div class="row invoice-info">
+                                            <div class="col-sm-4 invoice-col">
+                                                Prescriped by
+                                                <address>
+                                                    <strong><input type="text" id="dfname" /></strong><br>
+                                                    795 Folsom Ave, Suite 600<br>
+                                                    San Francisco, CA 94107<br>
+                                                    Phone: 888-33-7095<br>
+                                                    Email: zenhealthcareservice@gmail.com
+                                                </address>
+                                            </div>
+                                            <div class="col-sm-4 invoice-col">
+                                                To
+                                                <address>
+                                                    <strong><input id="pfname" /></strong><br>
+                                                    795 Folsom Ave, Suite 600<br>
+                                                    San Francisco, CA 94107<br>
+                                                    Phone: <input type="text" id="patcontact" /><br>
+                                                    Email: <input type="text" id="patemail" />
+                                                </address>
+                                            </div>
+                                            <div class="col-sm-4 invoice-col">
+                                                <b>PrescriptionCode :</b><br>
+                                                <br>
+                                                <b>Appointment Code:</b> 4F3S8J<br>
+                                                <b>Prescritpion Date:</b> 2/22/2014<br>
+                                                <b>Account No:</b> 968-34567
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 table-responsive">
+                                                <table id="prescriptionTable" class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SlNo</th>
+                                                            <th>Prescription</th>
+                                                            <th>Dosage</th>
+                                                            <th>No of Days</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-@section scripts
-{
     <script src="~/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
     <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
     <script src="~/dist/js/adminlte.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
     <script src="~/dist/js/demo.js"></script>
 
-                    <script type="text/javascript">
-                        $("#DDLPresccategory").change(function () {
-                            aptcode = $(this).val();
-                         $.get("/Report/Getdetails", { type: aptcode }, function (resposedata) {
-                                var data = JSON.parse(resposedata);
-                                $('#pfname').val(data[0].PFname)
-                                $('#plname').val(data[0].PLname)
-                                $('#dfname').val(data[0].DFname)
-                                $('#patage').val(data[0].Patage)
-                                $('#patcontact').val(data[0].Patphone)
-                                $('#patemail').val(data[0].PatientEmail)
-                                $('#slno').val(data[1].Slno)
-                                $('#prscitem').val(data[1].Prscitem)
-                                $('#prscdosage').val(data[1].PrscDosage)
-                                $('#prscdays').val(data[1].Prscdays)
-                            });
+    <script type="text/javascript">
+        $("#DDLPresccategory").change(function () {
+            var aptcode = $(this).val();
+            $.get("/Report/Getdetails", { type: aptcode }, function (data) {
+                // Clear existing table rows
+                $('#example tbody').empty();
 
-                        });
+                // Iterate over the data and populate the table
+                $.each(data.showlist1, function (index, prescription) {
+                    var row = '<tr>' +
+                        '<td>' + prescription.SlNo + '</td>' +
+                        '<td>' + prescription.Prescription + '</td>' +
+                        '<td>' + prescription.Dosage + '</td>' +
+                        '<td>' + prescription.NoOfDays + '</td>' +
+                        '</tr>';
+                    $('#example tbody').append(row);
+                });
+            });
+        });
 
-                    </script>
-
-
-
-    <script>
         function showPopup() {
-            // Get the popup element
             var popup = document.getElementById("popup");
-
-            // Show the popup by setting its display property to "block"
             if (popup) {
                 popup.style.display = "block";
             }
         }
     </script>
+</body>
+</html>
 
-
-}

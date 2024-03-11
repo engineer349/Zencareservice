@@ -70,22 +70,22 @@ namespace Zencareservice
             });
         }
 
-        public void Configure(WebApplication zencareserviceapp, IWebHostEnvironment env)
+        public void Configure(WebApplication app, IWebHostEnvironment env)
         {
-            if(!zencareserviceapp.Environment.IsDevelopment())
+            if(!app.Environment.IsDevelopment())
             {
-                zencareserviceapp.UseExceptionHandler("/Error");
-                zencareserviceapp.UseHsts();
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
             }
-            zencareserviceapp.UseSession();
-            zencareserviceapp.UseHttpsRedirection();
-            zencareserviceapp.UseStaticFiles();
-            zencareserviceapp.UseRouting();
-            zencareserviceapp.UseAuthentication();
-            zencareserviceapp.UseAuthorization();
-            zencareserviceapp.MapRazorPages();
+            app.UseSession();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapRazorPages();
 
-            zencareserviceapp.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
@@ -93,7 +93,7 @@ namespace Zencareservice
 
 
             });
-            zencareserviceapp.Run();
+            app.Run();
         }
   
 

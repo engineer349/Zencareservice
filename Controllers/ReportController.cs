@@ -38,80 +38,50 @@ namespace Zencareservice.Controllers
         }
 
 
-        public IActionResult Getdetails(string type, Prescs presc)
+        public IActionResult Getprscdetails(Prescs prsc, string type)
         {
-
-
-            DataSet ds = new DataSet();
-
             DataAccess Obj_DataAccess = new DataAccess();
-
+            DataSet ds = new DataSet();
             ds = Obj_DataAccess.SetDetails(type);
-
-
-
-            //string prescdetails = JsonConvert.SerializeObject(ds.Tables[0]);
-
-            //string prescdetails1 = JsonConvert.SerializeObject(ds.Tables[1]);
-
-
-
-
             List<Prescs> PrescList = new List<Prescs>();
-
 
             foreach (DataRow row in ds.Tables[1].Rows)
             {
-                Prescs prsc = new Prescs();
+                Prescs prescs = new Prescs();
                 {
-
-                    prsc.Prescription = row["Prscitem"].ToString();
-
-                    prsc.SlNo = Convert.ToInt32(row["Slno"]);
-
-                    prsc.Dosage = Convert.ToInt32(row["PrscDosage"]);
-
+                    prescs.SlNo = Convert.ToInt32(row["Slno"]);
+                    prescs.Prescription = row["Prscitem"].ToString();
+                    prescs.Dosage = Convert.ToInt32( row["PrscDosage"]);
                     prsc.NoOfDays = Convert.ToInt32(row["Prscdays"]);
+
                 };
-
-
-                PrescList.Add(presc);
-
-                presc.showlist1 = PrescList;
-
-               
-
+                PrescList.Add(prescs);
             }
+             prsc.showlist1 = PrescList;
+            return View(prsc);
 
-            foreach (DataRow row in ds.Tables[0].Rows)
-            {
-                Prescs prsc = new Prescs();
-                {
-
-                    prsc.PatientFirstName = row["PFname"].ToString();
-
-                    prsc.DoctorFirstName = row["DFname"].ToString();
-
-                    prsc.Patientphoneno = row["Patphone"].ToString();
-
-                    prsc.PatientEmail = row["PatientEmail"].ToString();
-
-                    prsc.aptcode = row["AptCode"].ToString();
-                };
-
-
-                PrescList.Add(presc);
-
-                presc.showlist1 = PrescList;
-
-
-
-            }
-            //return Json(prescdetails);
-
-            return View(presc);
         }
-        
+
+        public IActionResult Getdetails(string type, Prescs prsc)
+        {
+            DataSet ds = new DataSet();
+            DataAccess Obj_DataAccess = new DataAccess();
+            ds = Obj_DataAccess.SetDetails(type);
+
+            //var prescriptions = ds.Tables[1].AsEnumerable().Select(row => new
+            //{
+            //    SlNo = row.Field<int>("SlNo"),
+            //    Prescription = row.Field<string>("Prscitem"),
+            //    Dosage = row.Field<object>("PrscDosage").ToString(),
+            //    NoOfDays = row.Field<object>("Prscdays").ToString()
+            //}).ToList();
+
+            string prescdetails = JsonConvert.SerializeObject(ds.Tables[0]);
+
+            return Json(new { prescdetails });
+        }
+
+
         public async Task<IActionResult> Prescdetails( string type, Prescs presc)
         {
             DataSet ds = new DataSet();
@@ -171,7 +141,7 @@ namespace Zencareservice.Controllers
 
             var AptcodeList = new List<SelectListItem>();
 
-            foreach (DataRow row in ds.Tables[0].Rows)
+            foreach (DataRow row in ds.Tables[3].Rows)
             {
                 var presccategory = new SelectListItem
                 {
