@@ -66,21 +66,12 @@ namespace Zencareservice.Controllers
         {
             DataSet ds = new DataSet();
             DataAccess Obj_DataAccess = new DataAccess();
-            ds = Obj_DataAccess.SetDetails(type);
-
-            //var prescriptions = ds.Tables[1].AsEnumerable().Select(row => new
-            //{
-            //    SlNo = row.Field<int>("SlNo"),
-            //    Prescription = row.Field<string>("Prscitem"),
-            //    Dosage = row.Field<object>("PrscDosage").ToString(),
-            //    NoOfDays = row.Field<object>("Prscdays").ToString()
-            //}).ToList();
+            ds = Obj_DataAccess.SetDetails(type);         
 
             string prescdetails = JsonConvert.SerializeObject(ds.Tables[0]);
 
-            return Json(new { prescdetails });
+            return Json(prescdetails);
         }
-
 
         public async Task<IActionResult> Prescdetails( string type, Prescs presc)
         {
@@ -115,10 +106,6 @@ namespace Zencareservice.Controllers
             }
             return View(presc);
         }
-
-   
-
-
 
         public void Reportdropdown()
         {
