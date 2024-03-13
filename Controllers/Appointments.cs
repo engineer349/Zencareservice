@@ -539,18 +539,51 @@ namespace Zencareservice.Controllers
             }
             else
             {
-                int aptId = Convert.ToInt32(Obj.AptId);
-                int reschedule = 1;
-                DateTime rescheduledate = (DateTime)Obj.RescheduleAppointmentDate;
-                TimeSpan rescheduletime = (TimeSpan)Obj.RescheduleAppointmentTime;
+                try
+                { 
 
-                DataAccess Obj_DataAccess = new DataAccess();
-                DataSet ds = new DataSet();
-                ds = Obj_DataAccess.SetRescheduleAppointment(Obj);
+                    int aptId = Convert.ToInt32(Obj.AptId);
+                    int reschedule = 1;
+                    DateTime rescheduledate = (DateTime)Obj.RescheduleAppointmentDate;
+                    TimeSpan rescheduletime = (TimeSpan)Obj.RescheduleAppointmentTime;
+
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet ds = new DataSet();
+                    ds = Obj_DataAccess.ReCheckAppointmentList(Obj);
+                    if (ds.Tables[0].Rows.Count == 0)
+                    {
+
+
+                        ds = Obj_DataAccess.SetRescheduleAppointment(Obj);
+
+                        TempData["SwalMessage"] = "Your Appointment is Booked.";
+                        TempData["SwalType"] = "success";
+
+                        return RedirectToAction("Aptlist", "Appointments");
+                    }
+                    else
+                    {
+                        TempData["SwalMessage"] = "Your Appointment is already booked.";
+                        TempData["SwalType"] = "error";
+
+                        return RedirectToAction("CreateAppointment", "Appointments");
+
+                    }
+
+                }
+                catch(Exception ex)
+                {
+                    TempData["SwalMessage"] = "An error occurred while processing your request.";
+                    TempData["SwalType"] = "error";
+
+                    return RedirectToAction("Error", "Home");
+                }
+             
 
             }
 
-            return View();
+
+            return RedirectToAction("PAptlist", "Appointmens");
         }
 
         public IActionResult Aptedit(Appts apt,int Id)
@@ -567,6 +600,9 @@ namespace Zencareservice.Controllers
 
             else
             {
+              
+
+                
                 apt.Rescedule = true;
                
                 DataAccess Obj_DataAccess = new DataAccess();
@@ -686,7 +722,7 @@ namespace Zencareservice.Controllers
 
                                 ds = Obj_DataAccess.SaveAppointment(Obj);
 
-                                TempData["SwalMessage"] = "Your Appointment is saved.";
+                                TempData["SwalMessage"] = "Your Appointment is Booked.";
                                 TempData["SwalType"] = "success";
 
                                 return RedirectToAction("Aptlist", "Appointments");

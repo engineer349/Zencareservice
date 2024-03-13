@@ -111,19 +111,32 @@
                 </div>
             </div>
         </section>
+        <div class="row no-print">
+            <div class="col-12">
+                <a href="#" rel="noopener" target="_blank" class="btn btn-default" onclick="printContent()">
+                    <i class="fas fa-print"></i> Print
+                </a>
+                <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="generatePDF()">
+                    <i class="fas fa-download"></i> Generate PDF
+                </button>
+
+            </div>
+        </div>
     </div>
 
     <script src="~/plugins/jquery/jquery.min.js"></script>
     <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/dist/js/adminlte.min.js"></script>
     <script src="~/dist/js/demo.js"></script>
-
+    
 
 
     <script type="text/javascript">
         $(document).ready(function () {
             $("#DDLPresccategory").change(function () {
                 var aptcode = $(this).val();
+                showToast(aptcode);
+
                 $.get("/Report/Getdetails", { type: aptcode }, function (resposedata) {
                     var data = JSON.parse(resposedata)
                     if (data.length === 0) {
@@ -136,6 +149,7 @@
 
                         // Clear the selected aptcode value
                         $("#DDLPresccategory").val('');
+                        $('#popup').hide();
                         return; // Exit the function if data is empty
                     }
                     $('#pfname').text(data[0].PFirstname.toUpperCase())
@@ -184,10 +198,37 @@
                 tableBody.append(row);
             });
         }
+        function showToast(aptcode) {
+            toastr.success("Selected aptcode: " + aptcode, "", {
+                timeOut: 5000, // 5 seconds
+                extendedTimeOut: 0 // Disable extended timeout
+            });
+        }
     </script>
+    <script>
+        // Function to generate PDF
+        function generatePDF() {
+            // Create new jsPDF instance
+            const doc = new jsPDF();
 
+            // Capture entire window's content
+            const windowContent = document.body.innerHTML;
 
+            // Add content from the window to the PDF
+            doc.html(windowContent, {
+                callback: function (pdf) {
+                    // Save the PDF
+                    pdf.save('document.pdf');
+                }
+            });
+        }
 
+        // Function to print the content
+        function printContent() {
+            // Open print dialog
+            window.print();
+        }
+    </script>
     <script>
      function showPopup() {
             var popup = document.getElementById("popup");

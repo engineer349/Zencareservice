@@ -150,6 +150,38 @@ namespace Zencareservice.Repository
             }
 
         }
+        public DataSet ReCheckAppointmentList(Appts Obj)
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "GetAllAppointmentdetails";
+
+                SqlParameter[] param = new SqlParameter[4];
+
+                param[0] = new SqlParameter("@AptBookingdate", SqlDbType.Date);
+                param[0].Value = Obj.AptBookingDate;
+                param[1] = new SqlParameter("@AptBokingtime", SqlDbType.Time);
+                param[1].Value = Obj.AptBookingTime; ;
+                param[2] = new SqlParameter("@PFname", SqlDbType.NVarChar);
+                param[2].Value = Obj.PatientFirstName;
+                param[3] = new SqlParameter("@DFname", SqlDbType.NVarChar);
+                param[3].Value = Obj.DoctorFirstName;
+
+
+
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+            }
+
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+
+        }
         public DataSet SaveAppointment(Aptcrt Obj)
         {
 

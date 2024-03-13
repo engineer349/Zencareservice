@@ -112,21 +112,26 @@
 </html>
 @section Scripts
     {
-    <script type="text/javascript">
-        function ShowMessage(user) {
-            alert("Name: " + user);
-            // Swal.fire({
-            //     title: "HI!" + user,
-            //     text: "You clicked the button!",
-            //     icon: "success"
-            // });
-
-        };
-    </script>
-    @if (ViewBag.Message != null)
-    {
         <script type="text/javascript">
-            @Html.Raw(ViewBag.Message)
+            $(document).ready(function () {
+                // Check if there is a message in TempData
+                var swalMessage = '@TempData["SwalMessage"]';
+                var swalType = '@TempData["SwalType"]';
+
+                // Function to display the Swal alert
+                function displayAlert() {
+                    if (swalMessage !== '') {
+                        Swal.fire({
+                            icon: swalType,
+                            title: swalMessage,
+                            showConfirmButton: false,
+                            timer: 5000 // Display for 5 seconds
+                        });
+                    }
+                }
+
+                // Call the displayAlert function when the document is ready
+                displayAlert();
+            });
         </script>
     }
-}

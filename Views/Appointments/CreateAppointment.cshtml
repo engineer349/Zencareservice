@@ -335,20 +335,26 @@
         });
     </script>
 
-    <!-- Add this script at the end of your view (e.g., CreateAppointment.cshtml or Aptlist.cshtml) -->
-    <script>
+    <script type="text/javascript">
         $(document).ready(function () {
+            // Check if there is a message in TempData
             var swalMessage = '@TempData["SwalMessage"]';
             var swalType = '@TempData["SwalType"]';
 
-            if (swalMessage !== '') {
-                Swal.fire({
-                    icon: swalType,
-                    title: swalMessage,
-                    showConfirmButton: false,
-                    timer: 1500 // Adjust the timer as needed
-                });
+            // Function to display the Swal alert
+            function displayAlert() {
+                if (swalMessage !== '') {
+                    Swal.fire({
+                        icon: swalType,
+                        title: swalMessage,
+                        showConfirmButton: false,
+                        timer: 5000 // Display for 5 seconds
+                    });
+                }
             }
+
+            // Call the displayAlert function when the document is ready
+            displayAlert();
         });
     </script>
 
