@@ -27,11 +27,6 @@
       "useSSL": true
     }
   },
-  "Twilio": {
-    "AccountSid": "AC74008bec25839bb9a6ee49c1381ad737",
-    "AuthToken": "7256102857ffc022b3d4abd30977db87",
-    "PhoneNumber": "944414193"
-  },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,

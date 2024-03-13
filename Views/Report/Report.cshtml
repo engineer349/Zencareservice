@@ -65,26 +65,25 @@
                                         </div>
                                         <div class="row invoice-info">
                                             <div class="col-sm-4 invoice-col">
-                                                Prescriped by
-                                                <address>
-                                                    <strong><input type="text" id="dfname" /></strong><br>                                              
-                                                    <input type="text" id="dphone" /><br>
-                                                    <input type="text" id="demail" />
-                                                </address>
+                                              Prescriped by
+                                                        <address>
+                                                            <strong id="dfname"></strong><br>
+                                                            <span id="dphone"></span><br>
+                                                            <span id="demail"></span>
+                                                        </address>
                                             </div>
                                             <div class="col-sm-4 invoice-col">
                                                 To
-                                                <address>
-                                                    <strong><input type="text" id="pfname" value="pfname" /></strong><br>                                                                                                   
-                                                    <input type="text" id="patcontact" /><br>
-                                                    <input type="text" id="patemail"/>
-                                                </address>
+                                                    <address>
+                                                        <strong><span id="pfname"/></strong><br>                                                      
+                                                        <span  id="patcontact" ></span><br>
+                                                       <sapn id="patemail"></sapn>
+                                                    </address>
                                             </div>
                                             <div class="col-sm-4 invoice-col">
-                                                <b>PrescriptionCode : <input type="text" id="prscode" /></b><br>
-                                                <b>Appointment Code:</b> <input type="text" id="aptcode"/><br>
-                                                <b>Patient Phoneno:</b> <input type="tel" id="pcontact" /> <br>
-                                                <b>Register No:</b> <input type="text" id="rcode" />
+                                                <i>Register No: <span id="rcode"/></i><br />
+                                                <i>PrescriptionCode :<b> <span id="prscode" /> </b></i><br>
+                                                <i>Appointment Code:</i> <span  id="aptcode" /><br>                                                                                             
                                             </div>
                                         </div>
                                         <div class="row">
@@ -126,18 +125,30 @@
             $("#DDLPresccategory").change(function () {
                 var aptcode = $(this).val();
                 $.get("/Report/Getdetails", { type: aptcode }, function (resposedata) {
-                    var data = JSON.parse(resposedata)                  
-                    $('#pfname').val(data[0].PFirstname)
-                    $('#plname').val(data[0].PLastname);                  
-                    $('#patcontact').val(data[0].PContactno);
-                    $('#patemail').val(data[0].PEmail);
-                    $('#prscode').val(data[0].PrsCode);
-                    $('#rcode').val(data[0].RCode);
-                    $('#pcontact').val(data[0].PContact);
-                    $('#aptcode').val(data[0].AptCode);  
-                    $('#dfname').val(data[0].DFirstname);
-                    $('#dphone').val(data[0].DContact);
-                    $('#demail').val(data[0].DEmail);
+                    var data = JSON.parse(resposedata)
+                    if (data.length === 0) {
+                        // Show SweetAlert message
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Prescription data found',
+                            text: 'No Prescription  data available for the selected aptcode.',
+                        });
+
+                        // Clear the selected aptcode value
+                        $("#DDLPresccategory").val('');
+                        return; // Exit the function if data is empty
+                    }
+                    $('#pfname').text(data[0].PFirstname.toUpperCase())
+                    $('#plname').text(data[0].PLastname.toUpperCase());
+                    $('#patcontact').text(data[0].PContactno);
+                    $('#patemail').text(data[0].PEmail);
+                    $('#prscode').text(data[0].PrsCode.toUpperCase());
+                    $('#rcode').text(data[0].RCode.toUpperCase());
+                    $('#pcontact').text(data[0].PContact);
+                    $('#aptcode').text(data[0].AptCode);  
+                    $('#dfname').text(data[0].DFirstname.toUpperCase());
+                    $('#dphone').text(data[0].DContact);
+                    $('#demail').text(data[0].DEmail);
                     var arr = [];
                     data.forEach(function (e) {
                         var newObj = {
@@ -158,10 +169,18 @@
             tableBody.empty(); // Clear table body before inserting new data
 
             dataArray.forEach(function (item) {
+                var dosageWithUnit = item.prscdosage + 'mg';
+
+                // Create a new row
                 var row = $('<tr>');
-                Object.keys(item).forEach(function (key) {
-                    row.append($('<td>').text(item[key]));
-                });
+
+                // Append data to the row
+                row.append($('<td>').text(item.slno));
+                row.append($('<td>').text(item.prscitem));
+                row.append($('<td>').text(dosageWithUnit)); // Append dosage with 'mg'
+                row.append($('<td>').text(item.prscdays));
+
+                // Append the row to the table body
                 tableBody.append(row);
             });
         }

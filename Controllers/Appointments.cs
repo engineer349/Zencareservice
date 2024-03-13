@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing.Template;
 using System.Data;
-using System.Net.Mail;
 using Zencareservice.Models;
 using Zencareservice.Repository;
-
-using Newtonsoft.Json;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Zencareservice.Controllers
 {

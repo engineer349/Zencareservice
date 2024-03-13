@@ -39,11 +39,7 @@ namespace Zencareservice
             Services.AddSignalR();
             /*DataAccess page addd */
 
-            var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-            var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-            var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
 
-            var connectionString = $"Data Source{dbHost}; Inital Catalog ={dbName}; User ID=sa; Password={dbPassword}";
             Services.AddScoped<DataAccess>();
             Services.AddScoped<SqlDataAccess>();
             Services.Configure<CookiePolicyOptions>(options =>
