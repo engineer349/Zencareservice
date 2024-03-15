@@ -19,7 +19,7 @@
 
  <body>
 
-    <form class="prescription" method="POST" asp-action="SaveHeadPrescription" asp-controller="Prescriptions">
+    <form class="prescription" method="POST" asp-action="SaveHeadPrescription" asp-controller="Prescriptions" onsubmit="return validateAppointment()">
             <section class="content-header">
                    <div class="container-fluid">
                     <div class="row mb-2">
@@ -145,7 +145,7 @@
                 
                         <div class="card-footer">
                                 <button type="submit" class="btn btn-default ">Cancel</button>
-                    <button type="submit" class="btn btn-success float-right" onclick="saveData()">CreatePrescription</button>
+                            <button type="submit" class="btn btn-success float-right" onclick="saveData()">CreatePrescription</button>
                         </div>
                     </div>
              </div>
@@ -161,12 +161,7 @@
 @section Scripts {
 
     <script>
-        // Your JavaScript code here
-
-
-
         var aptcode;
-
         function createTable() {
             // Reference to the tbody element
             var tbody = document.querySelector('#example1 tbody');
@@ -226,9 +221,9 @@
         }
 
 
+      
         function saveData() {
             var dataToSave = [];
-
             // Loop through each row in the table
             $('#example1 tbody tr').each(function () {
                 var row = $(this);
@@ -245,8 +240,43 @@
                     noofdays: noofdays,
                     aptcode: aptcode
                 });
+
+                // Validate the "Prscitem" field
+                if (prescription.trim() === '') {
+                    // If "Prscitem" is not entered
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please enter a Prescription Item for all rows!'
+                    });
+                    return false; // Prevent form submission
+                }
+
+                // Validate if dosage value is changed
+                var defaultDosage = 5; // Assuming default dosage value
+                if (dosage == defaultDosage) {
+                    // If dosage value is changed
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Dosage value has not been changed'
+                    });
+                    return false; // Prevent form submission
+                }
+
+                // Validate the "Noofdays" field
+                if (noofdays.trim() === '' || isNaN(parseInt(noofdays))) {
+                    // If "Noofdays" is not entered or is not a number
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: 'Please enter a valid number of days for all rows!'
+                    });
+                    return false; // Prevent form submission
+                }
             });
 
+            // If all validations pass, submit the form
             // Send data to the server using AJAX
             $.ajax({
                 url: '@Url.Action("SaveItemPrescription", "Prescriptions")',
@@ -265,19 +295,17 @@
 
     <script>
 
-         function validatePatient() {
-            var age = parseInt(document.getElementById("patage").value);
+        function validatePatient() {
+
             var weight = parseInt(document.getElementById("pweight").value);
 
-            if (!isNaN(age) && age > 110) {
-                // If age exceeds 110
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Age should not be more than 110!'
-                });
-                document.getElementById("patage").value = ''; // Clear age field
-                return false;
+
+            var bloodgroup = $("#PatBloodgroup").val();
+            if (!bloodgroup || bloodgroup === "Please select") {
+                valid = false;
+                $("#PatBloodgroup").addClass("is-invalid");
+            } else {
+                $("#PatBloodgroup").removeClass("is-invalid");
             }
 
             if (!isNaN(weight) && weight > 180) {
@@ -291,10 +319,34 @@
                 return false;
             }
         }
-
-        // Attach input event listeners to age and weight input fields
-        document.getElementById("patage").addEventListener("input", validatePatient);
+        
         document.getElementById("pweight").addEventListener("input", validatePatient);
+
+        // Function to validate Appointment Code selection and prescription entry
+        function validateAppointment() {
+            var aptCode = document.getElementById("DDLPresccategory").value;
+            if (aptCode === '') {
+                // If Appointment Code is not selected
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please select an Appointment Code!'
+                });
+                return false;
+            }
+            // Check if prescription is entered (you need to adjust the selector based on your HTML structure)
+            var prescriptionValue = document.querySelector('#example1 tbody input[type="text"]').value;
+            if (prescriptionValue.trim() === '') {
+                // If prescription is not entered
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a prescription!'
+                });
+                return false;
+            }
+            return true;
+        }
 </script>
 
 

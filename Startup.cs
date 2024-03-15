@@ -52,9 +52,7 @@ namespace Zencareservice
             Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    //options.Cookie.Name = "YourCookieName";
-                    //options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"path-to-keys-directory"));
-                    options.LoginPath = "/Account/Login"; // Redirect to login page if not authenticated
+                    options.LoginPath = "/Account/Login"; 
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
                     options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to access denied page if not authorized
                     options.LogoutPath = "/Account/Logout";

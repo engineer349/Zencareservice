@@ -112,7 +112,6 @@
                                             </div>
                                             <div class="input-group-append">
                                                 <span class="input-group-text" onclick="uploadImage()">Upload</span>
-
                                             </div>
                                             <div class="input-group-append">    
                                                 <span class="input-group-text" onclick="clearImage()">Clear</span>
@@ -250,7 +249,7 @@
                                         <span asp-validation-for="Zipcode" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="mt-5 text-center"><button class="form-submit btn btn-primary" name="Save">Save Profile</button></div>
+                                <div class="mt-5 text-center"><button class="form-submit btn btn-primary" name="Save" onclick="UpdateProfile()9">Save Profile</button></div>
                             </div>
                         </div>
                         <div class="col-md-3 border-left">
@@ -478,7 +477,22 @@
             uploadInput.value = '';
         }
     </script>
-  
+    <script>
+        function UpdateProfile()
+        {
+          var gender    =  $("#Gender").text();
+          var address1  = $("#Address1").text();
+          var address2  = $("#Address2").text();
+          var altaddress= $("#AltAddress").text();
+          var state     = $("#State").val();
+          var city      = $("#City").val();
+          var country   = $("#Country").val();
+          var zipcode   = $("#Zipcode").val();
+          var uniqueid = $("#Uniqueid").val();
+      
+        }
+
+    </script>
 
 
 

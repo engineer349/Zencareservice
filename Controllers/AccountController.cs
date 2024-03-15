@@ -157,7 +157,7 @@ namespace Zencareservice.Controllers
 
             var myemail = TempData["MyEmail"];
 
-            return View();
+            return RegistrationSuccess();
         }
 
 
@@ -363,21 +363,6 @@ namespace Zencareservice.Controllers
 
         }
 
-
-        public bool VerifyPassword(String password)
-        {
-            if(password != null )
-            {
-               DataAccess dataAccess = new DataAccess();
-
-            }
-            else
-            {
-
-            }
-            return true;
-        }
-
         private static byte[] BytesFromString(string str)
         {
             return Encoding.ASCII.GetBytes(str);
@@ -423,42 +408,6 @@ namespace Zencareservice.Controllers
             tClient.Close();
             return true;
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> Register(Signup model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = new Signup
-        //        {
-        //            Firstname = model.Firstname,
-        //            Lastname = model.Lastname,
-        //            Dob = model.Dob,
-        //            Password = model.Password, 
-        //            CRPassword = model.CRPassword,
-        //            Username = model.Username,
-        //            Email = model.Email,
-        //        };
-
-        //        var result = await _userManager.CreateAsync(user, model.Password);
-
-        //        if (result.Succeeded)
-        //        {
-        //            await _signInManager.SignInAsync(user, isPersistent: false);
-
-        //            return RedirectToAction("Index", "Home");
-        //        }
-
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError("", error.Description);
-        //        }
-
-        //        ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
-
-        //    }
-        //    return View(model);
-        //}
 
 
         [HttpPost]
@@ -1098,17 +1047,9 @@ namespace Zencareservice.Controllers
                         ViewBag.ShowAlert = true;
                         ViewBag.AlertMessage = "Login successful!";
                         ViewBag.AlertType = "success";
-
-                       
+ 
 
                         return RedirectToAction("Dashboard", "Report");
-                       
-                        //if (Role == "Doctor")
-                        //{
-
-                        //	return RedirectToAction("DashboardDoctor", "Report");
-                        //}
-
 
                     }
                 }

@@ -64,10 +64,6 @@
                 <li class="nav-item d-none d-sm-inline-block">
                     <a asp-action="Privacy" asp-controller="Home" class="nav-link">Privacy</a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    @*    <partial name="_LoginPartial"/> *@
-                </li>
-
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -148,24 +144,6 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-                   @*      <li class="nav-item">
-                            <a asp-action="Dashboard" asp-controller="Report" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Dashboard
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class=" nav-icon fas fa-bar-chart"></i>
-                                        <p>AdminDashboard</p>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li> *@
                         <li class="nav-item">
                             <a asp-action="Calendar" asp-controller="Calendarscheduler" class="nav-link">
                                 <i class="nav-icon far fa-calendar-alt"></i>
@@ -174,111 +152,11 @@
                                 </p>
                             </a>
                         </li>
-                        @*   <li class="nav-item">
-                        <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-edit"></i>
-                        <p>
-                        Edit
-                        <i class="fas fa-angle-left right"></i>
-                        </p>
-                        </a>
-
-                        <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                        <a asp-action="Prescedit" asp-controller="Prescriptions" class="nav-link">
-                        <i class='fas fa-prescription' style='font-size:24px'></i>
-                        <p>PrescriptionDetails</p>
-                        </a>
-                        </li>
-                        <li class="nav-item">
-                        <a asp-action="Aptedit" asp-controller="Appointments" class="nav-link">
-                        <i class="fa fa-book" style="font-size:24px"></i>
-                        <p>AppointmentDetails</p>
-                        </a>
-                        </li>
-                        <li class="nav-item">
-                        <a asp-action="Bedregedit" asp-controller="BedRegistrations" class="nav-link">
-                        <i class='fas fa-procedures' style='font-size:24px'></i>
-                        <p>BedRegistrationDetails</p>
-                        </a>
-                        </li>
-
-                        </ul>
-                        </li> *@
-                        @* <li class="nav-item">
-                        <a href="#" class="nav-link">
-                        <i class="nav-icon far fa-plus-square"></i>
-                        <p>
-                        Add
-                        <i class="fas fa-angle-left right"></i>
-                        </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                        <a asp-action="Prescrt" asp-controller="Prescriptions" class="nav-link">
-                        <i class='fas fa-prescription' style='font-size:24px'></i>
-                        <p>
-                        PrescriptionDetails
-                        </p>
-                        </a>
-                        </li>
-                        </ul> *@
-                        @*  <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                        <a asp-action="Bedregcrt" asp-controller="BedRegistrations" class="nav-link">
-                        <i class='fas fa-procedures' style='font-size:24px'></i>
-                        <p>BedRegistrationDetails</p>
-                        </a>
-                        </li>
-
-                        </ul> *@
-
-                        @*         <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                        <a asp-action="Aptcrt" asp-controller="Appointments" class="nav-link">
-                        <i class="fa fa-book" style="font-size:24px"></i>
-                        <p> AppointmentDetails</p>
-                        </a>
-                        </li>
-                        </ul>
-                        </li>
-                        <li class="nav-item">
-                        <a href="#" class="nav-link active">
-
-                        <i class="nav-icon fas fa-table"></i>
-                        <p>
-                        Details
-                        <i class="fas fa-angle-left right"></i>
-                        </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                        <a asp-action="Aptlist" asp-controller="Appointments" class="nav-link">
-                        <i class="fa fa-book" style="font-size:24px"></i>
-                        <p>Appointments</p>
-                        </a>
-                        </li>
-                        <li class="nav-item">
-                        <a asp-action="Presclist" asp-controller="Prescriptions" class="nav-link active">
-                        <i class='fas fa-prescription' style='font-size:24px'></i>
-                        <p>Prescriptions</p>
-                        </a>
-                        </li> *@
-                        @*  <li class="nav-item">
-                        <a asp-action="Bedreglist" asp-controller="BedRegistrations" class="nav-link">
-                        <i class='fas fa-procedures' style='font-size:24px'></i>
-                        <p>BedRegistrations</p>
-                        </a>
-                        </li> *@
+ 
 
                         @foreach (DataRow row in dtlist.Rows)
                         {
-                                @* <li class="nav-item">
-                                    <p>
-                                    <a class="nav-link text-light" id="register" asp-action="@row["Action"]" asp-controller="@row["Controller"]"><i class="fas fa-user-plus"></i> @row["Modulename"]</a>
-                                    </p>
-                               </li> *@
-                                                     
+       
 
                             <li class="nav-item">
                                 <a asp-action="@row["Action"]" asp-controller="@row["Controller"]" class="nav-link">

@@ -15,7 +15,6 @@ namespace Zencareservice.Controllers
     {
     
 
-
         public IActionResult Profile(Personaldetails pers, int Id)
         {
 

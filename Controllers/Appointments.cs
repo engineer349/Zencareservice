@@ -182,7 +182,7 @@ namespace Zencareservice.Controllers
                         Appts apts = new Appts();
                         {
                             apts.RCode = row["RCode"].ToString();
-                            apts.DoctorFirstName = row["DFname"].ToString();
+                            //apts.DoctorFirstName = row["DFname"].ToString();
                             //apts.DoctorLastName = row["DLname"].ToString();
                        
                             apts.AptBookingDate = Convert.ToDateTime(row["AptBookingdate"]);
@@ -556,10 +556,10 @@ namespace Zencareservice.Controllers
 
                         ds = Obj_DataAccess.SetRescheduleAppointment(Obj);
 
-                        TempData["SwalMessage"] = "Your Appointment is Booked.";
+                        TempData["SwalMessage"] = "Your Appointment is Rescheduled.";
                         TempData["SwalType"] = "success";
 
-                        return RedirectToAction("Aptlist", "Appointments");
+                        return RedirectToAction("PAptlist", "Appointments");
                     }
                     else
                     {
@@ -583,7 +583,7 @@ namespace Zencareservice.Controllers
             }
 
 
-            return RedirectToAction("PAptlist", "Appointmens");
+           
         }
 
         public IActionResult Aptedit(Appts apt,int Id)

@@ -90,12 +90,8 @@ namespace Zencareservice.Controllers
                 ViewBag.Bloodgroup = BloodgroupList;
                 ViewBag.SelectedValue = "Bloodgroup";
             }
-                        
-           
-           
-                
+                                
             foreach (DataRow row in ds.Tables[2].Rows)
-
 
             ViewBag.DataSet = ds.Tables[2];
             ViewBag.SelectedValue = "Tamil Nadu";
@@ -117,13 +113,9 @@ namespace Zencareservice.Controllers
             return Json(prescdetails);
         }
 
-
-
         [HttpPost]
-
         public IActionResult SaveItemPrescription( [FromBody] Prescs[] medications)
         {
-
 
             foreach (var medication in medications)
             {
