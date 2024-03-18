@@ -17,7 +17,7 @@ FROM build AS publish
 RUN dotnet publish "Zencareservice.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Set environment variables
-ENV ConnectionStrings__DefaultConnection="Server=GOPI\SQLEXPRESS;Database=zencareservice;User=sa;Password=Devops@22;"
+ENV connectionString__DefaultConnection="Server=zencareservice;Database=zencareservice;User=sa;Password=Devops@22;"
 
 FROM base AS final
 WORKDIR /app

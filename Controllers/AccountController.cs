@@ -368,46 +368,64 @@ namespace Zencareservice.Controllers
             return Encoding.ASCII.GetBytes(str);
         }
 
-        private static int GetResponseCode(string ResponseString)
+        private static int GetResponseCode(string responseString)
         {
-            return int.Parse(ResponseString.Substring(0, 3));
+            // Handle potential invalid responses with exception or default value
+            if (responseString.Length < 3)
+            {
+                throw new Exception("Invalid response received from server");
+            }
+            return int.Parse(responseString.Substring(0, 3));
         }
 
-        private static bool IsEmailAccountValid(string tcpClient, string emailAddress)
+        private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
         {
-            TcpClient tClient = new TcpClient(tcpClient, 25);
-            string CRLF = "\r\n";
-            byte[] dataBuffer;
-            string ResponseString;
-            NetworkStream netStream = tClient.GetStream();
-            StreamReader reader = new StreamReader(netStream);
-            ResponseString = reader.ReadLine();
-
-            /* Perform HELO to SMTP Server and get Response */
-            dataBuffer = BytesFromString("HELO Hi" + CRLF);
-            netStream.Write(dataBuffer, 0, dataBuffer.Length);
-            ResponseString = reader.ReadLine();
-            dataBuffer = BytesFromString("MAIL FROM:<YourGmailIDHere@gmail.com>" + CRLF);
-            netStream.Write(dataBuffer, 0, dataBuffer.Length);
-            ResponseString = reader.ReadLine();
-
-            /* Read Response of the RCPT TO Message to know from google if it exist or not */
-            dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
-            netStream.Write(dataBuffer, 0, dataBuffer.Length);
-            ResponseString = reader.ReadLine();
-            var responseCode = GetResponseCode(ResponseString);
-
-            if (responseCode == 550)
+            try
             {
+                using (TcpClient tClient = new TcpClient(smtpServer,26))
+                using (NetworkStream netStream = tClient.GetStream())
+                using (StreamReader reader = new StreamReader(netStream))
+                {
+                    string CRLF = "\r\n";
+                    byte[] dataBuffer;
+                    string responseString;
+
+                    /* Perform HELO to SMTP Server and get Response */
+                    dataBuffer = BytesFromString("HELO Hi" + CRLF);
+                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                    responseString = reader.ReadLine();
+                    // Check response for success
+
+                    dataBuffer = BytesFromString($"MAIL FROM:<zenheathcareservice@gmail.com>" + CRLF);
+                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                    responseString = reader.ReadLine();
+                    // Check response for success
+
+                    /* Read Response of the RCPT TO Message to know from google if it exists or not */
+                    dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
+                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                    responseString = reader.ReadLine();
+                    var responseCode = GetResponseCode(responseString);
+
+                    if (responseCode == 550)
+                    {
+                        return false;
+                    }
+
+                    /* QUIT CONNECTION */
+                    dataBuffer = BytesFromString("QUIT" + CRLF);  // Correct typo "QUITE"
+                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log exception details for debugging
+                Console.WriteLine("Error checking email: " + ex.Message);
                 return false;
             }
-
-            /* QUITE CONNECTION */
-            dataBuffer = BytesFromString("QUITE" + CRLF);
-            netStream.Write(dataBuffer, 0, dataBuffer.Length);
-            tClient.Close();
-            return true;
         }
+
 
 
         [HttpPost]
@@ -430,96 +448,97 @@ namespace Zencareservice.Controllers
                     if (agreeToTerms == true)
                     {
 
-                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+                        /*var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);*/
+                        
 
-                        if (gMail == true)
+                       //if (gMail == true)
+                        //{
+                        DataAccess Obj_DataAccess = new DataAccess();
+                        DataSet dse = new DataSet();
+                        dse = Obj_DataAccess.CheckEmail(Obj);
+
+
+
+                        if (dse.Tables[0].Rows.Count == 0 && dse.Tables[1].Rows.Count == 0)
                         {
-                            DataAccess Obj_DataAccess = new DataAccess();
-                            DataSet dse = new DataSet();
-                            dse = Obj_DataAccess.CheckEmail(Obj);
 
-
-
-                            if (dse.Tables[0].Rows.Count == 0 && dse.Tables[1].Rows.Count == 0)
+                            try
                             {
+                                string validemail = Obj.Email;
+                                TempData["MyEmail"] = validemail;
 
-                                try
+
+
+                                //Console.WriteLine($"Gmail account is valid - {gMail.ToString()}");
+
+                                // var live = IsEmailAccountValid("live-com.olc.protection.outlook.com", "aa.aa@live.com");
+                                //Console.WriteLine($"Live account is valid - {live.ToString()}");
+
+
+                                Obj.RoleId = "Patient";
+                                Obj.RCategory = "Patient";
+
+                                Obj.Age = userAge;
+                                int agreeterms = Convert.ToInt32(Obj.agreeterm);
+                                string fname = Obj.Firstname;
+                                string lname = Obj.Lastname;
+                                string password = Obj.Password;
+                                string confirmpassword = Obj.Confirmpassword;
+                                string username = Obj.Username;
+                                string phoneno = Obj.Phonenumber;
+
+                                DateTime Dob = Obj.Dob;
+                                Obj.Status = 1;
+
+                                if (!String.IsNullOrEmpty(validemail))
                                 {
-                                    string validemail = Obj.Email;
-                                    TempData["MyEmail"] = validemail;
 
+                                    string generatedCode = Codegenerator();
 
-
-                                    //Console.WriteLine($"Gmail account is valid - {gMail.ToString()}");
-
-                                    // var live = IsEmailAccountValid("live-com.olc.protection.outlook.com", "aa.aa@live.com");
-                                    //Console.WriteLine($"Live account is valid - {live.ToString()}");
-
-                                   
-                                    Obj.RoleId = "Patient";
-                                    Obj.RCategory = "Patient";
-                                  
-                                    Obj.Age = userAge;
-                                    int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                    string fname = Obj.Firstname;
-                                    string lname = Obj.Lastname;
-                                    string password = Obj.Password;
-                                    string confirmpassword = Obj.Confirmpassword;
-                                    string username = Obj.Username;
-                                    string phoneno = Obj.Phonenumber;
-
-                                    DateTime Dob = Obj.Dob;
-                                    Obj.Status = 1;
-
-                                    if (!String.IsNullOrEmpty(validemail))
-                                    {
-
-                                        string generatedCode = Codegenerator();
-
-                                        _generatedOtp = Convert.ToInt32(generatedCode);
-                                        CookieOptions options = new CookieOptions();
-                                        options.Expires = DateTime.Now.AddMinutes(2);
-                                        Response.Cookies.Append("OTP", generatedCode, options);
-
-                                    }
-
-                                    SendingEmail(Obj);
-
-
-                                    DataAccess Obj_DataAccess2 = new DataAccess();
-                                    DataSet ds = new DataSet();
-                                    ds = Obj_DataAccess2.SaveRegister(Obj);
-
-                                    return RedirectToAction("VerifyOtp", "Account");
-
-
-
+                                    _generatedOtp = Convert.ToInt32(generatedCode);
+                                    CookieOptions options = new CookieOptions();
+                                    options.Expires = DateTime.Now.AddMinutes(2);
+                                    Response.Cookies.Append("OTP", generatedCode, options);
 
                                 }
 
+                                SendingEmail(Obj);
 
-                                catch (Exception ex)
-                                {
-                                    string msg = ex.Message.ToString();
-                                    ViewBag.Message = msg;
-                                }
+
+                                DataAccess Obj_DataAccess2 = new DataAccess();
+                                DataSet ds = new DataSet();
+                                ds = Obj_DataAccess2.SaveRegister(Obj);
+
+                                return RedirectToAction("VerifyOtp", "Account");
+
+
+
+
                             }
-                            else
+
+
+                            catch (Exception ex)
                             {
-                                ViewBag.Message = "UserAlready Exsits";
+                                string msg = ex.Message.ToString();
+                                ViewBag.Message = msg;
                             }
                         }
                         else
                         {
-                            TempData["Email"] = "InvalidUser";
-
-                            ViewBag.Message = "Invalid Emailaddress UserAccount can't create.Pls Enter a valid email address!";
-
-                            return View();
-
+                            ViewBag.Message = "UserAlready Exsits";
                         }
-
                     }
+                    //else
+                    //{
+                    //    TempData["Email"] = "InvalidUser";
+
+                    //    ViewBag.Message = "Invalid Emailaddress UserAccount can't create.Pls Enter a valid email address!";
+
+                    //    return View();
+
+                    //}
+
+
                     else
                     {
                         ModelState.AddModelError(nameof(Signup.agreeterm), "Pls  agree to terms of service and condition.");
@@ -540,7 +559,7 @@ namespace Zencareservice.Controllers
 
 
 
-            return View();
+             return View();
 
 
         }
@@ -831,7 +850,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zenhealthcareservice@gmail.com", Obj.Email, "lamubclwmhfjwjjs", "Autoverification", $@"
+            string mail = sendMail.EmailSend("zenhealthcareservice@gmail.com", Obj.Email, "sfudavatkjeahhse", "Autoverification", $@"
 
 
 
