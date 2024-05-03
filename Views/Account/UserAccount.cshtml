@@ -1,0 +1,95 @@
+@{
+    Layout = "";
+    ViewData["Title"] = "Signup";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
+    <title>User Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        .my-login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .card-wrapper {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .brand img {
+            max-width: 100%;
+        }
+
+        .role-container {
+            text-align: center;
+        }
+
+        .role-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .role-button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .role-button:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body class="my-login-page">
+    <section class="h-100">
+        <div class="container h-100">
+            <div class="row justify-content-md-center h-100">
+                <div class="card-wrapper">
+                    <div class="brand">
+                        <img src="~/images/signup-zencare.png" alt="logo">
+                    </div>
+                    <div class="card fat">
+                        <div class="card-body">
+                            <div class="role-container">
+                                <div class="role-text">Choose Your Role:</div>
+                                <form  method="get" asp-action="PatientRegister" asp-controller="Account">
+                                    <button type="submit" class="role-button">Patient</button>
+                                </form>
+
+                                <form method="get"  asp-action="Register" asp-controller="Account">
+                                    <button type="submit" class="role-button">Doctor</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ 
+</body>
+</html>

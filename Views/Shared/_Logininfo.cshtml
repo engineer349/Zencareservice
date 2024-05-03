@@ -1,0 +1,18 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject Microsoft.AspNetCore.Identity.SignInManager<Views_Account_Login> _signInManager
+
+
+@if (_signInManager.IsSignedIn(User))
+{
+
+    <a class="nav-link text-dark" id="register" asp-action="PatientRegister" asp-controller="Account"><i class="fas fa-user-plus"></i> Sign Up</a>
+
+    <a class="nav-link text-dark" id="login" asp-action="PatientLogin" asp-controller="Account"><i class="fas fa-sign-in-alt"></i> Login</a>
+}
+else
+{
+    <a>Hello User!</a>
+    <a class="nav-link text-dark" id="login" asp-action="Logout" asp-controller="Account"><i class="fas fa-sign-in-alt"></i> Logout</a>
+}

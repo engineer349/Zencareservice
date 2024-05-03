@@ -1,0 +1,242 @@
+﻿@using System.Xml.Linq;
+@{
+    ViewData["Title"] = "Report";
+    Layout = "_AdminLayout";
+}
+
+@model Zencareservice.Models.Prescs
+
+<html>
+<head>
+    <title>Create Prescription</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Gopi">
+</head>
+<body>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Report</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Report</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-sm-3">
+                    @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id="DDLPresccategory" })
+                    <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="showPopup()">View Report</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="popup" style="display:none">
+        <section class="content-body">
+            <div class="container-fluid">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h1 class="card-title">@ViewData["Title"]</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="callout callout-info">
+                                        <h5><i class="fas fa-info"></i> Note:</h5>
+                                        This page has been enhanced for printing. Click the print button at the bottom of E-prescription to test.
+                                    </div>
+                                    <div class="invoice p-3 mb-3">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4>
+                                                    <i class="fas fa-globe"></i> Zencare, Inc.
+                                                    <small class="float-right">Date: @DateTime.Now.ToString("d MMMM yyyy")</small>
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <div class="row invoice-info">
+                                            <div class="col-sm-4 invoice-col">
+                                              Prescriped by
+                                                        <address>
+                                                            <strong id="dfname"></strong><br>
+                                                            <span id="dphone"></span><br>
+                                                            <span id="demail"></span>
+                                                        </address>
+                                            </div>
+                                            <div class="col-sm-4 invoice-col">
+                                                To
+                                                    <address>
+                                                        <strong><span id="pfname"/></strong><br>                                                      
+                                                        <span  id="patcontact" ></span><br>
+                                                       <sapn id="patemail"></sapn>
+                                                    </address>
+                                            </div>
+                                            <div class="col-sm-4 invoice-col">
+                                                <i>Register No: <span id="rcode"/></i><br />
+                                                <i>PrescriptionCode :<b> <span id="prscode" /> </b></i><br>
+                                                <i>Appointment Code:</i> <span  id="aptcode" /><br>                                                                                             
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 table-responsive">
+                                                <table id="prescriptionTable" class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SlNo</th>
+                                                            <th>Prescription</th>
+                                                            <th>Dosage</th>
+                                                            <th>No of Days</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="row no-print">
+            <div class="col-12">
+                <a href="#" rel="noopener" target="_blank" class="btn btn-default" onclick="printContent()">
+                    <i class="fas fa-print"></i> Print
+                </a>
+                <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="generatePDF()">
+                    <i class="fas fa-download"></i> Generate PDF
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/dist/js/adminlte.min.js"></script>
+    <script src="~/dist/js/demo.js"></script>
+    
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#DDLPresccategory").change(function () {
+                var aptcode = $(this).val();
+                showToast(aptcode);
+
+                $.get("/Report/Getdetails", { type: aptcode }, function (resposedata) {
+                    var data = JSON.parse(resposedata)
+                    if (data.length === 0) {
+                        // Show SweetAlert message
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No Prescription data found',
+                            text: 'No Prescription  data available for the selected aptcode.',
+                        });
+
+                        // Clear the selected aptcode value
+                        $("#DDLPresccategory").val('');
+                        $('#popup').hide();
+                        return; // Exit the function if data is empty
+                    }
+                    $('#pfname').text(data[0].PFirstname.toUpperCase())
+                    $('#plname').text(data[0].PLastname.toUpperCase());
+                    $('#patcontact').text(data[0].PContactno);
+                    $('#patemail').text(data[0].PEmail);
+                    $('#prscode').text(data[0].PrsCode.toUpperCase());
+                    $('#rcode').text(data[0].RCode.toUpperCase());
+                    $('#pcontact').text(data[0].PContact);
+                    $('#aptcode').text(data[0].AptCode);  
+                    $('#dfname').text(data[0].DFirstname.toUpperCase());
+                    $('#dphone').text(data[0].DContact);
+                    $('#demail').text(data[0].DEmail);
+                    var arr = [];
+                    data.forEach(function (e) {
+                        var newObj = {
+                            slno: e.Slno,
+                            prscitem: e.Drug,
+                            prscdosage: e.Dosage,
+                            prscdays: e.Noofdays
+                        };
+                        arr.push(newObj);
+                    });
+                    insertDataIntoTable(arr);
+                });
+            });
+        });
+
+        function insertDataIntoTable(dataArray) {
+            var tableBody = $('#prescriptionTable tbody');
+            tableBody.empty(); // Clear table body before inserting new data
+
+            dataArray.forEach(function (item) {
+                var dosageWithUnit = item.prscdosage + 'mg';
+
+                // Create a new row
+                var row = $('<tr>');
+
+                // Append data to the row
+                row.append($('<td>').text(item.slno));
+                row.append($('<td>').text(item.prscitem));
+                row.append($('<td>').text(dosageWithUnit)); // Append dosage with 'mg'
+                row.append($('<td>').text(item.prscdays));
+
+                // Append the row to the table body
+                tableBody.append(row);
+            });
+        }
+        function showToast(aptcode) {
+            toastr.success("Selected aptcode: " + aptcode, "", {
+                timeOut: 5000, // 5 seconds
+                extendedTimeOut: 0 // Disable extended timeout
+            });
+        }
+    </script>
+    <script>
+        // Function to generate PDF
+        function generatePDF() {
+            // Create new jsPDF instance
+            const doc = new jsPDF();
+
+            // Capture entire window's content
+            const windowContent = document.body.innerHTML;
+
+            // Add content from the window to the PDF
+            doc.html(windowContent, {
+                callback: function (pdf) {
+                    // Save the PDF
+                    pdf.save('document.pdf');
+                }
+            });
+        }
+
+        // Function to print the content
+        function printContent() {
+            // Open print dialog
+            window.print();
+        }
+    </script>
+    <script>
+     function showPopup() {
+            var popup = document.getElementById("popup");
+            if (popup) {
+                popup.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
+

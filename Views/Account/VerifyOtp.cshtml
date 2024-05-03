@@ -1,0 +1,155 @@
+﻿ @{
+    ViewData["Title"] = "VerifyingOtp";
+    Layout = "";
+    
+}
+@model Zencareservice.Models.Signup;
+
+<!Doctype html>  
+
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Verify Otp</title>
+    <link rel="stylesheet"   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" >
+    <script  src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"> </script>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="~/css/Verifyotp.css"> 
+    <style>
+        #timer {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+    <link rel="stylesheet" css="~/css/Verifyotp.css"/>
+    <script src="~/js/verifyotp.js"></script>
+    
+    
+    </head>
+   
+    <body>
+
+    <form  method="post" asp-action="ValidateOtp" asp-controller="Account">
+
+        <div class="container height-100 d-flex justify-content-center align-items-center">
+            <div id="timer">
+                <p>This timer expires in 5:00 min</p>
+            </div>
+
+            <div class="position-relative">
+                <div class="card p-2 text-center">
+                    <h6>Please enter the one time password <br> to verify your account</h6> 
+                        <div>
+                             @* <span>A code has been sent to </span> *@
+                        
+                    </div>
+                    <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+
+                    <input class="m-2 text-center form-control rounded" type="text" id="first" maxlength="1" asp-for="numeric1" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="second" maxlength="1" asp-for="numeric2"/>
+                    <input class="m-2 text-center form-control rounded" type="text" id="third" maxlength="1" asp-for="numeric3"/> 
+                    <input class="m-2 text-center form-control rounded" type="text" id="fourth" maxlength="1"asp-for="numeric4" />
+                    <input class="m-2 text-center form-control rounded" type="text" id="fifth" maxlength="1" asp-for="numeric5"/> 
+                    </div> 
+                    <div class="mt-4">
+                    <button class="btn btn-danger" type="submit" onclick="validateForm()">Validate</button>
+                     </div> 
+                     </div> 
+                     <div class="card-2"> 
+                         <div class="content d-flex justify-content-center align-items-center">
+                         <span>Didn't get the code</span> <a asp-action="ResendEmail" asp-controller="Account" class="text-decoration-none ms-3">Resend</a>
+                       </div> 
+                     </div> 
+                     </div>
+        </div>
+    </form>
+   <script type="text/javascript">
+   	 $(document).ready(function () {
+        var swalMessage = '@TempData["SwalMessage"]';
+        var swalType = '@TempData["SwalType"]';
+
+        if (swalMessage !== '') {
+            showSweetAlert(swalType, swalMessage);
+        }
+
+        var message = '@ViewBag.Message';
+        switch (message) {
+            case 'otpgenerated':
+                showSweetAlert('success', 'OTP Sent', 'Pls Check your Email to continue!');
+                break;
+            case 'PINMISMATCH':
+                showSweetAlert('error', 'Login Failed', 'Pls TryAgain to continue!');
+                break;
+            case 'MissingOTP':
+                showSweetAlert('warning', 'Missed OTP', 'Pls Enter All Digits!');
+        }
+
+    });
+
+    function showSweetAlert(icon, title, text) {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            showConfirmButton: false,
+            timer: 1500 // Adjust the timer as needed
+        });
+    }
+</script>
+    <script>
+        function validateForm() {
+            var first = document.getElementById("first").value;
+            var second = document.getElementById("second").value;
+            var third = document.getElementById("third").value;
+            var fourth = document.getElementById("fourth").value;
+            var fifth = document.getElementById("fifth").value;
+
+           if (first.trim() === '' || second.trim() === '' || third.trim() === '' || fourth.trim() === '' || fifth.trim() === '') 
+           {
+            showSweetAlert('warning', 'Missing OTP', 'Please enter all digits of the OTP.');
+            return false; // Return false to prevent form submission
+            }
+
+            return true; // Proceed with form submission
+        }
+    </script>
+
+    
+    <script>
+        // Function to start the countdown timer
+        function startTimer(duration, display) {
+            var timer = duration;
+            setInterval(function () {
+                var minutes, seconds;
+
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = "This page expires in " + minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    window.location.href = '/Account/Login'; // Redirect to logout page
+                }
+            }, 1000);
+        }
+
+        // Function to initialize and start the timer
+        window.onload = function () {
+            var duration = 300; // 5 minutes in seconds
+            var display = document.querySelector('#timer p');
+            startTimer(duration, display);
+        };
+    </script>
+
+    </body>
+    </html> 
+ 

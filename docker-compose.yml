@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  zenhealthcareapp: 
+
+services: 
+  zencareservice:
+    container_name: Zencareservice-app-db
+    image: mcr.microsoft.com/mssql/server:2022-latest    
+    ports:
+      - 8002:1433
+    environment:
+      SA_PASSWORD: Devops@22  # Set a strong password for the 'sa' user
+      ACCEPT_EULA: Y
+    volumes:
+      - ./scripts:/scripts  # Fix the volume mapping
+    networks:
+      - zenhealthcareapp
+
+  zencareserviceserverapp:
+    container_name: Zencareservice-app
+    image: ${DOCKER_REGISTRY-}Zencareservice
+    build:
+      context: .
+      dockerfile: Zencareservice/Dockerfile
+    ports:
+      - 8001:80 
+    depends_on:
+      - zencareservice  # Depend on the database service
+    environment:
+      DB_HOST: zencareservice
+      DB_NAME: zencareservice  # Adjust the database name if necessary
+      DB_SA_PASSWORD: Devops@22  # Adjust the password if necessary
+    networks:
+      - zenhealthcareapp
+  
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S zencareservice -U sa -P Devops@22 -d zencareservice -Q 'SELECT 1'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3

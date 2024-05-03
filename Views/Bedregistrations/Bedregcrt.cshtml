@@ -1,0 +1,82 @@
+﻿    @*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "CreateBedregistration";
+}
+@model Zencareservice.Models.Bedreg;
+<html>
+<head>
+    <meta lang="en" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<h3>BedRegistrationDetails</h3>
+<body>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="PatientFirstName">PatientFirstName</label>
+                <input asp-for="PatientFirstName" type="text" class="form-control" id="patientname" placeholder="PatienFirstName">
+                <span asp-validation-for="PatientFirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label asp-for="PatientLastName">PatientLastName</label>
+                <input asp-for="PatientLastName" type="text" class="form-control" id="patientname" placeholder="PatienLastName">
+                <span asp-validation-for="PatientLastName" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="BedType">Bedtype</label>
+                <select asp-for="BedType" name="BedType" id="bedtype" class="form-control">
+                    <option value="single">Single</option>
+                    <option value="doubleshared">Doubleshared</option>
+                    <option value="singelnon-ac">Single Non-AC</option>
+                </select>
+                <span asp-validation-for="BedType" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="RoomType">RoomType</label>
+                <select asp-for="RoomType" name="RoomType" id="roomtype" class="form-control">
+                    <option value="general">General</option>
+                    <option value="icu">ICU</option>
+                    <option value="Isolated ventilator">IsolatedVentilator </option>
+                </select>
+                <span asp-validation-for="RoomType" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <div class="form-row">          
+            <div class="form-group col-md-3">
+                <label asp-for="BedRequiredDate">BedRequiredDate</label>
+                <input type="date" id="bedrequireddate" class="form-control" asp-for="BedRequiredDate" />
+                <span asp-validation-for="BedRequiredDate" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-3">
+                <label asp-for="BedRequiredTime">BedRequiredDate</label>
+                <input type="time" id="bedrequireddate" class="form-control" asp-for="BedRequiredTime" />
+                <span asp-validation-for="BedRequiredTime" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-3">
+                <label asp-for="ReasonType">ReasonType</label>
+                <input asp-for="ReasonType" type="text" class="form-control" id="reasontype" placeholder="ReasonType">
+                <span asp-validation-for="ReasonType" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-3">
+                <label asp-for="RequiredDays">ReasonType</label>
+                <input asp-for="RequiredDays" type="text" class="form-control" id="reasontype" placeholder="RequiredDays">
+                <span asp-validation-for="RequiredDays" class="text-danger"></span>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+</html>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
