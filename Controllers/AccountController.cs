@@ -32,7 +32,6 @@ using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
-using MongoDB.Driver.Core.Operations;
 
 namespace Zencareservice.Controllers
 {
@@ -633,7 +632,9 @@ namespace Zencareservice.Controllers
                     else
                     {
                         ViewBag.Message = "InvalidEmail";
-                        return RedirectToAction("PatientRegister", "Account");
+						TempData["SwalMessage"] = "Invalid";
+						TempData["SwalType"] = "error";
+						return RedirectToAction("PatientRegister", "Account");
                     }
                 }
                 else
