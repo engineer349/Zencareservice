@@ -56,7 +56,7 @@ namespace Zencareservice.Controllers
                 };
                 PrescList.Add(prescs);
             }
-             prsc.showlist1 = PrescList;
+             prsc.showlist= PrescList;
             return View(prsc);
 
         }

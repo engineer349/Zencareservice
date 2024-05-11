@@ -4,7 +4,9 @@
     {
         public List<Prescs> showlist1 { get; set; } = new List<Prescs>();
 
-        public string? AppointmentCode { get; set; }
+		public List<Prescs> showlist { get; set; } = new List<Prescs>();
+
+		public string? AppointmentCode { get; set; }
         public string? DoctorFirstName { get; set; }
 
         public string ? PatBloodgroup { get; set; }
@@ -37,8 +39,12 @@
         public int Dosage { get; set; }
         public int NoOfDays { get; set; }
 
+        public string prscode { get; set; }
         public string aptcode { get; set; }
+    
+        public DateTime Prscdate { get; set; }
     }
+
 
 
 

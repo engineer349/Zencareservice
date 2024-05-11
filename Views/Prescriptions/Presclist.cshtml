@@ -2,6 +2,7 @@
     Layout = "_AdminLayout";
     ViewData["Title"] = "PRESCRIPTIONS";
 }
+@model Zencareservice.Models.Prescs
 
 <section class="content-header">
 	<div class="container-fluid">
@@ -43,11 +44,30 @@
 				<th>ConsultationNo</th>
 				<th>PrescriptionOrderNo</th>				
 				<th>LastVisit</th>
-				<th>Prescription Status</th>								
+				@* <th>Prescription Status</th>		 *@						
 			</tr>
 		</thead>
 		<tbody>
-					
+				@if (Model != null)
+					{
+						@foreach (var prescription in Model.showlist)
+						{
+							<tr>
+								<td>@prescription.PatientFirstName</td>
+								<td>@prescription.Patientphoneno</td>
+								<td>@prescription.AppointmentCode</td>
+								<td>@prescription.prscode</td>
+								<td>@prescription.Prscdate</td>
+								
+								
+
+							</tr>
+						}
+					}
+					else
+					{
+
+					}
 		</tbody>
 	</table>
 

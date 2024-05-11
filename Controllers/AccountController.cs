@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
+using System.Security.Claims;
 
 namespace Zencareservice.Controllers
 {
@@ -1705,7 +1706,7 @@ namespace Zencareservice.Controllers
 
 
         [HttpPost]
-        public IActionResult Login(Login Obj)
+		public async Task<IActionResult> Login(Login Obj)
         {
             
              string username = Obj.Username;
@@ -1804,10 +1805,21 @@ namespace Zencareservice.Controllers
                         // Get the cookie value
                         HttpContext.Session.SetString("UsrId", UsrId);
 
-                        // Now, you can use 'storedUsrId' as needed
+						var claims = new[]
+					   {
+						new Claim(ClaimTypes.Name, username),
+						new Claim(ClaimTypes.Role, Role),
+						new Claim("UserId", UsrId)
+					};
+
+						var identity = new ClaimsIdentity(claims, "login");
+
+						var principal = new ClaimsPrincipal(identity);
+
+						await HttpContext.SignInAsync(principal);
 
 
-                        HttpContext.Session.SetString("FirstName", Fname);
+						HttpContext.Session.SetString("FirstName", Fname);
 
                         string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
 

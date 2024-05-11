@@ -16,8 +16,6 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-      
-
         public IActionResult Prescrt(Prescs prc)
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -36,7 +34,7 @@ namespace Zencareservice.Controllers
             }
             return View();
         }
-      
+
         public void Prescdropdown()
         {
 
@@ -54,7 +52,7 @@ namespace Zencareservice.Controllers
             var dataRows = (ds.Tables.Count > 1) ? ds.Tables[2].AsEnumerable() : Enumerable.Empty<DataRow>();
 
             ViewBag.YourDataList = new SelectList(dataRows, "AptCode", "AptCode");
-           
+
 
             var AptcodeList = new List<SelectListItem>();
 
@@ -77,7 +75,7 @@ namespace Zencareservice.Controllers
             ViewBag.YourDataList = new SelectList(dataRows, "Bloodgroup", "Bloodgroup");
 
             var BloodgroupList = new List<SelectListItem>();
-           
+
 
             foreach (DataRow row in ds.Tables[2].Rows)
             {
@@ -90,17 +88,17 @@ namespace Zencareservice.Controllers
                 ViewBag.Bloodgroup = BloodgroupList;
                 ViewBag.SelectedValue = "Bloodgroup";
             }
-                                
+
             foreach (DataRow row in ds.Tables[2].Rows)
 
-            ViewBag.DataSet = ds.Tables[2];
+                ViewBag.DataSet = ds.Tables[2];
             ViewBag.SelectedValue = "Tamil Nadu";
 
         }
 
         public IActionResult GetPrescription(string type)
         {
-             
+
 
             DataSet ds = new DataSet();
 
@@ -114,7 +112,7 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveItemPrescription( [FromBody] Prescs[] medications)
+        public IActionResult SaveItemPrescription([FromBody] Prescs[] medications)
         {
 
             foreach (var medication in medications)
@@ -127,33 +125,33 @@ namespace Zencareservice.Controllers
                 int dosage = medication.Dosage;
                 int noofdays = medication.NoOfDays;
                 string aptcode = medication.aptcode;
-               
+
                 DataSet ds = new DataSet();
                 DataAccess Obj_DataAccess = new DataAccess();
-                ds = Obj_DataAccess.SaveItemPrescription(slno,prescription,dosage,noofdays,aptcode);
+                ds = Obj_DataAccess.SaveItemPrescription(slno, prescription, dosage, noofdays, aptcode);
 
             }
-            
-           
+
+
             return RedirectToAction("Dashboard", "Report");
         }
 
 
         [HttpPost]
-        public async Task<IActionResult>  SaveHeadPrescription(Prescs Obj)
+        public async Task<IActionResult> SaveHeadPrescription(Prescs Obj)
         {
             // Here, you would process and save the medication data to the database
             // The MedicationViewModel corresponds to the structure of your Medication data.
             string aptcode = Obj.AppointmentCode;
 
             TempData["aptcode"] = aptcode;
-            
+
             string pfname = Obj.PatientFirstName;
             string plname = Obj.PatientLastName;
             string patphoneno = Obj.Patientphoneno;
             string patemail = Obj.PatientEmail;
             string patage = Obj.PatientAge;
-            string patbloodgroup = Obj.PatBloodgroup;           
+            string patbloodgroup = Obj.PatBloodgroup;
             string patweight = Obj.PatWeight;
             string dfname = Obj.DoctorFirstName;
 
@@ -171,10 +169,51 @@ namespace Zencareservice.Controllers
 
             return View();
         }
-
-        public IActionResult Presclist() 
+        public IActionResult Presclist(Prescs prescs)
         {
-            return View();
-        }
+            string UsrId = Request.Cookies["UsrId"];
+
+            TempData["UserId"] = UsrId;
+
+            string Role = Request.Cookies["Role"];
+
+            if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
+            {
+                return RedirectToAction("PatientLogin", "Account");
+            }
+            else
+            {
+                DataAccess Obj_DataAccess = new DataAccess();
+                DataSet ds = new DataSet();
+                ds = Obj_DataAccess.GetPrescriptionList(UsrId, Role);
+
+                if (Role == "Admin")
+                {
+                    List<Prescs> PrescsList = new List<Prescs>();
+
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        Prescs presc = new Prescs();
+                        {
+                            presc.PatientFirstName = row["Pfname"].ToString();
+
+                            presc.Patientphoneno = row[""].ToString();
+
+                            presc.AppointmentCode = row["AptCode"].ToString();
+
+                            presc.prscode = row["PrsCode"].ToString();
+
+                            presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
+
+                        };
+
+                        PrescsList.Add(prescs);
+                    }
+                    prescs.showlist = PrescsList;
+                }
+            }
+            
+			return View(prescs);
+		}
     }
 }

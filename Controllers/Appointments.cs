@@ -118,7 +118,7 @@ namespace Zencareservice.Controllers
                             object aptbooktime = row["AptTime"];
                             if (aptbooktime != DBNull.Value)
                             {
-                                // Conversion is safe since the value is not DBNull
+                                
                                 apts.AptBookingTime = (TimeSpan?)aptbooktime;
                             }
 
@@ -141,8 +141,7 @@ namespace Zencareservice.Controllers
                             }
                             else
                             {
-                                // Handle the case where the value is DBNull, e.g., assign a default value or take appropriate action.
-                                // For example:
+                                
                                  apts.Aptreschedule = 0;
                             }
                             
@@ -370,9 +369,6 @@ namespace Zencareservice.Controllers
             return View(apt);
 
         }
-
-
-    
 
         public IActionResult CreateAppointment()
         {          
