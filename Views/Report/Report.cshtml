@@ -127,9 +127,8 @@
     <script src="~/plugins/jquery/jquery.min.js"></script>
     <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/dist/js/adminlte.min.js"></script>
-    <script src="~/dist/js/demo.js"></script>
-    
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -205,30 +204,20 @@
             });
         }
     </script>
+    
+
     <script>
-        // Function to generate PDF
         function generatePDF() {
-            // Create new jsPDF instance
-            const doc = new jsPDF();
-
-            // Capture entire window's content
-            const windowContent = document.body.innerHTML;
-
-            // Add content from the window to the PDF
-            doc.html(windowContent, {
+            const pdf = new jsPDF(); 
+            pdf.html(document.body, {
                 callback: function (pdf) {
-                    // Save the PDF
-                    pdf.save('document.pdf');
+                    pdf.save('report.pdf'); // Save the PDF as "report.pdf"
                 }
             });
         }
-
-        // Function to print the content
-        function printContent() {
-            // Open print dialog
-            window.print();
-        }
     </script>
+
+    
     <script>
      function showPopup() {
             var popup = document.getElementById("popup");
