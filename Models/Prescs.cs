@@ -4,8 +4,6 @@
     {
         public List<Prescs> showlist1 { get; set; } = new List<Prescs>();
 
-		public List<Prescs> showlist { get; set; } = new List<Prescs>();
-
 		public string? AppointmentCode { get; set; }
         public string? DoctorFirstName { get; set; }
 

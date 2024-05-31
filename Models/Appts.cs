@@ -88,6 +88,8 @@ namespace Zencareservice.Models
 
         public int Aptbookconfirm { get; set; }
 
+        public string Aptcode { get; set; }
+
         public List<Appts> showlist { get; set; } = new List<Appts>();
 
 

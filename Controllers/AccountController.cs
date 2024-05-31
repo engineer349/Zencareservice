@@ -85,14 +85,10 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        public IActionResult URegister()
+       public IActionResult UserRegister()
         {
-            string returnUrl = "/Account/URegister";
-
+            string returnUrl = "/Account/UserRegsiter";
             ViewData["ReturnUrl"] = returnUrl;
-
-            ViewBag.Roles = new SelectList(roles, "RoleId", "RoleName");
-
             return View();
         }
 
@@ -298,7 +294,7 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("GOTP", out var gotp))
             {
-                ViewBag.Message = gotp; // Set ViewBag.Message to the value retrieved from TempData
+                ViewBag.Message = gotp; 
 
                 string _genotp = ViewBag.Message.ToString();
 
@@ -306,22 +302,21 @@ namespace Zencareservice.Controllers
 
                     if(enteredOtp !="" )
                     {
-					    if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
+					   if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
 					{
 
 						switch (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
 						{
 							case true:
-                                        username = TempData["OTPUser"] as string;
-								password = TempData["OTP"] as string;
+                                username = TempData["User"] as string;
+								password = TempData["Password"] as string;
 								model.Password = password;
 								break;
 							case false:
 								username = TempData["User"] as string;
 								password = TempData["Password"] as string;
-								break;
-
-								// Add more cases as needed
+                                model.Password = password;
+                                break;
 						}
 						if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
 						{
@@ -338,6 +333,7 @@ namespace Zencareservice.Controllers
 							{
 
 								Status = Convert.ToInt32(ds.Tables[0].Rows[0]["LStatus"]);
+
 								if (Status == 1)
 								{
 
@@ -346,7 +342,6 @@ namespace Zencareservice.Controllers
 									string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
 
 									TempData["Username"] = UserName;
-
 
 									string Email = ds.Tables[0].Rows[0]["Email"].ToString();
 
@@ -364,8 +359,6 @@ namespace Zencareservice.Controllers
 
 									TempData["RCode"] = RCode;
 
-
-
 									var userData = new Signup
 									{
 										UserId = UsrId,
@@ -382,8 +375,8 @@ namespace Zencareservice.Controllers
 
 									var cookieOptions = new CookieOptions
 									{
-										Expires = DateTime.Now.AddDays(1), // Set the expiration date
-										HttpOnly = true, // Makes the cookie accessible only to the server-side code
+										Expires = DateTime.Now.AddDays(1), 
+										HttpOnly = true,
 									};
 
 									Response.Cookies.Append("EncryptCookie", protectedData, new CookieOptions
@@ -402,22 +395,21 @@ namespace Zencareservice.Controllers
 
 									Response.Cookies.Append("UsrName", UserName, options);
 									CookieOptions options1 = new CookieOptions();
-									options.Expires = DateTime.Now.AddMinutes(5);
+									options1.Expires = DateTime.Now.AddMinutes(5);
 
 									Response.Cookies.Append("Role", Role, options);
 									CookieOptions options2 = new CookieOptions();
-									options.Expires = DateTime.Now.AddMinutes(5);
+									options2.Expires = DateTime.Now.AddMinutes(5);
 
 									Response.Cookies.Append("RCode", RCode, options);
 									CookieOptions options3 = new CookieOptions();
-									options.Expires = DateTime.Now.AddMinutes(5);
+									options3.Expires = DateTime.Now.AddMinutes(5);
 
 									Response.Cookies.Append("UsrId", UsrId, options);
 									// Get the cookie value
 									HttpContext.Session.SetString("UsrId", UsrId);
 
 									// Now, you can use 'storedUsrId' as needed
-
 
 									HttpContext.Session.SetString("FirstName", Fname);
 
@@ -430,13 +422,8 @@ namespace Zencareservice.Controllers
                                     TempData["SwalMessage"] = "Login Succesfull";
                                     TempData["SwalType"] = "success";
  
-
                                     return RedirectToAction("Dashboard", "Report");
 									
-								
-
-									
-
 								}
 
                                 else
@@ -453,9 +440,9 @@ namespace Zencareservice.Controllers
 
 						}
 
-						return View("Login");
+                        return RedirectToAction("Login", "Account");
 
-					}
+                    }
 					    else
 					    {
                                     ViewBag.Message = "PINMISMATCH";
@@ -521,8 +508,6 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("MyEmail", out var resetEmailObj) && resetEmailObj != null)
             {
-
-
                 string email = resetEmailObj.ToString();
 
 
@@ -532,11 +517,16 @@ namespace Zencareservice.Controllers
                     DataSet ds = new DataSet();
                     ds = Obj_DataAccess.ResetPassword(Obj, email);
 
+					ViewBag.Message = "UpdatedPassword";
+					TempData["SwalMessage"] = "Successfully Updated";
+					TempData["SwalType"] = "success";
+					return RedirectToAction("PatientLogin", "Account");
+				}
+                else
+                {
+                    return View();
                 }
-                ViewBag.Message = "UpdatedPassword";
-                TempData["SwalMessage"] = "Successfully Updated";
-                TempData["SwalType"] = "success";
-                return RedirectToAction("PatientLogin", "Account");
+          
             }
             else
             {
@@ -820,8 +810,6 @@ namespace Zencareservice.Controllers
         }
 
        
-       
-
         [HttpPost]
         public IActionResult PatientRegister(Signup Obj, string returnUrl)
         {
@@ -843,8 +831,6 @@ namespace Zencareservice.Controllers
                     {
 
                         var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
-
-
 
                         if (gMail == true)
                         {
@@ -872,16 +858,14 @@ namespace Zencareservice.Controllers
                                     Obj.RCategory = "Patient";
 
                                     Obj.Age = userAge;
+                                        
                                     int agreeterms = Convert.ToInt32(Obj.agreeterm);
+                                    
                                     string fname = Obj.Firstname;
                                     string lname = Obj.Lastname;
 
-
-
                                     string password = Obj.Password;
                                
-
-                                 
                                     TempData["Password"] = password;
 
                                     string confirmpassword = Obj.Confirmpassword;
@@ -1141,7 +1125,7 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
-        public IActionResult URegister(Signup Obj, string returnUrl, DateTime userDob)
+        public IActionResult UserRegister(Signup Obj, string returnUrl, DateTime userDob)
         {
             
 

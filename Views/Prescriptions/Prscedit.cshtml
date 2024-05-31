@@ -1,25 +1,23 @@
-﻿@using System.Data;
-@{
+﻿@{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "CreatePrescription";
-    DataTable dataTable = ViewBag.DataSet;
-    var dataRows = dataTable.AsEnumerable();
-    var selectedValue = ViewBag.SelectedValue;
+    ViewData["Title"] = "Edit Prescription";
 }
-@model Zencareservice.Models.Prescs;
+@model Zencareservice.Models.Prescs
 
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Create Prescription</title>
+    <title>Edit Prescription</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Gopi">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
-
 <body>
-    <form class="prescription" method="POST" asp-action="SaveHeadPrescription" asp-controller="Prescriptions" onsubmit="return validateForm()">
+    <form class="prescription" method="POST" asp-action="Prescedit" asp-controller="Prescriptions" onsubmit="return validateForm()">
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
@@ -28,8 +26,8 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a asp-action="Dashboard" asp-controller="Report">Home</a></li>
-                            <li class="breadcrumb-item active"> <b style="color:black">Create Prescription</b></li>
+                            <li class="breadcrumb-item"><a asp-action="Presclist" asp-controller="Prescriptions">Prescription List</a></li>
+                            <li class="breadcrumb-item active"><b style="color:black">Edit Prescription</b></li>
                         </ol>
                     </div>
                 </div>
@@ -47,54 +45,56 @@
                 </div>
                 <div class="card-body">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-row">
+                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label asp-for="AppointmentCode">Prescription Category</label>
-                            @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "DDLPresccategory" })
-                            <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                          @*   @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "DDLPresccategory" }) *@
+                            <input asp-for="AppointmentCode" type="text" class="form-control" id="aptcode"  readonly />
+                              <span asp-validation-for="AppointmentCode" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label asp-for="PatientFirstName">Patient First Name</label>
-                            <input asp-for="PatientFirstName" type="text" class="form-control" id="pfname" placeholder="Patient First Name" readonly />
+                            <input asp-for="PatientFirstName" type="text" class="form-control" id="pfname" readonly />
                             <span asp-validation-for="PatientFirstName" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatientLastName">Patient Last Name</label>
-                            <input asp-for="PatientLastName" type="text" class="form-control" id="plname" placeholder="Patient Last Name" readonly />
+                            <input asp-for="PatientLastName" type="text" class="form-control" id="plname" readonly />
                             <span asp-validation-for="PatientLastName" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="Patientphoneno">Contact No</label>
-                            <input asp-for="Patientphoneno" type="tel" class="form-control" id="patcontact" placeholder="Patient Contact No">
+                            <input asp-for="Patientphoneno" type="tel" class="form-control" id="patcontact" readonly />
                             <span asp-validation-for="Patientphoneno" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatientEmail">Patient Email</label>
-                            <input asp-for="PatientEmail" type="text" class="form-control" id="patemail" />
+                            <input asp-for="PatientEmail" type="text" class="form-control" id="patemail" readonly />
                             <span asp-validation-for="PatientEmail" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
                             <label asp-for="PatientAge">Age</label>
-                            <input asp-for="PatientAge" type="text" class="form-control" id="patage" placeholder="Age" />
+                            <input asp-for="PatientAge" type="text" class="form-control" id="patage" readonly />
                             <span asp-validation-for="PatientAge"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatBloodgroup">Patient Bloodgroup</label>
-                            @Html.DropDownListFor(model => model.PatBloodgroup, ViewBag.Bloodgroup as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "PatBloodgroup" })
+                            @* @Html.DropDownListFor(model => model.PatBloodgroup, ViewBag.Bloodgroup as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "PatBloodgroup" }) *@
+                            <input asp-for="PatBloodgroup" type="text" class="form-control" id="PatBloodgroup" readonly />
                             <span asp-validation-for="PatBloodgroup" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatWeight">Patient Weight</label>
-                            <input asp-for="PatWeight" type="number" class="form-control" min="0" max="100" id="pweight" placeholder="in Kgs" />
+                            <input asp-for="PatWeight" type="number" class="form-control" min="0" max="100" id="pweight" placeholder="in Kgs" readonly />
                             <span asp-validation-for="PatWeight" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="DoctorFirstName">Doctor First Name</label>
-                            <input asp-for="DoctorFirstName" type="text" class="form-control" id="dfname" placeholder="Doctor First Name" readonly />
+                            <input asp-for="DoctorFirstName" type="text" class="form-control" id="dfname"  readonly />
                             <span asp-validation-for="DoctorFirstName" class="text-danger"></span>
                         </div>
                     </div>
@@ -114,12 +114,31 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach (var item in Model.showlist1)
+                            {
+                                <tr>
+                                    <td>@item.SlNo</td>
+                                    <td><input type="text" value="@item.Prescription" /></td>
+                                    <td>
+                                        <input type="range" min="0" max="1000" value="@item.Dosage" oninput="updateDosageIndicator(this.value, @item.SlNo)" />
+                                        <span id="dosageIndicator_@item.SlNo">@item.Dosage mg</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" value="@item.NoOfDays" min="0" max="100" />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                                            <span class="glyphicon glyphicon-trash"></span> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-default" onclick="resetForm()">Cancel</button>
-                    <button type="submit" class="btn btn-success float-right" >Create Prescription</button>
+                    <button type="submit" class="btn btn-success float-right">Update Prescription</button>
                 </div>
             </div>
         </div>
@@ -137,15 +156,15 @@
             var noofdaysCell = row.insertCell(3);
             var actionCell = row.insertCell(4);
 
-            slNoCell.textContent = tbody.children.length;
+            slNoCell.textContent = tbody.children.length + 1;
 
             prescriptionCell.innerHTML = '<input type="text">';
             noofdaysCell.innerHTML = '<input type="number" value="0" min="0" max="100">';
 
             var dosageValue = 5;
             var maxDosage = 1000;
-            dosageCell.innerHTML = '<input type="range" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + tbody.children.length + ')">';
-            dosageCell.innerHTML += '<span id="dosageIndicator_' + tbody.children.length + '">' + dosageValue + ' mg</span>';
+            dosageCell.innerHTML = '<input type="range" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + (tbody.children.length + 1) + ')">';
+            dosageCell.innerHTML += '<span id="dosageIndicator_' + (tbody.children.length + 1) + '">' + dosageValue + ' mg</span>';
 
             var deleteButton = document.createElement('button');
             deleteButton.type = 'button';
@@ -160,8 +179,8 @@
 
         function updateSlNo() {
             var rows = document.querySelectorAll('#example1 tbody tr');
-            for (var i = 0; i < rows.length; i++) {
-                rows[i].cells[0].textContent = i + 1;
+            for (var i = 0; i < rows.length -1; i++) {
+                rows[i].cells[0].textContent  = i +1;
             }
         }
 
@@ -299,19 +318,7 @@
 
         document.getElementById("pweight").addEventListener("input", validatePatient);
 
-        $("#DDLPresccategory").change(function () {
-            aptcode = $(this).val();
-            $.get("/Prescriptions/GetPrescription", { type: aptcode }, function (resposedata) {
-                var data = JSON.parse(resposedata);
-                $('#pfname').val(data[0].PFname).prop('readonly', true);
-                $('#plname').val(data[0].PLname).prop('readonly', true);
-                $('#dfname').val(data[0].DFname).prop('readonly', true);
-                $('#patage').val(data[0].Patage).prop('readonly', true);
-                $('#patcontact').val(data[0].Patphone).prop('readonly', true);
-                $('#patemail').val(data[0].PatientEmail).prop('readonly', true);
-            });
-        });
-
+  
         function resetForm() {
             location.reload();
         }
@@ -320,5 +327,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
-
 </html>
+

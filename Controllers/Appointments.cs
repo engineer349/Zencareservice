@@ -297,6 +297,8 @@ namespace Zencareservice.Controllers
 
                         apts.AptId = ((int)row["AptId"]);
 
+                        apts.Aptcode = row["Aptcode"].ToString();
+
                         apts.Patientphoneno = row["Patphone"].ToString();
                         apts.PatientEmail = row["PatientEmail"].ToString();
 
@@ -403,9 +405,7 @@ namespace Zencareservice.Controllers
 
             if (type == "self")
             {
-
                 DataAccess Obj_DataAccess = new DataAccess();
-
                 ds = Obj_DataAccess.SetSelfAppointment(UsrId);
 
             }

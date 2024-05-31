@@ -13,6 +13,8 @@ namespace Zencareservice.Controllers
 {
     public class Profiles : Controller
     {
+
+  
         public IActionResult Personaldetails(Personaldetails personal, int Id)
         {
             string UsrId = Request.Cookies["UsrId"];

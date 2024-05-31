@@ -445,7 +445,34 @@ namespace Zencareservice.Repository
 
             }
         }
+        public DataSet GetEditPrescriptions(string UsrId, string decodedId)
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "GetEditPrescriptions";
 
+                SqlParameter[] param = new SqlParameter[2];
+
+                param[0] = new SqlParameter("@UsrId", SqlDbType.Int);
+                param[0].Value = UsrId;
+                param[1] = new SqlParameter("@Id", SqlDbType.VarChar);
+                param[1].Value = decodedId;
+
+
+
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+
+            }
+        }
 
         public DataSet GetAppointments(string UsrId)
         {
@@ -607,7 +634,7 @@ namespace Zencareservice.Repository
                 SqlParameter[] param = new SqlParameter[5];
 
 
-                
+
                 param[0] = new SqlParameter("@Prscitem", SqlDbType.VarChar);
                 param[0].Value = prescription;
                 param[1] = new SqlParameter("@Prscdosage", SqlDbType.Int);
@@ -618,7 +645,40 @@ namespace Zencareservice.Repository
                 param[3].Value = slno;
                 param[4] = new SqlParameter("@AptCode", SqlDbType.VarChar);
                 param[4].Value = aptcode;
-                
+
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+
+            }
+        }
+
+        public DataSet SaveUpdatePrescription(int slno, string prescription, int dosage, int noofdays, string aptcode,string decodedId)
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "SaveUpdatePrescription_SP";
+
+                SqlParameter[] param = new SqlParameter[5];
+
+                param[0] = new SqlParameter("@Prscitem", SqlDbType.VarChar);
+                param[0].Value = prescription;
+                param[1] = new SqlParameter("@Prscdosage", SqlDbType.Int);
+                param[1].Value = Convert.ToInt32(dosage);
+                param[2] = new SqlParameter("@Prscdays", SqlDbType.Int);
+                param[2].Value = Convert.ToInt32(noofdays);
+                param[3] = new SqlParameter("@Slno", SqlDbType.Int);
+                param[3].Value = slno;
+                param[4] = new SqlParameter("@AptCode", SqlDbType.VarChar);
+                param[4].Value = aptcode;
+                param[5] = new SqlParameter("@Prscode", SqlDbType.VarChar);
+                param[4].Value = decodedId;
 
                 ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
 

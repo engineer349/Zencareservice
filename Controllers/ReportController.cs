@@ -56,7 +56,7 @@ namespace Zencareservice.Controllers
                 };
                 PrescList.Add(prescs);
             }
-             prsc.showlist= PrescList;
+             prsc.showlist1= PrescList;
             return View(prsc);
 
         }
@@ -170,14 +170,12 @@ namespace Zencareservice.Controllers
             ViewBag.SelectedValue = "Tamil Nadu";
 
         }
+
         public IActionResult Dashboard(Dashboard Obj)
         {
             string UserId = Request.Cookies["UsrId"];
-
             string UsrName = Request.Cookies["UsrName"];
-
             string RoleName = Request.Cookies["Role"];
-
 
             if (string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(UsrName) || string.IsNullOrEmpty(RoleName))
             {
@@ -190,36 +188,41 @@ namespace Zencareservice.Controllers
 
                 DataAccess Obj_DataAccess = new DataAccess();
                 DataSet ds = new DataSet();
-                ds = Obj_DataAccess.GetDashboardvalues(Obj);
 
-                if (ds.Tables[0].Rows.Count > 0)
+                try
                 {
-                    string aptcount = Convert.ToString(ds.Tables[0].Rows[0]["AptCount"]);
+                    ds = Obj_DataAccess.GetDashboardvalues(Obj);
 
-                    ViewBag.Appointments = aptcount;
+                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        DataRow row = ds.Tables[0].Rows[0];
 
-                    string regcount = Convert.ToString(ds.Tables[0].Rows[0]["RegisterCount"]);
-
-                    ViewBag.Users = regcount;
-
-                    string aptstatuscount = Convert.ToString(ds.Tables[0].Rows[0]["AptstatusCount"]);
-
-                    ViewBag.AppointmentStatus = aptstatuscount;
-
-                    string prescriptioncount = Convert.ToString(ds.Tables[0].Rows[0]["PrescriptionCount"]);
-
-                    ViewBag.Prescriptions = prescriptioncount;
+                        ViewBag.Appointments = row["AptCount"].ToString();
+                        ViewBag.Users = row["RegisterCount"].ToString();
+                        ViewBag.AppointmentStatus = row["AptstatusCount"].ToString();
+                        ViewBag.Prescriptions = row["PrescriptionCount"].ToString();
+                    }
+                    else
+                    {
+                        // Handle case when there are no rows returned from the database
+                        // You can set default values or display an error message
+                        ViewBag.Appointments = "0";
+                        ViewBag.Users = "0";
+                        ViewBag.AppointmentStatus = "0";
+                        ViewBag.Prescriptions = "0";
+                    }
                 }
-
-
-
+                catch (Exception ex)
+                {
+                    // Handle the exception appropriately, such as logging it
+                    ViewBag.ErrorMessage = "An error occurred while retrieving dashboard data.";
+                    // Optionally, you can also throw the exception to be handled at a higher level
+                    // throw ex;
+                }
             }
             return View();
-
-
-
         }
 
-        
+
     }
 }

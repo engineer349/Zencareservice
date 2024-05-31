@@ -99,12 +99,12 @@
 
                                 <div class="form-group col-md-3">
                                 <label asp-for="PatientEmail">Patient Email</label>
-                                <input asp-for="PatientEmail" type="text" id="patemail" class="form-control">
+                            <input asp-for="PatientEmail" type="text" id="patemail" class="form-control" readonly>
                                 
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label asp-for="RescheduleAppointmentDate">Reschedule AppointmentDate:</label>
-                                <input asp-for="RescheduleAppointmentDate" type="date" id="aptbookingdate" class="form-control">
+                                    <input asp-for="RescheduleAppointmentDate" type="date" id="aptbookingdate" class="form-control">
                                     <span asp-validation-for="RescheduleAppointmentDate" class="text-danger"></span>
                         
                                 </div>
@@ -115,7 +115,7 @@
                                 </div>
                              <div class="form-group col-md-3">
                                     <label asp-for="AptId">AppointmentId</label>
-                                    <input asp-for="AptId" type="text" id="aptid" class="form-control">
+                            <input asp-for="AptId" type="text" id="aptid" class="form-control" readonly>
                                           
                              </div>
                          </div>

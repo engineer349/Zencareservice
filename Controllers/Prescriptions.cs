@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System;
 using System.Data;
+using System.Data.Entity;
+using System.Reflection.Emit;
+using System.Reflection.Metadata.Ecma335;
+using System.Web;
 using Zencareservice.Models;
 using Zencareservice.Repository;
 
@@ -35,6 +39,103 @@ namespace Zencareservice.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Prscedit(Prescs psc, string Id)
+        {
+            string UsrId = Request.Cookies["UsrId"];
+
+			string decodedId = HttpUtility.UrlDecode(Id);
+
+			TempData["UserId"] = UsrId;
+
+            if (string.IsNullOrEmpty(UsrId))
+            {
+                return RedirectToAction("PatientLogin", "Account");
+            }
+
+            DataAccess Obj_DataAccess = new DataAccess();
+            DataSet ds = Obj_DataAccess.GetEditPrescriptions(UsrId, decodedId);
+
+            if (ds != null && ds.Tables.Count > 0)
+            {
+                // Populate prescription details
+                DataRow headerRow = ds.Tables[1].Rows[0];
+                psc.PatientFirstName = headerRow["Pfname"].ToString();
+                psc.PatientLastName = headerRow["Plname"].ToString();
+                psc.Patientphoneno = headerRow["Pphoneno"].ToString();
+                psc.PatientEmail = headerRow["Pemail"].ToString();
+                psc.PatientAge = headerRow["Page"].ToString();
+                psc.PatBloodgroup = headerRow["PBloodgroup"].ToString();
+                psc.PatWeight = headerRow["Pweight"].ToString();
+                psc.DoctorFirstName = headerRow["dfname"].ToString();
+                psc.AppointmentCode = headerRow["Aptcode"].ToString();
+
+                // Populate medication items
+                psc.showlist1 = new List<Prescs>();
+                foreach (DataRow row in ds.Tables[2].Rows)
+                {
+                    var item = new Prescs
+                    {
+                        SlNo = Convert.ToInt32(row["Slno"]),
+                        Prescription = row["PrscItem"].ToString(),
+                        Dosage = Convert.ToInt32(row["PrscDosage"]),
+                        NoOfDays = Convert.ToInt32(row["Prscdays"])
+                    };
+                    psc.showlist1.Add(item);
+                }
+
+                return View(psc);
+            }
+            else
+            {
+                return View();
+            }
+        }
+        [HttpPost]
+        public IActionResult Prescedit(Prescs[] medications, string id)
+        {
+
+            string UsrId = Request.Cookies["UsrId"];
+      
+             string decodedId = HttpUtility.UrlDecode(id);
+
+            //string decodedId = Request.Query["id"].ToString();
+
+            TempData["UserId"] = UsrId;
+
+            if (string.IsNullOrEmpty(UsrId))
+            {
+                return RedirectToAction("PatientLogin", "Account");
+            }
+            else
+            {
+                try
+                {
+
+                    foreach (var medication in medications)
+                    {
+
+                        int slno = medication.SlNo;
+                        TempData["slno"] = slno;
+                        string prescription = medication.Prescription;
+                        int dosage = medication.Dosage;
+                        int noofdays = medication.NoOfDays;
+                        string aptcode = medication.aptcode;
+
+                        DataAccess Obj_DataAccess = new DataAccess();
+                        DataSet ds = Obj_DataAccess.SaveUpdatePrescription(slno, prescription, dosage, noofdays, aptcode, decodedId);
+                    }
+
+                    return RedirectToAction("Dashboard", "Report");
+                }
+                catch(Exception ex)
+                {
+                    return RedirectToAction(ex.Message);
+                }
+            }
+
+
+
+        }
         public void Prescdropdown()
         {
 
@@ -114,34 +215,39 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public IActionResult SaveItemPrescription([FromBody] Prescs[] medications)
         {
+            
 
             foreach (var medication in medications)
             {
-                //   // Save medication to the database using your data access logic
-                //    // MedicationViewModel properties: prescription, dos/age, noofdays
+                
                 int slno = medication.SlNo;
                 TempData["slno"] = slno;
                 string prescription = medication.Prescription;
                 int dosage = medication.Dosage;
                 int noofdays = medication.NoOfDays;
                 string aptcode = medication.aptcode;
-
-                DataSet ds = new DataSet();
+ 
                 DataAccess Obj_DataAccess = new DataAccess();
-                ds = Obj_DataAccess.SaveItemPrescription(slno, prescription, dosage, noofdays, aptcode);
-
+                DataSet ds = Obj_DataAccess.SaveItemPrescription(slno, prescription, dosage, noofdays, aptcode);
             }
-
+       
 
             return RedirectToAction("Dashboard", "Report");
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> SaveHeadPrescription(Prescs Obj)
+        public IActionResult SaveHeadPrescription(Prescs Obj)
         {
-            // Here, you would process and save the medication data to the database
-            // The MedicationViewModel corresponds to the structure of your Medication data.
+            //if (TempData["aptcode"] != null && TempData["aptcode"].ToString() == Obj.AppointmentCode)
+            //{
+              
+            //    return RedirectToAction("Index", "Home"); 
+            //}
+
+            // Store the appointment code in TempData to check for duplicates in subsequent requests
+            TempData["aptcode"] = Obj.AppointmentCode;
+
             string aptcode = Obj.AppointmentCode;
 
             TempData["aptcode"] = aptcode;
@@ -187,8 +293,7 @@ namespace Zencareservice.Controllers
                 DataSet ds = new DataSet();
                 ds = Obj_DataAccess.GetPrescriptionList(UsrId, Role);
 
-                if (Role == "Admin")
-                {
+             
                     List<Prescs> PrescsList = new List<Prescs>();
 
                     foreach (DataRow row in ds.Tables[0].Rows)
@@ -197,7 +302,7 @@ namespace Zencareservice.Controllers
                         {
                             presc.PatientFirstName = row["Pfname"].ToString();
 
-                            presc.Patientphoneno = row[""].ToString();
+                            presc.Patientphoneno = row["Pphoneno"].ToString();
 
                             presc.AppointmentCode = row["AptCode"].ToString();
 
@@ -207,9 +312,9 @@ namespace Zencareservice.Controllers
 
                         };
 
-                        PrescsList.Add(prescs);
-                    }
-                    prescs.showlist = PrescsList;
+                        PrescsList.Add(presc);
+                    
+                    prescs.showlist1 = PrescsList;
                 }
             }
             

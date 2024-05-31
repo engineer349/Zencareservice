@@ -10,7 +10,6 @@
 
 @model Zencareservice.Models.Aptcrt;
 <html>
-
     <head>
         <title>Create Appointment</title>
         <meta charset="UTF-8">
@@ -312,7 +311,7 @@
 
 
 
-    <script type="text/javascript">
+@*     <script type="text/javascript">
         $("#DDLAptCategory").change(function () {
             var aptId = $(this).val();
             if (aptId == "self") {
@@ -333,7 +332,32 @@
 
             }
         });
+    </script> *@
+
+    <script type="text/javascript">
+        $("#DDLAptCategory").change(function () {
+            var aptId = $(this).val();
+            var readOnlyState = aptId == "self";
+
+            $('#firstname').val('').prop('readonly', readOnlyState);
+            $('#lastname').val('').prop('readonly', readOnlyState);
+            $('#age').val('').prop('readonly', readOnlyState);
+            $('#contactno').val('').prop('readonly', readOnlyState);
+            $('#email').val('').prop('readonly', readOnlyState);
+
+            if (aptId == "self") {
+                $.get("/Appointments/GetAppointment", { type: aptId }, function (resposedata) {
+                    var data = JSON.parse(resposedata);
+                    $('#firstname').val(data[0].Fname);
+                    $('#lastname').val(data[0].Lname);
+                    $('#age').val(data[0].Age);
+                    $('#contactno').val(data[0].Phoneno);
+                    $('#email').val(data[0].Email);
+                });
+            }
+        });
     </script>
+
 
     <script type="text/javascript">
         $(document).ready(function () {

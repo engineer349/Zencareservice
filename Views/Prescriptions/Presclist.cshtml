@@ -44,21 +44,22 @@
 				<th>ConsultationNo</th>
 				<th>PrescriptionOrderNo</th>				
 				<th>LastVisit</th>
-				@* <th>Prescription Status</th>		 *@						
+						
 			</tr>
 		</thead>
 		<tbody>
-				@if (Model != null)
+					@if (Model != null)
 					{
-						@foreach (var prescription in Model.showlist)
+						@foreach (var prescription in Model.showlist1)
 						{
 							<tr>
 								<td>@prescription.PatientFirstName</td>
 								<td>@prescription.Patientphoneno</td>
-								<td>@prescription.AppointmentCode</td>
-								<td>@prescription.prscode</td>
+								<td>@prescription.AppointmentCode</td>							
+								<td>
+									<a asp-action="Prscedit" asp-controller="Prescriptions" asp-route-id="@Uri.EscapeDataString(prescription.prscode)">@prescription.prscode</a>
+								</td>
 								<td>@prescription.Prscdate</td>
-								
 								
 
 							</tr>
