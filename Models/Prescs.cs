@@ -15,6 +15,7 @@
 
         public string? DoctorLastName { get; set; }
 
+        public string ? Doctorcontact { get; set; }
         public string? PatientFirstName { get; set; }
 
         public string? PatientLastName { get; set; }

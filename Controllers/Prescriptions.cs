@@ -33,7 +33,15 @@ namespace Zencareservice.Controllers
 
             else
             {
-                Prescdropdown();
+                var hasAppointmentCodes = Prescdropdown();
+
+                if (!hasAppointmentCodes)
+                {
+                    ViewBag.Message = "Invalid";
+                    TempData["SwalMessage"] = "No New Appointments";
+                    TempData["SwalType"] = "warning";
+                    return RedirectToAction("NoAppointments", "Home");
+                }
 
             }
             return View();
@@ -68,7 +76,7 @@ namespace Zencareservice.Controllers
                 psc.PatWeight = headerRow["Pweight"].ToString();
                 psc.DoctorFirstName = headerRow["dfname"].ToString();
                 psc.AppointmentCode = headerRow["Aptcode"].ToString();
-
+                psc.prscode = headerRow["PrsCode"].ToString();
                 // Populate medication items
                 psc.showlist1 = new List<Prescs>();
                 foreach (DataRow row in ds.Tables[2].Rows)
@@ -136,67 +144,70 @@ namespace Zencareservice.Controllers
 
 
         }
-        public void Prescdropdown()
+
+
+        public bool Prescdropdown()
         {
-
             string UsrId = Request.Cookies["UsrId"];
-
             TempData["UserId"] = UsrId;
 
             DataAccess Obj_DataAccess = new DataAccess();
-
             DataSet ds = new DataSet();
 
-            ds = Obj_DataAccess.GetPrescriptions(UsrId);
-
-
-            var dataRows = (ds.Tables.Count > 1) ? ds.Tables[2].AsEnumerable() : Enumerable.Empty<DataRow>();
-
-            ViewBag.YourDataList = new SelectList(dataRows, "AptCode", "AptCode");
-
-
-            var AptcodeList = new List<SelectListItem>();
-
-            foreach (DataRow row in ds.Tables[0].Rows)
+            try
             {
-                var presccategory = new SelectListItem
-                {
-                    Text = row["AptCode"].ToString(),
-                    Value = row["AptCode"].ToString()
-                };
+                ds = Obj_DataAccess.GetPrescriptions(UsrId);
 
-                AptcodeList.Add(presccategory);
+                // Check if AptCode data exists and is not empty
+                if (ds.Tables.Count < 1 || ds.Tables[0].Rows.Count == 0)
+                {
+                    return false;
+                }
+
+                var dataRows = ds.Tables[2].AsEnumerable();
+
+                ViewBag.YourDataList = new SelectList(dataRows, "AptCode", "AptCode");
+
+                var AptcodeList = new List<SelectListItem>();
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    var presccategory = new SelectListItem
+                    {
+                        Text = row["AptCode"].ToString(),
+                        Value = row["AptCode"].ToString()
+                    };
+
+                    AptcodeList.Add(presccategory);
+                }
+
                 ViewBag.AptCode = AptcodeList;
                 ViewBag.SelectedValue = "Doctor FirstName";
 
-
-            }
-
-
-            ViewBag.YourDataList = new SelectList(dataRows, "Bloodgroup", "Bloodgroup");
-
-            var BloodgroupList = new List<SelectListItem>();
-
-
-            foreach (DataRow row in ds.Tables[2].Rows)
-            {
-                var bloodgroupcategory = new SelectListItem
+                var BloodgroupList = new List<SelectListItem>();
+                foreach (DataRow row in ds.Tables[2].Rows)
                 {
-                    Text = row["Bloodgroup"].ToString(),
-                    Value = row["Bloodgroup"].ToString()
-                };
-                BloodgroupList.Add(bloodgroupcategory);
+                    var bloodgroupcategory = new SelectListItem
+                    {
+                        Text = row["Bloodgroup"].ToString(),
+                        Value = row["Bloodgroup"].ToString()
+                    };
+
+                    BloodgroupList.Add(bloodgroupcategory);
+                }
+
                 ViewBag.Bloodgroup = BloodgroupList;
                 ViewBag.SelectedValue = "Bloodgroup";
+                ViewBag.DataSet = ds.Tables[2];
+                ViewBag.SelectedValue = "Tamil Nadu";
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (ex) if necessary
+                return false;
             }
 
-            foreach (DataRow row in ds.Tables[2].Rows)
-
-                ViewBag.DataSet = ds.Tables[2];
-            ViewBag.SelectedValue = "Tamil Nadu";
-
+            return true;
         }
-
         public IActionResult GetPrescription(string type)
         {
 
@@ -320,5 +331,51 @@ namespace Zencareservice.Controllers
             
 			return View(prescs);
 		}
-    }
+
+		public IActionResult DPresclist(Prescs prescs)
+		{
+			string UsrId = Request.Cookies["UsrId"];
+
+			TempData["UserId"] = UsrId;
+
+			string Role = Request.Cookies["Role"];
+
+			if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
+			{
+				return RedirectToAction("PatientLogin", "Account");
+			}
+			else
+			{
+				DataAccess Obj_DataAccess = new DataAccess();
+				DataSet ds = new DataSet();
+				ds = Obj_DataAccess.GetPrescriptionList(UsrId, Role);
+
+
+				List<Prescs> PrescsList = new List<Prescs>();
+
+				foreach (DataRow row in ds.Tables[1].Rows)
+				{
+					Prescs presc = new Prescs();
+					{
+						presc.DoctorFirstName = row["Dfname"].ToString();
+
+						presc.Doctorcontact = row["Dphoneno"].ToString();
+
+						presc.AppointmentCode = row["Aptcode"].ToString();
+
+						presc.prscode = row["PrsCode"].ToString();
+
+						presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
+
+					};
+
+					PrescsList.Add(presc);
+
+					prescs.showlist1 = PrescsList;
+				}
+			}
+
+			return View(prescs);
+		}
+	}
 }

@@ -18,7 +18,7 @@ namespace Zencareservice.Controllers
         }
 
 
-        public IActionResult PHoto()
+        public IActionResult NoAppointments()
         {
             return View();
         }

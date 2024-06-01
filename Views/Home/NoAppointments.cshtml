@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "No Appointments";
+    Layout = "_AdminLayout";
+}
+
+<h1>No Appointments Available</h1>
+<p>There are no available appointment codes at this time. Please try again later.</p>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var swalMessage = '@TempData["SwalMessage"]';
+        var swalType = '@TempData["SwalType"]';
+
+        if (swalMessage !== '') {
+            showSweetAlert(swalType, swalMessage);
+        }
+
+        var message = '@ViewBag.Message';
+        switch (message) {
+            case 'Invalid':
+                showSweetAlert('error', 'Pls Tryagain.', 'Invalid Username or Password!');
+                break;
+            case 'UpdatedPassword':
+                showSweetAlert('success', 'UpdatedPassword', 'UserAccountSuccessfullyUpdated!');
+                break;
+        }
+    });
+
+    function showSweetAlert(icon, title, text) {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            showConfirmButton: false,
+            timer: 1500 // Adjust the timer as needed
+        });
+    }
+</script>

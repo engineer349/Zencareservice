@@ -311,29 +311,6 @@
 
 
 
-@*     <script type="text/javascript">
-        $("#DDLAptCategory").change(function () {
-            var aptId = $(this).val();
-            if (aptId == "self") {
-                $.get("/Appointments/GetAppointment", { type: aptId }, function (resposedata) {
-                    var data = JSON.parse(resposedata);
-                    $('#firstname').val(data[0].Fname).prop('readonly', true);
-                    $('#lastname').val(data[0].Lname).prop('readonly', true);
-                    $('#age').val(data[0].Age).prop('readonly', true);
-                    $('#contactno').val(data[0].Phoneno).prop('readonly', true);
-                    $('#email').val(data[0].Email).prop('readonly', true);
-                });
-            } else {
-                $('#firstname').val('');
-                $('#lastname').val('');
-                $('#age').val('');
-                $('#contactno').val('');
-                $('#email').val('');
-
-            }
-        });
-    </script> *@
-
     <script type="text/javascript">
         $("#DDLAptCategory").change(function () {
             var aptId = $(this).val();

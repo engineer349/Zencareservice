@@ -15,6 +15,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <style>
+        .form-control {
+            font-size: 14px;
+        }
+
+        table {
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <form class="prescription" method="POST" asp-action="Prescedit" asp-controller="Prescriptions" onsubmit="return validateForm()">
@@ -45,12 +54,16 @@
                 </div>
                 <div class="card-body">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                     <div class="form-row">
+                    <div class="form-row">
                         <div class="form-group col-md-3">
                             <label asp-for="AppointmentCode">Prescription Category</label>
-                          @*   @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "DDLPresccategory" }) *@
-                            <input asp-for="AppointmentCode" type="text" class="form-control" id="aptcode"  readonly />
-                              <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                            <input asp-for="AppointmentCode" type="text" class="form-control" id="aptcode" readonly />
+                            <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label asp-for="prscode">Prescription Code</label>
+                            <input asp-for="prscode" type="text" class="form-control" id="prscode" readonly />
+                            <span asp-validation-for="prscode" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-row">
@@ -79,22 +92,21 @@
                         <div class="form-group col-md-3">
                             <label asp-for="PatientAge">Age</label>
                             <input asp-for="PatientAge" type="text" class="form-control" id="patage" readonly />
-                            <span asp-validation-for="PatientAge"></span>
+                            <span asp-validation-for="PatientAge" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatBloodgroup">Patient Bloodgroup</label>
-                            @* @Html.DropDownListFor(model => model.PatBloodgroup, ViewBag.Bloodgroup as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "PatBloodgroup" }) *@
                             <input asp-for="PatBloodgroup" type="text" class="form-control" id="PatBloodgroup" readonly />
                             <span asp-validation-for="PatBloodgroup" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="PatWeight">Patient Weight</label>
-                            <input asp-for="PatWeight" type="number" class="form-control" min="0" max="100" id="pweight" placeholder="in Kgs" readonly />
+                            <input asp-for="PatWeight" type="number" class="form-control" min="0" max="180" id="pweight" placeholder="in Kgs" readonly />
                             <span asp-validation-for="PatWeight" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-3">
                             <label asp-for="DoctorFirstName">Doctor First Name</label>
-                            <input asp-for="DoctorFirstName" type="text" class="form-control" id="dfname"  readonly />
+                            <input asp-for="DoctorFirstName" type="text" class="form-control" id="dfname" readonly />
                             <span asp-validation-for="DoctorFirstName" class="text-danger"></span>
                         </div>
                     </div>
@@ -118,13 +130,13 @@
                             {
                                 <tr>
                                     <td>@item.SlNo</td>
-                                    <td><input type="text" value="@item.Prescription" /></td>
+                                    <td><input type="text" class="form-control" value="@item.Prescription" /></td>
                                     <td>
-                                        <input type="range" min="0" max="1000" value="@item.Dosage" oninput="updateDosageIndicator(this.value, @item.SlNo)" />
+                                        <input type="range" class="form-control" min="0" max="1000" value="@item.Dosage" oninput="updateDosageIndicator(this.value, @item.SlNo)" />
                                         <span id="dosageIndicator_@item.SlNo">@item.Dosage mg</span>
                                     </td>
                                     <td>
-                                        <input type="number" value="@item.NoOfDays" min="0" max="100" />
+                                        <input type="number" class="form-control" value="@item.NoOfDays" min="0" max="100" />
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
@@ -145,7 +157,8 @@
     </form>
 
     <script>
-        var aptcode;
+        var aptcode = document.getElementById('aptcode').value;
+        var prscode = document.getElementById('prscode').value;
 
         function createTable() {
             var tbody = document.querySelector('#example1 tbody');
@@ -156,61 +169,41 @@
             var noofdaysCell = row.insertCell(3);
             var actionCell = row.insertCell(4);
 
-            slNoCell.textContent = tbody.children.length + 1;
+            var currentRows = tbody.rows.length;
+            slNoCell.textContent = currentRows;  // Generate SlNo that is always less than 1
 
-            prescriptionCell.innerHTML = '<input type="text">';
-            noofdaysCell.innerHTML = '<input type="number" value="0" min="0" max="100">';
+            prescriptionCell.innerHTML = '<input type="text" class="form-control">';
+            noofdaysCell.innerHTML = '<input type="number" class="form-control" value="0" min="0" max="100">';
 
             var dosageValue = 5;
             var maxDosage = 1000;
-            dosageCell.innerHTML = '<input type="range" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + (tbody.children.length + 1) + ')">';
-            dosageCell.innerHTML += '<span id="dosageIndicator_' + (tbody.children.length + 1) + '">' + dosageValue + ' mg</span>';
+            dosageCell.innerHTML = '<input type="range" class="form-control" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + currentRows + ')"><span id="dosageIndicator_' + currentRows + '">' + dosageValue + ' mg</span>';
 
-            var deleteButton = document.createElement('button');
-            deleteButton.type = 'button';
-            deleteButton.className = 'btn btn-danger btn-sm';
-            deleteButton.innerHTML = '<span class="glyphicon glyphicon-trash"></span> Delete';
-            deleteButton.addEventListener('click', function () {
-                tbody.removeChild(row);
-                updateSlNo();
-            });
-            actionCell.appendChild(deleteButton);
+            actionCell.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)"><span class="glyphicon glyphicon-trash"></span> Delete</button>';
+
+            validateNewRowInputs(row); // Validate new row inputs
+        }
+
+        function deleteRow(button) {
+            var row = button.closest('tr');
+            row.remove();
+            updateSlNo();
         }
 
         function updateSlNo() {
             var rows = document.querySelectorAll('#example1 tbody tr');
-            for (var i = 0; i < rows.length -1; i++) {
-                rows[i].cells[0].textContent  = i +1;
-            }
+            rows.forEach(function (row, index) {
+                row.cells[0].textContent = index + 1;
+            });
         }
 
-        function updateDosageIndicator(value, rowNumber) {
-            var indicator = document.getElementById('dosageIndicator_' + rowNumber);
-            var dosageValue = parseInt(value, 10);
-            var newDosage = dosageValue + 1;
-            indicator.textContent = newDosage + ' mg';
+        function updateDosageIndicator(value, slNo) {
+            document.getElementById('dosageIndicator_' + slNo).textContent = value + ' mg';
         }
 
         function validateForm() {
-            var aptCode = document.getElementById("DDLPresccategory").value;
-            if (aptCode === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please select an Appointment Code!'
-                });
-                return false;
-            }
-
             var rows = document.querySelectorAll('#example1 tbody tr');
-            if (rows.length === 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please add at least one medication!'
-                });
-                return false;
-            }
+            var allValid = true;
 
             for (var i = 0; i < rows.length; i++) {
                 var row = rows[i];
@@ -246,86 +239,66 @@
                 }
             }
 
-            saveData();
-            return true;
+            return allValid;
         }
 
-        function saveData() {
-            var dataToSave = [];
-            $('#example1 tbody tr').each(function () {
-                var row = $(this);
-                var slno = row.find('td:eq(0)').text();
-                var prescription = row.find('input[type="text"]').val();
-                var dosage = row.find('input[type="range"]').val();
-                var noofdays = row.find('input[type="number"]').val();
+        function validateNewRowInputs(row) {
+            var prescriptionInput = row.cells[1].querySelector('input[type="text"]');
+            var dosageInput = row.cells[2].querySelector('input[type="range"]');
+            var noOfDaysInput = row.cells[3].querySelector('input[type="number"]');
 
-                dataToSave.push({
-                    slno: slno,
-                    prescription: prescription,
-                    dosage: dosage,
-                    noofdays: noofdays,
-                    aptcode: aptcode
-                });
-            });
-
-            $.ajax({
-                url: '@Url.Action("SaveItemPrescription", "Prescriptions")',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(dataToSave),
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Data saved successfully!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload();
-                        }
-                    });
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error saving data. Please try again.'
-                    });
-                }
-            });
-        }
-
-        function validatePatient() {
-            var weight = parseInt(document.getElementById("pweight").value);
-            var bloodgroup = $("#PatBloodgroup").val();
-
-            if (!bloodgroup || bloodgroup === "Please select") {
-                valid = false;
-                $("#PatBloodgroup").addClass("is-invalid");
-            } else {
-                $("#PatBloodgroup").removeClass("is-invalid");
-            }
-
-            if (!isNaN(weight) && weight > 180) {
+            if (!prescriptionInput.value) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Warning',
-                    text: 'Weight should not be more than 180 kg!'
+                    text: 'Prescription cannot be empty'
                 });
-                document.getElementById("pweight").value = '';
-                return false;
+            }
+            if (!dosageInput.value || dosageInput.value <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Dosage must be greater than 0'
+                });
+            }
+            if (!noOfDaysInput.value || noOfDaysInput.value <= 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'No of Days must be greater than 0'
+                });
             }
         }
 
-        document.getElementById("pweight").addEventListener("input", validatePatient);
+        $(document).on('click', '#savePrescription', function () {
+            var prescriptions = [];
+            $('#example1 tbody tr').each(function () {
+                var row = $(this);
+                var prescription = {
+                    SlNo: row.find('td').eq(0).text(),
+                    Prescription: row.find('input[type="text"]').val(),
+                    Dosage: row.find('input[type="range"]').val(),
+                    NoOfDays: row.find('input[type="number"]').val(),
+                    AptCode: aptcode,
+                    PrsCode: prscode
+                };
+                prescriptions.push(prescription);
+            });
 
-  
-        function resetForm() {
-            location.reload();
-        }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SaveItemPrescription", "Prescriptions")',
+                data: JSON.stringify(prescriptions),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (response) {
+                    Swal.fire('Success', 'Prescription saved successfully!', 'success');
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire('Error', 'An error occurred while saving the prescription.', 'error');
+                }
+            });
+        });
     </script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
-

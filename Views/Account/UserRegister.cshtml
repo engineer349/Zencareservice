@@ -1,8 +1,7 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
 @{
-    ViewData["Titlte"] = "UserRegister";
+    ViewData["Title"] = "USER CREATION";
+    Layout = "_AdminLayout";
 }
 @model Zencareservice.Models.Signup;
 <html>
@@ -29,5 +28,78 @@
             </div>
         </div><!-- /.container-fluid -->
     </section>
+    <div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">@ViewData["Title"]</h3>
+    </div> 
+        <form method="POST" class="register-form" id="register-form" asp-action="UserRegister" asp-controller="Account">
+            <div class="card-body">
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                      <div class="form-group row">
+                            <div class="form-group col-md-3">
+                                <label asp-for="Firstname">FirstName </label>
+                                <input type="text" asp-for="Firstname" id="firstname" placeholder="Your FirstName" class="form-control" minlength="4" maxlength="16" required />
+                                <span asp-validation-for="Firstname" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label asp-for="Lastname">LastName</label> 
+                                <input type="text" asp-for="Lastname" id="lastname" placeholder="Your LastName" class="form-control" minlength="4" maxlength="16" required />
+                                <span asp-validation-for="Lastname" class="text-danger"></span>
+                           </div>
+                            <div class="form-group col-md-3">
+                                    <label asp-for="Email">Email</label>
+                                    <input type="email" asp-for="Email" class="form-control" id="email" pattern="^[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address" placeholder="Your Email" required />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            <div class="form-group col-md-3">
+                                <label asp-for="Username">Username</label>
+                                <input type="text" asp-for="Username" id="username" class="form-control" placeholder="Username" pattern="^(?=.*\d)[a-zA-Z\d]{1,6}$" title="Username must be alphanumeric and between 6 and 10 characters." required />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                        </div>  
+                      <div class="form-group row">
+                                <div class="form-group col-md-3">
+                                            <label asp-for="Password">Password</label>
+                                            <input type="password" asp-for="Password" class="form-control" id="pass" placeholder="Password" pattern="^(?=.*[A-Za-z0-9])(?=.*[@@$!%*#?&]).{8,16}$" title="Password must be at least 8 characters long, alphanumeric, and contain at least one special character." required />
+                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                 </div>
+                                <div class="form-group col-md-3">
+                                            <label asp-for="Confirmpassword">ConfirmPassword</label>
+                                            <input type="password" asp-for="Confirmpassword" class="form-control" id="pass" placeholder="Repeat your password" pattern="^(?=.*[A-Za-z0-9])(?=.*[@@$!%*#?&]).{8,16}$" title="Password must be at least 8 characters long, alphanumeric, and contain at least one special character." required />
+                                            <span asp-validation-for="Confirmpassword" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-3">
+                                <label asp-for="Confirmpassword">Phonenumber</label>    
+                                <input type="tel" asp-for="Phonenumber" id="phonenumber" class="form-control" placeholder="Phone Number" pattern="[0-9]{10}" title="Enter a valid 10-digit phone number" required />
+                                <span asp-validation-for="Phonenumber" class="text-danger"></span>
+                            </div>
+                                <div class="form-group col-md-3">
+                                    <label asp-for="Confirmpassword">Role</label>
+                                     <select id="roleDropdown" name="RoleId" asp-items="ViewBag.Roles" class="form-control" required>
+                                                        <option value="">-- Select Role --</option>
+                                                    </select>
+                                </div>                        
+                           </div>
+                      <div class="form-group row">
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="Dob"><i class="zmdi zmdi-date"></i></label>
+                                        <input type="date" asp-for="Dob" id="dob" class="form-control" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;" placeholder="Date of Birth" required />
+                                        <span asp-validation-for="Dob" class="text-danger"></span>
+                                    </div>
+                        </div>
+                      <div>
+                            <span>@ViewBag.Message</span>
+                        </div>        
+                                     
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-default ">Cancel</button>
+                <button type="submit" class="btn btn-primary float-right">Save Register</button>
+            </div>
+        </form>
+        
+    </div>
+        
 </body>
 </html>

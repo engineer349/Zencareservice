@@ -1,4 +1,4 @@
-﻿@using System.Data;
+﻿﻿@using System.Data;
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "CreatePrescription";
@@ -118,7 +118,7 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn btn-default" onclick="resetForm()">Cancel</button>
+                    <button type="button" class="btn btn-default float-left" onclick="resetForm()">Cancel</button>
                     <button type="submit" class="btn btn-success float-right" >Create Prescription</button>
                 </div>
             </div>
@@ -127,7 +127,7 @@
 
     <script>
         var aptcode;
-
+       
         function createTable() {
             var tbody = document.querySelector('#example1 tbody');
             var row = tbody.insertRow();
@@ -230,7 +230,7 @@
             saveData();
             return true;
         }
-
+   
         function saveData() {
             var dataToSave = [];
             $('#example1 tbody tr').each(function () {
@@ -303,20 +303,53 @@
             aptcode = $(this).val();
             $.get("/Prescriptions/GetPrescription", { type: aptcode }, function (resposedata) {
                 var data = JSON.parse(resposedata);
+                showToast(aptcode);
                 $('#pfname').val(data[0].PFname).prop('readonly', true);
                 $('#plname').val(data[0].PLname).prop('readonly', true);
                 $('#dfname').val(data[0].DFname).prop('readonly', true);
                 $('#patage').val(data[0].Patage).prop('readonly', true);
                 $('#patcontact').val(data[0].Patphone).prop('readonly', true);
-                $('#patemail').val(data[0].PatientEmail).prop('readonly', true);
+                $('#patemail').val(data[0].PatientEmail).prop('readonly', true);               
             });
         });
-
+        function showToast(aptcode) {
+            toastr.success("Selected aptcode: " + aptcode, "", {
+                timeOut: 5000, // 5 seconds
+                extendedTimeOut: 0 // Disable extended timeout
+            });
+        }
         function resetForm() {
             location.reload();
         }
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var swalMessage = '@TempData["SwalMessage"]';
+            var swalType = '@TempData["SwalType"]';
 
+            if (swalMessage !== '') {
+                showSweetAlert(swalType, swalMessage);
+            }
+
+            var message = '@ViewBag.Message';
+            switch (message) {
+                case 'Invalid':
+                    showSweetAlert('warning', 'Pls wait for New Appointments.', 'No new Confirmed appointments!');
+                    break;
+               
+            }
+        });
+
+        function showSweetAlert(icon, title, text) {
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: text,
+                showConfirmButton: false,
+                timer: 1500 // Adjust the timer as needed
+            });
+        }
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>

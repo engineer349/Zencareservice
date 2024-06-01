@@ -22,18 +22,18 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Report</li>
+                        <li class="breadcrumb-item"><a asp-action="Dashboard" asp-controller="Report">Home</a></li>
+                        <li class="breadcrumb-item active"><b style="color:black">Report</b></li>
                     </ol>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col-sm-3">
-                    @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id="DDLPresccategory" })
+                    @Html.DropDownListFor(model => model.AppointmentCode, ViewBag.AptCode as List<SelectListItem>, "Please select", new { @class = "form-control", Id = "DDLPresccategory" })
                     <span asp-validation-for="AppointmentCode" class="text-danger"></span>
                 </div>
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="showPopup()">View Report</button>
+                    <button type="button" class="btn btn-info float-right" style="margin-right: 5px;" onclick="showPopup()">View Report</button>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
     <div id="popup" style="display:none">
         <section class="content-body">
             <div class="container-fluid">
-                <div class="card card-success">
+                <div class="card card-info">
                     <div class="card-header">
                         <h1 class="card-title">@ViewData["Title"]</h1>
                     </div>
@@ -65,25 +65,25 @@
                                         </div>
                                         <div class="row invoice-info">
                                             <div class="col-sm-4 invoice-col">
-                                              Prescriped by
-                                                        <address>
-                                                            <strong id="dfname"></strong><br>
-                                                            <span id="dphone"></span><br>
-                                                            <span id="demail"></span>
-                                                        </address>
+                                                Prescribed by
+                                                <address>
+                                                    <strong id="dfname"></strong><br>
+                                                    <span id="dphone"></span><br>
+                                                    <span id="demail"></span>
+                                                </address>
                                             </div>
                                             <div class="col-sm-4 invoice-col">
                                                 To
-                                                    <address>
-                                                        <strong><span id="pfname"/></strong><br>                                                      
-                                                        <span  id="patcontact" ></span><br>
-                                                       <sapn id="patemail"></sapn>
-                                                    </address>
+                                                <address>
+                                                    <strong><span id="pfname" /></strong><br>
+                                                    <span id="patcontact"></span><br>
+                                                    <span id="patemail"></span>
+                                                </address>
                                             </div>
                                             <div class="col-sm-4 invoice-col">
-                                                <i>Register No: <span id="rcode"/></i><br />
+                                                <i>Register No: <span id="rcode" /></i><br />
                                                 <i>PrescriptionCode :<b> <span id="prscode" /> </b></i><br>
-                                                <i>Appointment Code:</i> <span  id="aptcode" /><br>                                                                                             
+                                                <i>Appointment Code:</i> <span id="aptcode" /><br>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -98,7 +98,6 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -116,10 +115,9 @@
                 <a href="#" rel="noopener" target="_blank" class="btn btn-default" onclick="printContent()">
                     <i class="fas fa-print"></i> Print
                 </a>
-                <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="generatePDF()">
+                <button type="button" class="btn btn-info float-right" style="margin-right: 5px;" onclick="generatePDF()">
                     <i class="fas fa-download"></i> Generate PDF
                 </button>
-
             </div>
         </div>
     </div>
@@ -128,6 +126,7 @@
     <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/dist/js/adminlte.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
 
     <script type="text/javascript">
@@ -143,7 +142,7 @@
                         Swal.fire({
                             icon: 'warning',
                             title: 'No Prescription data found',
-                            text: 'No Prescription  data available for the selected aptcode.',
+                            text: 'No Prescription data available for the selected aptcode.',
                         });
 
                         // Clear the selected aptcode value
@@ -158,7 +157,7 @@
                     $('#prscode').text(data[0].PrsCode.toUpperCase());
                     $('#rcode').text(data[0].RCode.toUpperCase());
                     $('#pcontact').text(data[0].PContact);
-                    $('#aptcode').text(data[0].AptCode);  
+                    $('#aptcode').text(data[0].AptCode);
                     $('#dfname').text(data[0].DFirstname.toUpperCase());
                     $('#dphone').text(data[0].DContact);
                     $('#demail').text(data[0].DEmail);
@@ -197,29 +196,41 @@
                 tableBody.append(row);
             });
         }
+
         function showToast(aptcode) {
             toastr.success("Selected aptcode: " + aptcode, "", {
                 timeOut: 5000, // 5 seconds
                 extendedTimeOut: 0 // Disable extended timeout
             });
         }
-    </script>
-    
 
-    <script>
-        function generatePDF() {
-            const pdf = new jsPDF(); 
-            pdf.html(document.body, {
+        async function generatePDF() {
+            Swal.fire({
+                title: 'Generating Report',
+                text: 'Report of APTCode is being generated. Please wait...',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const pdf = new jsPDF();
+
+            // Extract the specific div content
+            const invoice = document.querySelector('.invoice.p-3.mb-3');
+
+            // Add the content to the PDF
+            pdf.html(invoice, {
                 callback: function (pdf) {
+                    Swal.close();
                     pdf.save('report.pdf'); // Save the PDF as "report.pdf"
                 }
             });
         }
-    </script>
 
-    
-    <script>
-     function showPopup() {
+        function showPopup() {
             var popup = document.getElementById("popup");
             if (popup) {
                 popup.style.display = "block";
@@ -228,4 +239,3 @@
     </script>
 </body>
 </html>
-

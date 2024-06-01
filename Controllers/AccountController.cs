@@ -89,6 +89,7 @@ namespace Zencareservice.Controllers
         {
             string returnUrl = "/Account/UserRegsiter";
             ViewData["ReturnUrl"] = returnUrl;
+            ViewBag.Roles = new SelectList("RoleId", "Role");
             return View();
         }
 
@@ -1280,8 +1281,6 @@ namespace Zencareservice.Controllers
 
     }
       
-
-
         [HttpPost]
         public IActionResult AdminRegister(Signup Obj)
         {
@@ -1916,8 +1915,7 @@ namespace Zencareservice.Controllers
 
 		[ValidateAntiForgeryToken]
 		public IActionResult Logout()
-		{
-          
+		{         
             HttpContext.Session.Clear();
             // Clear authentication cookies
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
