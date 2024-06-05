@@ -38,8 +38,8 @@
         public int Dosage { get; set; }
         public int NoOfDays { get; set; }
 
-        public string prscode { get; set; }
-        public string aptcode { get; set; }
+        public string PrsCode { get; set; }
+        public string AptCode { get; set; }
     
         public DateTime Prscdate { get; set; }
     }

@@ -13,6 +13,7 @@ using System.Reflection.Emit;
 
 using System.Text;
 using System.Security.Cryptography;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace Zencareservice.Repository
 {
@@ -658,38 +659,53 @@ namespace Zencareservice.Repository
             }
         }
 
-        public DataSet SaveUpdatePrescription(int slno, string prescription, int dosage, int noofdays, string aptcode,string decodedId)
+      
+
+        public DataSet SaveUpdateItemPrescription(List<Prescs> medications)
         {
             try
             {
                 DataSet ds = new DataSet();
-                string StrSPName = "SaveUpdatePrescription_SP";
+                string processSPName = "ProcessPrscData";
+                string deleteSPName = "DeleteProcessPrscData";
 
-                SqlParameter[] param = new SqlParameter[5];
+                foreach (var medication in medications)
+                {
+                    
+                    SqlParameter[] param = new SqlParameter[6];
+                    param[0] = new SqlParameter("@Prscitem", SqlDbType.VarChar);
+                    param[0].Value = medication.Prescription;
+                    param[1] = new SqlParameter("@Prscdosage", SqlDbType.Int);
+                    param[1].Value = medication.Dosage;
+                    param[2] = new SqlParameter("@Prscdays", SqlDbType.Int);
+                    param[2].Value = medication.NoOfDays;
+                    param[3] = new SqlParameter("@Slno", SqlDbType.Int);
+                    param[3].Value = medication.SlNo;
+                    param[4] = new SqlParameter("@AptCode", SqlDbType.VarChar);
+                    param[4].Value = medication.AptCode;
+                    param[5] = new SqlParameter("@Prscode", SqlDbType.VarChar);
+                    param[5].Value = medication.PrsCode;
 
-                param[0] = new SqlParameter("@Prscitem", SqlDbType.VarChar);
-                param[0].Value = prescription;
-                param[1] = new SqlParameter("@Prscdosage", SqlDbType.Int);
-                param[1].Value = Convert.ToInt32(dosage);
-                param[2] = new SqlParameter("@Prscdays", SqlDbType.Int);
-                param[2].Value = Convert.ToInt32(noofdays);
-                param[3] = new SqlParameter("@Slno", SqlDbType.Int);
-                param[3].Value = slno;
-                param[4] = new SqlParameter("@AptCode", SqlDbType.VarChar);
-                param[4].Value = aptcode;
-                param[5] = new SqlParameter("@Prscode", SqlDbType.VarChar);
-                param[4].Value = decodedId;
+                    
+                    DataSet tempDs = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(processSPName, param);
+                   
+                    ds.Merge(tempDs);
+                }
 
-                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+                
+                SqlParameter[] deleteParam = new SqlParameter[0];
+             
+                DataSet deleteDs = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(deleteSPName, deleteParam);
+                ds.Merge(deleteDs);
 
                 return ds;
             }
             catch (SqlException ex)
             {
                 throw ex;
-
             }
         }
+
 
         public DataSet SaveHeadPrescription(Prescs Obj)
         {
@@ -725,6 +741,49 @@ namespace Zencareservice.Repository
                 return ds;
             }
             catch(SqlException ex)
+            {
+                throw ex;
+
+            }
+        }
+
+        public DataSet UpdateHeadPrescription(Prescs Obj)
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "UpdateHeadPrescription_SP";
+
+                SqlParameter[] param = new SqlParameter[10];
+
+
+                param[0] = new SqlParameter("@AptCode", SqlDbType.VarChar);
+                param[0].Value = Obj.AptCode;
+                param[1] = new SqlParameter("@PatFirstName", SqlDbType.VarChar);
+                param[1].Value = Obj.PatientFirstName;
+                param[2] = new SqlParameter("@PatLastName", SqlDbType.VarChar);
+                param[2].Value = Obj.PatientLastName;
+                param[3] = new SqlParameter("@PatPhoneno", SqlDbType.VarChar);
+                param[3].Value = Obj.Patientphoneno;
+                param[4] = new SqlParameter("@PatEmail", SqlDbType.VarChar);
+                param[4].Value = Obj.PatientEmail;
+                param[5] = new SqlParameter("@PatAge", SqlDbType.VarChar);
+                param[5].Value = Obj.PatientAge;
+                param[6] = new SqlParameter("@PatBloodgroup", SqlDbType.NVarChar);
+                param[6].Value = Obj.PatBloodgroup;
+                param[7] = new SqlParameter("@PatWeight", SqlDbType.VarChar);
+                param[7].Value = Obj.PatWeight;
+                param[8] = new SqlParameter("@Dfname", SqlDbType.VarChar);
+                param[8].Value = Obj.DoctorFirstName;
+                param[9] = new SqlParameter("@Prscode", SqlDbType.VarChar);
+                param[9].Value = Obj.PrsCode;
+
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+            }
+            catch (SqlException ex)
             {
                 throw ex;
 

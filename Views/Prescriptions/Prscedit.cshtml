@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-    <form class="prescription" method="POST" asp-action="Prescedit" asp-controller="Prescriptions" onsubmit="return validateForm()">
+    <form class="prescription" id="prescriptionForm" method="POST"  asp-action="UpdateHeadPrescription" asp-controller="Prescriptions">
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
@@ -56,14 +56,12 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
-                            <label asp-for="AppointmentCode">Prescription Category</label>
-                            <input asp-for="AppointmentCode" type="text" class="form-control" id="aptcode" readonly />
-                            <span asp-validation-for="AppointmentCode" class="text-danger"></span>
+                            <label asp-for="AptCode">Prescription Category</label>
+                            <input asp-for="AptCode" type="text" class="form-control" id="aptcode" readonly />                         
                         </div>
                         <div class="form-group col-md-3">
-                            <label asp-for="prscode">Prescription Code</label>
-                            <input asp-for="prscode" type="text" class="form-control" id="prscode" readonly />
-                            <span asp-validation-for="prscode" class="text-danger"></span>
+                            <label asp-for="PrsCode">Prescription Code</label>
+                            <input asp-for="PrsCode" type="text" class="form-control" id="prscode" readonly />
                         </div>
                     </div>
                     <div class="form-row">
@@ -150,155 +148,148 @@
                 </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-default" onclick="resetForm()">Cancel</button>
-                    <button type="submit" class="btn btn-success float-right">Update Prescription</button>
+                    <button type="submit" class="btn btn-success float-right" id="savePrescription">Update Prescription</button>
                 </div>
             </div>
         </div>
     </form>
 
     <script>
-        var aptcode = document.getElementById('aptcode').value;
-        var prscode = document.getElementById('prscode').value;
+        document.addEventListener('DOMContentLoaded', function () {
+            window.createTable = function () {
+                var tbody = document.querySelector('#example1 tbody');
+                var row = tbody.insertRow();
+                var slNoCell = row.insertCell(0);
+                var prescriptionCell = row.insertCell(1);
+                var dosageCell = row.insertCell(2);
+                var noofdaysCell = row.insertCell(3);
+                var actionCell = row.insertCell(4);
 
-        function createTable() {
-            var tbody = document.querySelector('#example1 tbody');
-            var row = tbody.insertRow();
-            var slNoCell = row.insertCell(0);
-            var prescriptionCell = row.insertCell(1);
-            var dosageCell = row.insertCell(2);
-            var noofdaysCell = row.insertCell(3);
-            var actionCell = row.insertCell(4);
+                var currentRows = tbody.rows.length;
+                slNoCell.textContent = currentRows;
 
-            var currentRows = tbody.rows.length;
-            slNoCell.textContent = currentRows;  // Generate SlNo that is always less than 1
+                prescriptionCell.innerHTML = '<input type="text" class="form-control">';
+                noofdaysCell.innerHTML = '<input type="number" class="form-control" value="0" min="0" max="100">';
 
-            prescriptionCell.innerHTML = '<input type="text" class="form-control">';
-            noofdaysCell.innerHTML = '<input type="number" class="form-control" value="0" min="0" max="100">';
+                var dosageValue = 5;
+                var maxDosage = 1000;
+                dosageCell.innerHTML = '<input type="range" class="form-control" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + currentRows + ')"><span id="dosageIndicator_' + currentRows + '">' + dosageValue + ' mg</span>';
 
-            var dosageValue = 5;
-            var maxDosage = 1000;
-            dosageCell.innerHTML = '<input type="range" class="form-control" min="0" max="' + maxDosage + '" value="' + dosageValue + '" oninput="updateDosageIndicator(this.value, ' + currentRows + ')"><span id="dosageIndicator_' + currentRows + '">' + dosageValue + ' mg</span>';
+                actionCell.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)"><span class="glyphicon glyphicon-trash"></span> Delete</button>';
+            };
 
-            actionCell.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)"><span class="glyphicon glyphicon-trash"></span> Delete</button>';
+            window.updateDosageIndicator = function (value, slNo) {
+                document.getElementById('dosageIndicator_' + slNo).textContent = value + ' mg';
+            };
 
-            validateNewRowInputs(row); // Validate new row inputs
-        }
+            window.deleteRow = function (button) {
+                var row = button.closest('tr');
+                row.parentNode.removeChild(row);
+                updateSlNo();
+            };
 
-        function deleteRow(button) {
-            var row = button.closest('tr');
-            row.remove();
-            updateSlNo();
-        }
+            function updateSlNo() {
+                var rows = document.querySelectorAll('#example1 tbody tr');
+                rows.forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+                });
+            }
 
-        function updateSlNo() {
-            var rows = document.querySelectorAll('#example1 tbody tr');
-            rows.forEach(function (row, index) {
-                row.cells[0].textContent = index + 1;
-            });
-        }
-
-        function updateDosageIndicator(value, slNo) {
-            document.getElementById('dosageIndicator_' + slNo).textContent = value + ' mg';
-        }
-
-        function validateForm() {
-            var rows = document.querySelectorAll('#example1 tbody tr');
-            var allValid = true;
-
-            for (var i = 0; i < rows.length; i++) {
-                var row = rows[i];
-                var prescription = row.querySelector('input[type="text"]').value;
-                var dosage = row.querySelector('input[type="range"]').value;
-                var noofdays = row.querySelector('input[type="number"]').value;
-
-                if (prescription.trim() === '') {
+            window.validateForm = function () {
+                var rows = document.querySelectorAll('#example1 tbody tr');
+                if (rows.length === 0) {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: 'Please enter a Prescription Item for all rows!'
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please add at least one medication!'
                     });
                     return false;
                 }
 
-                if (dosage == 5) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: 'Dosage value has not been changed'
-                    });
-                    return false;
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var prescription = row.querySelector('input[type="text"]').value;
+                    var dosage = row.querySelector('input[type="range"]').value;
+                    var noofdays = row.querySelector('input[type="number"]').value;
+
+                    if (prescription.trim() === '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: 'Please enter a Prescription Item for all rows!'
+                        });
+                        return false;
+                    }
+
+                    if (dosage == 5) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: 'Dosage value has not been changed'
+                        });
+                        return false;
+                    }
+
+                    if (noofdays.trim() === '' || isNaN(parseInt(noofdays)) || parseInt(noofdays) < 0 || parseInt(noofdays) == 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: 'Please enter a valid number of days greater than 0 for all rows!'
+                        });
+                        return false;
+                    }
                 }
 
-                if (noofdays.trim() === '' || isNaN(parseInt(noofdays))) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: 'Please enter a valid number of days for all rows!'
-                    });
-                    return false;
+                return true;
+            };
+
+            $(document).on('submit', '#prescriptionForm', function (event) {
+                event.preventDefault();
+                if (!validateForm()) {
+                    return;
                 }
-            }
 
-            return allValid;
-        }
+                var aptcode = document.getElementById('aptcode').value;
+                var prscode = document.getElementById('prscode').value;
 
-        function validateNewRowInputs(row) {
-            var prescriptionInput = row.cells[1].querySelector('input[type="text"]');
-            var dosageInput = row.cells[2].querySelector('input[type="range"]');
-            var noOfDaysInput = row.cells[3].querySelector('input[type="number"]');
-
-            if (!prescriptionInput.value) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Prescription cannot be empty'
+                var prescriptions = [];
+                $('#example1 tbody tr').each(function () {
+                    var row = $(this);
+                    var prescription = {
+                        SlNo: row.find('td').eq(0).text(),
+                        Prescription: row.find('input[type="text"]').val(),
+                        Dosage: row.find('input[type="range"]').val(),
+                        NoOfDays: row.find('input[type="number"]').val(),
+                        AptCode: aptcode,
+                        PrsCode: prscode
+                    };
+                    prescriptions.push(prescription);
                 });
-            }
-            if (!dosageInput.value || dosageInput.value <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Dosage must be greater than 0'
-                });
-            }
-            if (!noOfDaysInput.value || noOfDaysInput.value <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'No of Days must be greater than 0'
-                });
-            }
-        }
 
-        $(document).on('click', '#savePrescription', function () {
-            var prescriptions = [];
-            $('#example1 tbody tr').each(function () {
-                var row = $(this);
-                var prescription = {
-                    SlNo: row.find('td').eq(0).text(),
-                    Prescription: row.find('input[type="text"]').val(),
-                    Dosage: row.find('input[type="range"]').val(),
-                    NoOfDays: row.find('input[type="number"]').val(),
-                    AptCode: aptcode,
-                    PrsCode: prscode
-                };
-                prescriptions.push(prescription);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Prescedit", "Prescriptions")',
+                    data: JSON.stringify(prescriptions),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (response) {
+                        window.location.href = '@Url.Action("Presclist", "Prescriptions")',
+                        Swal.fire('Success', 'Prescription saved successfully!', 'success');
+                      
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire('Error', 'An error occurred while saving the prescription.', 'error');
+                    }
+                });
             });
 
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Action("SaveItemPrescription", "Prescriptions")',
-                data: JSON.stringify(prescriptions),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                success: function (response) {
-                    Swal.fire('Success', 'Prescription saved successfully!', 'success');
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire('Error', 'An error occurred while saving the prescription.', 'error');
-                }
-            });
+            window.resetForm = function () {
+                window.location.href = '@Url.Action("Presclist", "Prescriptions")';
+            };
         });
     </script>
+
+
 </body>
 </html>
+

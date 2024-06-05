@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -75,8 +76,8 @@ namespace Zencareservice.Controllers
                 psc.PatBloodgroup = headerRow["PBloodgroup"].ToString();
                 psc.PatWeight = headerRow["Pweight"].ToString();
                 psc.DoctorFirstName = headerRow["dfname"].ToString();
-                psc.AppointmentCode = headerRow["Aptcode"].ToString();
-                psc.prscode = headerRow["PrsCode"].ToString();
+                psc.AptCode = headerRow["Aptcode"].ToString();
+                psc.PrsCode = headerRow["PrsCode"].ToString();
                 // Populate medication items
                 psc.showlist1 = new List<Prescs>();
                 foreach (DataRow row in ds.Tables[2].Rows)
@@ -98,16 +99,48 @@ namespace Zencareservice.Controllers
                 return View();
             }
         }
+ 
+        //[HttpPost]
+        //public IActionResult Prescedit([FromBody] Prescs[] medications)
+        //{
+        //    string UsrId = Request.Cookies["UsrId"];
+        //    TempData["UserId"] = UsrId;
+
+        //    if (string.IsNullOrEmpty(UsrId))
+        //    {
+        //        return RedirectToAction("PatientLogin", "Account");
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            foreach (var medication in medications)
+        //            {
+        //                int slno = medication.SlNo;
+        //                string prescription = medication.Prescription;
+        //                int dosage = medication.Dosage;
+        //                int noofdays = medication.NoOfDays;
+        //                string aptcode = medication.AptCode;
+        //                string prscode = medication.PrsCode;
+
+        //                // Save medication
+        //                DataAccess Obj_DataAccess = new DataAccess();
+        //                DataSet ds = Obj_DataAccess.SaveUpdatePrescription(slno, prescription, dosage, noofdays, aptcode, prscode);
+        //            }
+
+        //            return Json(new { success = true });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return Json(new { success = false, message = ex.Message });
+        //        }
+        //    }
+        //}
+
         [HttpPost]
-        public IActionResult Prescedit(Prescs[] medications, string id)
+        public IActionResult Prescedit( [FromBody] Prescs[] medications)
         {
-
             string UsrId = Request.Cookies["UsrId"];
-      
-             string decodedId = HttpUtility.UrlDecode(id);
-
-            //string decodedId = Request.Query["id"].ToString();
-
             TempData["UserId"] = UsrId;
 
             if (string.IsNullOrEmpty(UsrId))
@@ -116,35 +149,31 @@ namespace Zencareservice.Controllers
             }
             else
             {
+                if (medications == null || medications.Length == 0)
+                {
+                    return Json(new { success = false, message = "No medications provided" });
+                }
+
                 try
                 {
+                    DataAccess Obj_DataAccess = new DataAccess(); 
 
-                    foreach (var medication in medications)
-                    {
+                    List<Prescs> medicationsList = medications.ToList();
 
-                        int slno = medication.SlNo;
-                        TempData["slno"] = slno;
-                        string prescription = medication.Prescription;
-                        int dosage = medication.Dosage;
-                        int noofdays = medication.NoOfDays;
-                        string aptcode = medication.aptcode;
 
-                        DataAccess Obj_DataAccess = new DataAccess();
-                        DataSet ds = Obj_DataAccess.SaveUpdatePrescription(slno, prescription, dosage, noofdays, aptcode, decodedId);
-                    }
+                    DataSet ds = Obj_DataAccess.SaveUpdateItemPrescription(medicationsList);
+                    
+                    return Json(new { success = true });
 
-                    return RedirectToAction("Dashboard", "Report");
+                    
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    return RedirectToAction(ex.Message);
+                    // Log the exception here
+                    return Json(new { success = false, message = ex.Message });
                 }
             }
-
-
-
         }
-
 
         public bool Prescdropdown()
         {
@@ -236,7 +265,7 @@ namespace Zencareservice.Controllers
                 string prescription = medication.Prescription;
                 int dosage = medication.Dosage;
                 int noofdays = medication.NoOfDays;
-                string aptcode = medication.aptcode;
+                string aptcode = medication.AptCode;
  
                 DataAccess Obj_DataAccess = new DataAccess();
                 DataSet ds = Obj_DataAccess.SaveItemPrescription(slno, prescription, dosage, noofdays, aptcode);
@@ -281,6 +310,43 @@ namespace Zencareservice.Controllers
 
             return RedirectToAction("Dashboard", "Report");
         }
+
+
+        [HttpPost]
+        public IActionResult UpdateHeadPrescription(Prescs Obj)
+        {
+            //if (TempData["aptcode"] != null && TempData["aptcode"].ToString() == Obj.AppointmentCode)
+            //{
+
+            //    return RedirectToAction("Index", "Home"); 
+            //}
+
+            // Store the appointment code in TempData to check for duplicates in subsequent requests
+            TempData["aptcode"] = Obj.AptCode;
+
+            string aptcode = Obj.AptCode;
+
+            TempData["aptcode"] = aptcode;
+
+            string pfname = Obj.PatientFirstName;
+            string plname = Obj.PatientLastName;
+            string patphoneno = Obj.Patientphoneno;
+            string patemail = Obj.PatientEmail;
+            string patage = Obj.PatientAge;
+            string patbloodgroup = Obj.PatBloodgroup;
+            string patweight = Obj.PatWeight;
+            string dfname = Obj.DoctorFirstName;
+            string Appointmentcode = Obj.AptCode;
+            string PrsCode = Obj.PrsCode;
+
+
+            DataSet ds = new DataSet();
+            DataAccess Obj_DataAccess = new DataAccess();
+            ds = Obj_DataAccess.UpdateHeadPrescription(Obj);
+
+
+            return RedirectToAction("Dashboard", "Report");
+        }
         public IActionResult Prescedit()
         {
 
@@ -317,7 +383,7 @@ namespace Zencareservice.Controllers
 
                             presc.AppointmentCode = row["AptCode"].ToString();
 
-                            presc.prscode = row["PrsCode"].ToString();
+                            presc.PrsCode = row["PrsCode"].ToString();
 
                             presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
 
@@ -363,7 +429,7 @@ namespace Zencareservice.Controllers
 
 						presc.AppointmentCode = row["Aptcode"].ToString();
 
-						presc.prscode = row["PrsCode"].ToString();
+						presc.PrsCode = row["PrsCode"].ToString();
 
 						presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
 
