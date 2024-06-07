@@ -55,7 +55,7 @@
 							<th>ConsultationNo</th>
 							<th>PrescriptionOrderNo</th>
 							<th>LastVisit</th>
-
+							<th>Status</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -69,6 +69,9 @@
 									<td>@prescription.AppointmentCode</td>
 									<td>@prescription.PrsCode</td>										
 									<td>@prescription.Prscdate</td>
+									<td>
+										<a href="#" class="badge badge-info">@prescription.Status</a>
+									</td>
 								</tr>
 							}
 						}

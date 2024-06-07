@@ -54,7 +54,7 @@
 					<th>ConsultationNo</th>
 					<th>PrescriptionOrderNo</th>				
 					<th>LastVisit</th>
-						
+					<th>Status</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -67,10 +67,10 @@
 									<td>@prescription.Patientphoneno</td>
 									<td>@prescription.AppointmentCode</td>							
 									<td>
-										<a asp-action="Prscedit" asp-controller="Prescriptions" asp-route-id="@Uri.EscapeDataString(prescription.PrsCode)">@prescription.PrsCode</a>
+										<a asp-action="Prscedit" asp-controller="Prescriptions" asp-route-id="@Uri.EscapeDataString(prescription.PrsCode)" class="bold-primary">@prescription.PrsCode</a>
 									</td>
 									<td>@prescription.Prscdate</td>
-								
+									<td><a href="#" class="badge badge-success">@prescription.Status</a></td>
 
 								</tr>
 							}

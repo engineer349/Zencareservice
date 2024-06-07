@@ -65,8 +65,7 @@ namespace Zencareservice.Controllers
             DataSet ds = Obj_DataAccess.GetEditPrescriptions(UsrId, decodedId);
 
             if (ds != null && ds.Tables.Count > 0)
-            {
-                // Populate prescription details
+            {           
                 DataRow headerRow = ds.Tables[1].Rows[0];
                 psc.PatientFirstName = headerRow["Pfname"].ToString();
                 psc.PatientLastName = headerRow["Plname"].ToString();
@@ -78,6 +77,7 @@ namespace Zencareservice.Controllers
                 psc.DoctorFirstName = headerRow["dfname"].ToString();
                 psc.AptCode = headerRow["Aptcode"].ToString();
                 psc.PrsCode = headerRow["PrsCode"].ToString();
+                psc.Status = headerRow["Status"].ToString();
                 // Populate medication items
                 psc.showlist1 = new List<Prescs>();
                 foreach (DataRow row in ds.Tables[2].Rows)
@@ -387,6 +387,8 @@ namespace Zencareservice.Controllers
 
                             presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
 
+                            presc.Status = row["Status"].ToString();
+
                         };
 
                         PrescsList.Add(presc);
@@ -432,6 +434,8 @@ namespace Zencareservice.Controllers
 						presc.PrsCode = row["PrsCode"].ToString();
 
 						presc.Prscdate = Convert.ToDateTime(row["Prscreatedate"]);
+
+                        presc.Status = row["Status"].ToString();
 
 					};
 
