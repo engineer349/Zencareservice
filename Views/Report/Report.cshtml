@@ -6,6 +6,7 @@
 
 @model Zencareservice.Models.Prescs
 
+<!DOCTYPE html>
 <html>
 <head>
     <title>Create Prescription</title>
@@ -216,12 +217,12 @@
                 }
             });
 
-            const pdf = new jsPDF();
+            const { jsPDF } = window.jspdf;
 
             // Extract the specific div content
-            const invoice = document.querySelector('.invoice.p-3.mb-3');
+            const invoice = document.getElementById('popup');
 
-            // Add the content to the PDF
+            const pdf = new jsPDF('p', 'pt', 'a4');
             pdf.html(invoice, {
                 callback: function (pdf) {
                     Swal.close();
