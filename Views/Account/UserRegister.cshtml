@@ -6,10 +6,17 @@
 @model Zencareservice.Models.Signup;
 <html>
 <head>
-    <title>Create Appointment</title>
+    <title>@ViewData["Title"]</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Gopi">
+    <style>
+        .back-button {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,7 +24,9 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>User Creation</h1>
+                    <svg class="back-button" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="goBack()">
+                        <path d="M0 12L9 3V9H24V15H9V21L0 12Z" fill="currentColor" />
+                    </svg>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -75,15 +84,17 @@
                                 <span asp-validation-for="Phonenumber" class="text-danger"></span>
                             </div>
                                 <div class="form-group col-md-3">
-                                    <label asp-for="Confirmpassword">Role</label>
-                                     <select id="roleDropdown" name="RoleId" asp-items="ViewBag.Roles" class="form-control" required>
-                                                        <option value="">-- Select Role --</option>
-                                                    </select>
+                                    <label asp-for="RoleName">Role</label>
+                                    @{
+                                        var mma = ViewBag.YourDataList;
+                                    }
+
+                        @Html.DropDownListFor(model => model.RoleName, ViewBag.RoleName as List<SelectListItem>, "Please select Role", new { @class = "form-control", Id = "RoleId" })
                                 </div>                        
                            </div>
                       <div class="form-group row">
-                                    <div class="form-group col-md-6">
-                                        <label asp-for="Dob"><i class="zmdi zmdi-date"></i></label>
+                                    <div class="form-group col-md-3">
+                                        <label asp-for="Dob">Dob</label>
                                         <input type="date" asp-for="Dob" id="dob" class="form-control" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;" placeholder="Date of Birth" required />
                                         <span asp-validation-for="Dob" class="text-danger"></span>
                                     </div>
@@ -100,6 +111,10 @@
         </form>
         
     </div>
-        
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 </html>

@@ -1128,7 +1128,6 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public IActionResult UserRegister(Signup Obj, string returnUrl, DateTime userDob)
         {
-            
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {

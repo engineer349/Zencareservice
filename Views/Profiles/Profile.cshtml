@@ -13,7 +13,17 @@
 <html>
 
     <head>
-
+    <title>@ViewData["Title"]</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Gopi">
+    <style>
+        .back-button {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+    </style>
     </head>
    <body>
 
@@ -23,7 +33,9 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Users</h1>
+                    <svg class="back-button" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="goBack()">
+                        <path d="M0 12L9 3V9H24V15H9V21L0 12Z" fill="currentColor" />
+                    </svg>
                 </div>
                 @if(Model.Role=="Admin")
                 {
@@ -454,7 +466,11 @@
         }
 
     </script>
-
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 
 
  }   

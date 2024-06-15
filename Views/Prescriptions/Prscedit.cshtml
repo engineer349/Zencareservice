@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Prescription</title>
+    <title>@ViewData["Title"]</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Gopi">
@@ -24,6 +24,11 @@
             font-size: 14px;
         }
     </style>
+    <style>
+        .back-button {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <form class="prescription" id="prescriptionForm" method="POST"  asp-action="UpdateHeadPrescription" asp-controller="Prescriptions">
@@ -31,7 +36,9 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Prescription</h1>
+                        <svg class="back-button" width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="goBack()">
+                            <path d="M0 12L9 3V9H24V15H9V21L0 12Z" fill="currentColor" />
+                        </svg>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -309,6 +316,11 @@
             // Call the displayAlert function when the document is ready
             displayAlert();
         });
+    </script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
     </script>
 
 </body>
