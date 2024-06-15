@@ -39,6 +39,7 @@ builder.Services.AddSignalR();
 /*DataAccess page addd */
 
 
+
 builder.Services.AddScoped<DataAccess>();
 builder.Services.AddScoped<SqlDataAccess>();
 builder.Services.Configure<CookiePolicyOptions>(options =>

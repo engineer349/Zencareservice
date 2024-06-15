@@ -45,9 +45,13 @@
 
                                         <a asp-action="Aptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
-                                    else
+                                    else if(User.IsInRole("Doctor"))
                                     {
                                         <a asp-action="PAptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Aptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
                                 </div>
                             </div>
@@ -68,9 +72,13 @@
 
                                         <a asp-action="DPresclist" asp-controller="Prescriptions" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
-                                    else
+                                    else if(User.IsInRole("Doctor"))
                                     {
                                         <a asp-action="Presclist" asp-controller="Prescriptions" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
                                 </div>
                             </div>
@@ -117,9 +125,13 @@
 
                                         <a asp-action="Aptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
-                                    else
+                                    else if(User.IsInRole("Doctor"))
                                     {
                                         <a asp-action="PAptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a  href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     }
                                 </div>
                             </div>                         

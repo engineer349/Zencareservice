@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.CodeDom;
 using System.Data;
+using System.Data.Entity;
 using System.Data.SqlClient;
+using Zencareservice.Models;
 
 namespace Zencareservice.Data
 {
@@ -9,7 +11,7 @@ namespace Zencareservice.Data
     {
         string connectionString = @"Data Source=GOPI\SQLEXPRESS;Initial Catalog = zencareservice; User Id = sa; Password=Devops@22;";
 
-		public string DbConnectionString { get; set; }
+        public string DbConnectionString { get; set; }
 
 		public IConfiguration _configuration;
 
@@ -18,16 +20,17 @@ namespace Zencareservice.Data
         SqlDataAdapter da = new SqlDataAdapter();
 
         
+        
 
 
         public SqlDataAccess()
         {
+               
 
-            
-            DbConnectionString = _configuration.GetConnectionString("DefaultConnection");
+        DbConnectionString = _configuration.GetConnectionString("DefaultConnection");
+      
 
-
-		}
+    }
         public DataSet GetDataWithStoredprocedure(string StrSpName)
         {
             DataTable dt = new DataTable();
@@ -53,6 +56,7 @@ namespace Zencareservice.Data
             }
             return ds;
         }
+        public DbSet<Signup> Roles { get; set; }
         public DataSet GetDataWithParamStoredprocedure(string StrSpName, SqlParameter[] Param)
         {
             DataTable dt = new DataTable();

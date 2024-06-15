@@ -33,14 +33,15 @@ using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
+using System.Data.Entity;
 
 namespace Zencareservice.Controllers
 {
 
     public class AccountController : Controller
     {
-
-        //private readonly TwilioService _twilioService;
+        
+        
         private readonly IDataProtector _dataProtector;
 
         //private readonly UserManager<Signup> _userManager;
@@ -89,7 +90,8 @@ namespace Zencareservice.Controllers
         {
             string returnUrl = "/Account/UserRegsiter";
             ViewData["ReturnUrl"] = returnUrl;
-            ViewBag.Roles = new SelectList("RoleId", "Role");
+            var roles = _sqldataaccess.Roles.ToList();
+            ViewBag.Roles = new SelectList(roles, "RoleId", "RoleName");
             return View();
         }
 
@@ -463,12 +465,7 @@ namespace Zencareservice.Controllers
 		                            return RedirectToAction("VerifyOtp", "Account");
 		}
 
-        private List<Signup> roles = new List<Signup>
-        {
-           
-            new Signup { RoleId = "Doctor", RoleName = "Doctor" },
-            new Signup {RoleId = "Staff", RoleName = "Staff"},
-        };
+ 
 
         [HttpPost]
         public IActionResult ResetPassword(Signup Obj)
@@ -1132,8 +1129,8 @@ namespace Zencareservice.Controllers
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
 
+                var roles = _sqldataaccess.Roles.ToList();
                 ViewBag.Roles = new SelectList(roles, "RoleId", "RoleName");
-
                 // Perform additional validation
                 if (IsDateOfBirthValid(Obj.Dob))
                 {
