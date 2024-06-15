@@ -39,7 +39,16 @@
                                     <div class="icon">
                                         <i class="ion ion-stats-bars"></i>
                                     </div>
-                                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                
+                                    @if (User.IsInRole("Patient"))
+                                    {
+
+                                        <a asp-action="Aptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="PAptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
                                 </div>
                             </div>
                             <!-- ./col -->
@@ -53,7 +62,16 @@
                                     <div class="icon">
                                         <i class="ion ion-bag"></i>
                                     </div>
-                                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                             
+                                    @if (User.IsInRole("Patient"))
+                                    {
+
+                                        <a asp-action="DPresclist" asp-controller="Prescriptions" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Presclist" asp-controller="Prescriptions" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
                                 </div>
                             </div>
                             <!-- ./col -->
@@ -70,7 +88,16 @@
                                     <div class="icon">
                                         <i class="ion ion-person-add"></i>
                                     </div>
-                                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                  
+                                    @if (User.IsInRole("Admin"))
+                                    {
+
+                                        <a asp-action="Userlist" asp-controller="Profiles" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
                                 </div>
                             </div>        
                             <!-- ./col -->
@@ -79,13 +106,21 @@
                                 <div class="small-box bg-warning">
                                     <div class="inner">
                                         <h3>@ViewBag.AppointmentStatus</h3>
-
                                         <p>Pending Appointments</p>
                                     </div>
                                     <div class="icon">
                                         <i class="ion ion-pie-graph"></i>
                                     </div>
-                                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                   
+                                    @if (User.IsInRole("Patient"))
+                                    {
+
+                                        <a asp-action="Aptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="PAptlist" asp-controller="Appointments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    }
                                 </div>
                             </div>                         
                          </div>

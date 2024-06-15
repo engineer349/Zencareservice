@@ -22,7 +22,7 @@
 				</div>
 				<div class="col-sm-6">
 					<ol class="breadcrumb float-sm-right">
-						<li class="breadcrumb-item"><a asp-action="Dashboard" asp-controller="Report">Home</a></li>
+						<li class="breadcrumb-item"><a asp-action="Report" asp-controller="Report">Report</a></li>
 						<li class="breadcrumb-item active"><b style="color:black">Prescription</b></li>
 					</ol>
 				</div>
@@ -128,4 +128,26 @@
         });
           
     </script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			// Check if there is a message in TempData
+			var swalMessage = '@TempData["SwalMessage"]';
+			var swalType = '@TempData["SwalType"]';
+
+			// Function to display the Swal alert
+			function displayAlert() {
+				if (swalMessage !== '') {
+					Swal.fire({
+						icon: swalType,
+						title: swalMessage,
+						showConfirmButton: false,
+						timer: 5000 // Display for 5 seconds
+					});
+				}
+			}
+
+			// Call the displayAlert function when the document is ready
+			displayAlert();
+		});
+	</script>
 	}

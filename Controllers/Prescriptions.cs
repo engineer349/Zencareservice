@@ -162,7 +162,10 @@ namespace Zencareservice.Controllers
 
 
                     DataSet ds = Obj_DataAccess.SaveUpdateItemPrescription(medicationsList);
-                    
+
+                    TempData["SwalMessage"] = "Your Prescription is Updated.";
+                    TempData["SwalType"] = "success";
+
                     return Json(new { success = true });
 
                     
