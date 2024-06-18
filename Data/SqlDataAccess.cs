@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.Reflection.Emit;
 using Zencareservice.Models;
 
 namespace Zencareservice.Data
@@ -15,13 +16,9 @@ namespace Zencareservice.Data
 
 		public IConfiguration _configuration;
 
-		//SqlConnection sqlcon;
+	
         SqlCommand cmd = new SqlCommand();
         SqlDataAdapter da = new SqlDataAdapter();
-
-        
-        
-
 
         public SqlDataAccess()
         {
@@ -57,6 +54,8 @@ namespace Zencareservice.Data
             return ds;
         }
         public DbSet<Signup> Roles { get; set; }
+
+    
         public DataSet GetDataWithParamStoredprocedure(string StrSpName, SqlParameter[] Param)
         {
             DataTable dt = new DataTable();

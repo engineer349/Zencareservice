@@ -1135,7 +1135,24 @@ namespace Zencareservice.Repository
                 throw ex;
             }
         }
+        public DataSet RolesList()
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "GetRoles";
 
+                ds = Obj_SqlDataAccess.GetDataWithStoredprocedure(StrSPName);
+
+                return ds;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+
+        }
 
     }
+   
 }

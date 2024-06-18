@@ -34,6 +34,7 @@ using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
 using System.Data.Entity;
+using System.Runtime.Intrinsics.X86;
 
 namespace Zencareservice.Controllers
 {
@@ -88,9 +89,14 @@ namespace Zencareservice.Controllers
 
        public IActionResult UserRegister()
         {
-            string returnUrl = "/Account/UserRegsiter";
+            string returnUrl = "/Account/UserRegister";
             ViewData["ReturnUrl"] = returnUrl;
-            var roles = _sqldataaccess.Roles.ToList();
+            var roles = RolesDropdown();
+            if (roles == null || !roles.Any())
+            {
+                ViewBag.Message = "No roles found in the database.";
+            }
+
             ViewBag.Roles = new SelectList(roles, "RoleId", "RoleName");
             return View();
         }
@@ -972,16 +978,14 @@ namespace Zencareservice.Controllers
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-
-                // Perform additional validation
+              
+               
                 if (IsDateOfBirthValid(Obj.Dob))
                 {
 
                     int userAge = CalculateAge(Obj.Dob);
 
-
                     bool agreeToTerms = true;
-
 
                     if (agreeToTerms == true)
                     {
@@ -1122,16 +1126,35 @@ namespace Zencareservice.Controllers
 
         }
 
+        private List<Signup> RolesDropdown()
+        {
+            DataAccess Obj_DataAccess = new DataAccess();
+            DataSet ds = Obj_DataAccess.RolesList();
+
+            var roles = new List<Signup>();
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                roles.Add(new Signup
+                {
+                    RoleId = row["RoleId"].ToString(),
+                    RoleName = row["RoleName"].ToString()
+                });
+            }
+
+            return roles;
+        }
+
         [HttpPost]
         public IActionResult UserRegister(Signup Obj, string returnUrl, DateTime userDob)
         {
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-
-                var roles = _sqldataaccess.Roles.ToList();
+                RolesDropdown();
+                var roles = RolesDropdown();
                 ViewBag.Roles = new SelectList(roles, "RoleId", "RoleName");
-                // Perform additional validation
+
+
                 if (IsDateOfBirthValid(Obj.Dob))
                 {
                     int userAge = CalculateAge(Obj.Dob);
@@ -1167,8 +1190,8 @@ namespace Zencareservice.Controllers
 
                                     string SelectedRoleId = Obj.RoleId;
                                     Obj.Age = userAge;
-                                    
-                                    if(Obj.RoleId == "Doctor")
+
+                                    if (Obj.RoleId == "Doctor")
                                     {
                                         Obj.RCategory = "Employee";
                                         Obj.Username = "Employee";
@@ -1187,7 +1210,7 @@ namespace Zencareservice.Controllers
                                     string fname = Obj.Firstname;
                                     string lname = Obj.Lastname;
                                     string password = Obj.Password;
-                                    string confirmpassword = Obj.Confirmpassword;                                 
+                                    string confirmpassword = Obj.Confirmpassword;
                                     string phoneno = Obj.Phonenumber;
 
                                     DateTime Dob = Obj.Dob;
@@ -1232,20 +1255,20 @@ namespace Zencareservice.Controllers
                             else
                             {
                                 ViewBag.Message = "UserAlreadyExists";
-								TempData["SwalMessage"] = "UserAlready Exsits";
-								TempData["SwalType"] = "error";
+                                TempData["SwalMessage"] = "UserAlready Exsits";
+                                TempData["SwalType"] = "error";
 
-							}
-						}
+                            }
+                        }
                         else
                         {
-                            
-						
-							ViewBag.Message = "InvalidEmailaddress!";
+
+
+                            ViewBag.Message = "InvalidEmailaddress!";
                             TempData["Email"] = "InvalidUser";
                             TempData["SwalMessage"] = "InvalidEmailaddress";
-							TempData["SwalType"] = "warning";
-						
+                            TempData["SwalType"] = "warning";
+
 
                         }
 
@@ -1256,14 +1279,16 @@ namespace Zencareservice.Controllers
                     }
 
                 }
+
                 else
                 {
-                     ViewBag.Message = "Legal";
-                     TempData["SwalMessage"] = "Age Restriction";
+                    ViewBag.Message = "Legal";
+                    TempData["SwalMessage"] = "Age Restriction";
                     TempData["SwalType"] = "warning";
                     ModelState.AddModelError(nameof(Signup.Dob), "User must be at least 18 years old.");
                 }
             }
+
             else
             {
                 ViewBag.Message = "PleaseTryAgain";
