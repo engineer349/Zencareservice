@@ -41,8 +41,8 @@ namespace Zencareservice.Controllers
 
     public class AccountController : Controller
     {
-        
-        
+
+
         private readonly IDataProtector _dataProtector;
 
         //private readonly UserManager<Signup> _userManager;
@@ -57,7 +57,7 @@ namespace Zencareservice.Controllers
 
         private int _generatedOtp;
 
-        private int _regeneratedOtp; 
+        private int _regeneratedOtp;
 
         private string? ResetEmail;
 
@@ -87,7 +87,7 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-       public IActionResult UserRegister()
+        public IActionResult UserRegister()
         {
             string returnUrl = "/Account/UserRegister";
             ViewData["ReturnUrl"] = returnUrl;
@@ -131,7 +131,7 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-  
+
         public IActionResult PatForgot()
         {
             string returnUrl = "/Account/PatForgot";
@@ -186,13 +186,13 @@ namespace Zencareservice.Controllers
             return RegistrationSuccess();
         }
 
-        public IActionResult OTPLogin( )
+        public IActionResult OTPLogin()
         {
-			string returnUrl = "/Account/OTPLogin";
-			ViewData["ReturnUrl"] = returnUrl;
+            string returnUrl = "/Account/OTPLogin";
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
 
-		}
+        }
         public IActionResult VerifyOtp()
         {
             string gotp = Request.Cookies["OTP"];
@@ -205,44 +205,44 @@ namespace Zencareservice.Controllers
             }
 
             HttpContext.Session.SetString("AccessDenied", DateTime.Now.AddMinutes(1).ToString());
-         
+
             return RegistrationSuccess();
         }
-        
+
         public IActionResult UserAccount()
         {
             return View();
         }
-    
-        
+
+
         [HttpPost]
-        public IActionResult ValidateResetOtp( Login model)
+        public IActionResult ValidateResetOtp(Login model)
         {
             string username, password;
             string enteredOtp = model.ResendOTP;
             if (TempData.TryGetValue("GOTP", out var gotp))
             {
-                ViewBag.Message = gotp; 
+                ViewBag.Message = gotp;
                 string _genotp = ViewBag.Message.ToString();
                 TempData["ROTP"] = _genotp;
                 if (enteredOtp != null)
                 {
                     if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
                     {
-                                    ViewBag.Message = "VerificationOTP";
-                                    TempData["SwalMessage"] = "OTP Verified";
-                                    TempData["SwalType"] = "success";
+                        ViewBag.Message = "VerificationOTP";
+                        TempData["SwalMessage"] = "OTP Verified";
+                        TempData["SwalType"] = "success";
                         return Json(new { success = true, redirectUrl = Url.Action("PatReset", "Account") });
 
                     }
 
                     else
                     {
-                                    ViewBag.Message = "OTPFailed";
-                                    TempData["SwalMessage"] = "OTP Failed";
-                                    TempData["SwalType"] = "error";
-                        return Json(new { success = false , redirectUrl = Url.Action("OTPVerification", "Account") });
-                        
+                        ViewBag.Message = "OTPFailed";
+                        TempData["SwalMessage"] = "OTP Failed";
+                        TempData["SwalType"] = "error";
+                        return Json(new { success = false, redirectUrl = Url.Action("OTPVerification", "Account") });
+
                     }
 
 
@@ -257,9 +257,9 @@ namespace Zencareservice.Controllers
                 {
                     if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_regenotp))
                     {
-                                    ViewBag.Message = "VerificationOTP";
-                                    TempData["SwalMessage"] = "OTP Verified";
-                                    TempData["SwalType"] = "success";
+                        ViewBag.Message = "VerificationOTP";
+                        TempData["SwalMessage"] = "OTP Verified";
+                        TempData["SwalType"] = "success";
 
                         return RedirectToAction("PatReset", "Account");
 
@@ -273,7 +273,7 @@ namespace Zencareservice.Controllers
 
 
                 }
-               
+
                 return RedirectToAction("VerifyOtp", "Account");
             }
 
@@ -286,11 +286,11 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public IActionResult ValidateOtp(Signup model)
         {
-			string username;
+            string username;
 
-			string password;
+            string password;
 
-			StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.Append(model.numeric1);
             stringBuilder.Append(model.numeric2);
@@ -303,207 +303,207 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("GOTP", out var gotp))
             {
-                ViewBag.Message = gotp; 
+                ViewBag.Message = gotp;
 
                 string _genotp = ViewBag.Message.ToString();
 
                 TempData["OTP"] = _genotp;
 
-                    if(enteredOtp !="" )
+                if (enteredOtp != "")
+                {
+                    if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
                     {
-					   if (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
-					{
 
-						switch (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
-						{
-							case true:
+                        switch (Convert.ToInt64(enteredOtp) == Convert.ToInt64(_genotp))
+                        {
+                            case true:
                                 username = TempData["User"] as string;
-								password = TempData["Password"] as string;
-								model.Password = password;
-								break;
-							case false:
-								username = TempData["User"] as string;
-								password = TempData["Password"] as string;
+                                password = TempData["Password"] as string;
                                 model.Password = password;
                                 break;
-						}
-						if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-						{
+                            case false:
+                                username = TempData["User"] as string;
+                                password = TempData["Password"] as string;
+                                model.Password = password;
+                                break;
+                        }
+                        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                        {
 
-							model.Username = username;
-							model.Password = password;
-							DataAccess Obj_DataAccess = new DataAccess();
-							DataSet ds = new DataSet();
-							ds = Obj_DataAccess.SaveOTPLogin(username, password);
+                            model.Username = username;
+                            model.Password = password;
+                            DataAccess Obj_DataAccess = new DataAccess();
+                            DataSet ds = new DataSet();
+                            ds = Obj_DataAccess.SaveOTPLogin(username, password);
 
-							int Status;
+                            int Status;
 
-							if (ds.Tables[0].Rows.Count > 0)
-							{
+                            if (ds.Tables[0].Rows.Count > 0)
+                            {
 
-								Status = Convert.ToInt32(ds.Tables[0].Rows[0]["LStatus"]);
+                                Status = Convert.ToInt32(ds.Tables[0].Rows[0]["LStatus"]);
 
-								if (Status == 1)
-								{
+                                if (Status == 1)
+                                {
 
-									string UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
+                                    string UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
 
-									string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
+                                    string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
 
-									TempData["Username"] = UserName;
+                                    TempData["Username"] = UserName;
 
-									string Email = ds.Tables[0].Rows[0]["Email"].ToString();
+                                    string Email = ds.Tables[0].Rows[0]["Email"].ToString();
 
-									TempData["Email"] = Email;
+                                    TempData["Email"] = Email;
 
-									string Role = ds.Tables[0].Rows[0]["Role"].ToString();
+                                    string Role = ds.Tables[0].Rows[0]["Role"].ToString();
 
-									TempData["Role"] = Role;
+                                    TempData["Role"] = Role;
 
-									string Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
+                                    string Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
 
-									TempData["FirstName"] = Fname;
+                                    TempData["FirstName"] = Fname;
 
-									string RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
+                                    string RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
 
-									TempData["RCode"] = RCode;
+                                    TempData["RCode"] = RCode;
 
-									var userData = new Signup
-									{
-										UserId = UsrId,
-										Rcode = RCode,
-										Email = Email,
-										RoleName = Role,
-										Firstname = Fname
-									};
+                                    var userData = new Signup
+                                    {
+                                        UserId = UsrId,
+                                        Rcode = RCode,
+                                        Email = Email,
+                                        RoleName = Role,
+                                        Firstname = Fname
+                                    };
 
-									var userDataJson = JsonConvert.SerializeObject(userData);
+                                    var userDataJson = JsonConvert.SerializeObject(userData);
 
-									var protectedData = _dataProtector.Protect(userDataJson);
-
-
-									var cookieOptions = new CookieOptions
-									{
-										Expires = DateTime.Now.AddDays(1), 
-										HttpOnly = true,
-									};
-
-									Response.Cookies.Append("EncryptCookie", protectedData, new CookieOptions
-									{
-										HttpOnly = true,
-										Secure = true,
-										SameSite = SameSiteMode.None,
-										Expires = DateTimeOffset.Now.AddDays(1)
-
-									});
-									Response.Cookies.Append("MyCookie", "CookieValue", cookieOptions);
-
-									Response.Cookies.Append("UserId", UsrId);
-									CookieOptions options = new CookieOptions();
-									options.Expires = DateTime.Now.AddMinutes(5);
-
-									Response.Cookies.Append("UsrName", UserName, options);
-									CookieOptions options1 = new CookieOptions();
-									options1.Expires = DateTime.Now.AddMinutes(5);
-
-									Response.Cookies.Append("Role", Role, options);
-									CookieOptions options2 = new CookieOptions();
-									options2.Expires = DateTime.Now.AddMinutes(5);
-
-									Response.Cookies.Append("RCode", RCode, options);
-									CookieOptions options3 = new CookieOptions();
-									options3.Expires = DateTime.Now.AddMinutes(5);
-
-									Response.Cookies.Append("UsrId", UsrId, options);
-									// Get the cookie value
-									HttpContext.Session.SetString("UsrId", UsrId);
-
-									// Now, you can use 'storedUsrId' as needed
-
-									HttpContext.Session.SetString("FirstName", Fname);
-
-									string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
+                                    var protectedData = _dataProtector.Protect(userDataJson);
 
 
-									HttpContext.Session.SetString("MenuList", jsonString);
+                                    var cookieOptions = new CookieOptions
+                                    {
+                                        Expires = DateTime.Now.AddDays(1),
+                                        HttpOnly = true,
+                                    };
+
+                                    Response.Cookies.Append("EncryptCookie", protectedData, new CookieOptions
+                                    {
+                                        HttpOnly = true,
+                                        Secure = true,
+                                        SameSite = SameSiteMode.None,
+                                        Expires = DateTimeOffset.Now.AddDays(1)
+
+                                    });
+                                    Response.Cookies.Append("MyCookie", "CookieValue", cookieOptions);
+
+                                    Response.Cookies.Append("UserId", UsrId);
+                                    CookieOptions options = new CookieOptions();
+                                    options.Expires = DateTime.Now.AddMinutes(5);
+
+                                    Response.Cookies.Append("UsrName", UserName, options);
+                                    CookieOptions options1 = new CookieOptions();
+                                    options1.Expires = DateTime.Now.AddMinutes(5);
+
+                                    Response.Cookies.Append("Role", Role, options);
+                                    CookieOptions options2 = new CookieOptions();
+                                    options2.Expires = DateTime.Now.AddMinutes(5);
+
+                                    Response.Cookies.Append("RCode", RCode, options);
+                                    CookieOptions options3 = new CookieOptions();
+                                    options3.Expires = DateTime.Now.AddMinutes(5);
+
+                                    Response.Cookies.Append("UsrId", UsrId, options);
+                                    // Get the cookie value
+                                    HttpContext.Session.SetString("UsrId", UsrId);
+
+                                    // Now, you can use 'storedUsrId' as needed
+
+                                    HttpContext.Session.SetString("FirstName", Fname);
+
+                                    string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
+
+
+                                    HttpContext.Session.SetString("MenuList", jsonString);
 
                                     ViewBag.Message = "OTPLoginsuccessful";
                                     TempData["SwalMessage"] = "Login Succesfull";
                                     TempData["SwalType"] = "success";
- 
+
                                     return RedirectToAction("Dashboard", "Report");
-									
-								}
+
+                                }
 
                                 else
                                 {
                                     return RedirectToAction("Login", "Account");
                                 }
-								
-							}
-							else
-							{
-								    
-								    return RedirectToAction("VerifyOtp", "Account");
-							}
 
-						}
+                            }
+                            else
+                            {
+
+                                return RedirectToAction("VerifyOtp", "Account");
+                            }
+
+                        }
 
                         return RedirectToAction("Login", "Account");
 
                     }
-					    else
-					    {
-                                    ViewBag.Message = "PINMISMATCH";
-                                    TempData["SwalMessage"] = "Login Failed";
-                                    TempData["SwalType"] = "error";
-						            return RedirectToAction("VerifyOtp", "Account");
-					    }
+                    else
+                    {
+                        ViewBag.Message = "PINMISMATCH";
+                        TempData["SwalMessage"] = "Login Failed";
+                        TempData["SwalType"] = "error";
+                        return RedirectToAction("VerifyOtp", "Account");
+                    }
 
-				    }
-                    
-               
-               
-			    }
-                                    ViewBag.Message = "PINMISMATCH";
-                                    TempData["SwalMessage"] = "Login Failed";
-                                    TempData["SwalType"] = "error";            
-		                            return RedirectToAction("VerifyOtp", "Account");
-		}
+                }
 
- 
+
+
+            }
+            ViewBag.Message = "PINMISMATCH";
+            TempData["SwalMessage"] = "Login Failed";
+            TempData["SwalType"] = "error";
+            return RedirectToAction("VerifyOtp", "Account");
+        }
+
+
 
         [HttpPost]
         public IActionResult ResetPassword(Signup Obj)
         {
-			string ResetPassword = Obj.RPassword;
-			string ConfirmResetPassword = Obj.CRPassword;
+            string ResetPassword = Obj.RPassword;
+            string ConfirmResetPassword = Obj.CRPassword;
 
-			if (TempData.TryGetValue("MyEmail", out var resetEmailObj) && resetEmailObj != null)
-			{
-
-
-				string email = resetEmailObj.ToString();
+            if (TempData.TryGetValue("MyEmail", out var resetEmailObj) && resetEmailObj != null)
+            {
 
 
-				if (!string.IsNullOrEmpty(ResetPassword) && !string.IsNullOrEmpty(ConfirmResetPassword))
-				{
-					DataAccess Obj_DataAccess = new DataAccess();
-					DataSet ds = new DataSet();
-					ds = Obj_DataAccess.ResetPassword(Obj, email);
+                string email = resetEmailObj.ToString();
 
-				}
-				ViewBag.Message = "UpdatedPassword";
-				TempData["SwalMessage"] = "Successfully Updated";
-				TempData["SwalType"] = "success";
-				return RedirectToAction("Login", "Account");
-			}
-			else
-			{
 
-				return View();
-			}
-		}
+                if (!string.IsNullOrEmpty(ResetPassword) && !string.IsNullOrEmpty(ConfirmResetPassword))
+                {
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet ds = new DataSet();
+                    ds = Obj_DataAccess.ResetPassword(Obj, email);
+
+                }
+                ViewBag.Message = "UpdatedPassword";
+                TempData["SwalMessage"] = "Successfully Updated";
+                TempData["SwalType"] = "success";
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+
+                return View();
+            }
+        }
         [HttpPost]
         public IActionResult PatReset(Signup Obj)
         {
@@ -521,76 +521,76 @@ namespace Zencareservice.Controllers
                     DataSet ds = new DataSet();
                     ds = Obj_DataAccess.ResetPassword(Obj, email);
 
-					ViewBag.Message = "UpdatedPassword";
-					TempData["SwalMessage"] = "Successfully Updated";
-					TempData["SwalType"] = "success";
-					return RedirectToAction("PatientLogin", "Account");
-				}
+                    ViewBag.Message = "UpdatedPassword";
+                    TempData["SwalMessage"] = "Successfully Updated";
+                    TempData["SwalType"] = "success";
+                    return RedirectToAction("PatientLogin", "Account");
+                }
                 else
                 {
                     return View();
                 }
-          
+
             }
             else
             {
 
                 return View();
             }
-           
+
         }
         [HttpPost]
         public IActionResult ForgotPassword(Signup Obj)
         {
-			string ResetEmail = Obj.Email;
-			if (ResetEmail != null)
-			{
-				var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+            string ResetEmail = Obj.Email;
+            if (ResetEmail != null)
+            {
+                var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
 
-				if (gMail == true)
-				{
-					DataAccess Obj_DataAccess = new DataAccess();
-					DataSet ds = new DataSet();
-					ds = Obj_DataAccess.CheckEmail(Obj);
-					if (ds.Tables[0].Rows.Count > 0)
-					{
-						string validemail = Obj.Email;
-						TempData["MyEmail"] = validemail;
-						if (!String.IsNullOrEmpty(validemail))
-						{
-							string generatedCode = Codegenerator();
-							_generatedOtp = Convert.ToInt32(generatedCode);
-							// Store OTP in TempData for verification
-							TempData["OTP"] = generatedCode;
-							SendingResetEmail(Obj);
-							TempData.Keep("OTP");
+                if (gMail == true)
+                {
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet ds = new DataSet();
+                    ds = Obj_DataAccess.CheckEmail(Obj);
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        string validemail = Obj.Email;
+                        TempData["MyEmail"] = validemail;
+                        if (!String.IsNullOrEmpty(validemail))
+                        {
+                            string generatedCode = Codegenerator();
+                            _generatedOtp = Convert.ToInt32(generatedCode);
+                            // Store OTP in TempData for verification
+                            TempData["OTP"] = generatedCode;
+                            SendingResetEmail(Obj);
+                            TempData.Keep("OTP");
 
-							ViewBag.Message = "VerificationOTP";
-							TempData["SwalMessage"] = "OTP sent";
-							TempData["SwalType"] = "success";
-						}
-						return RedirectToAction("OTPVerification", "Account");
-					}
-					else
-					{
-						ViewBag.Message = "InvalidEmail";
-						return RedirectToAction("Register", "Account");
-					}
-				}
-				else
-				{
-					ViewBag.Message = "Please enter your registered email to continue!";
-					return RedirectToAction("ForgotPassword", "Account");
-				}
-			}
-			else
-			{
-				ViewBag.Message = "Please enter your registered email to continue!";
-				return RedirectToAction("ForgotPassword", "Account");
-			}
+                            ViewBag.Message = "VerificationOTP";
+                            TempData["SwalMessage"] = "OTP sent";
+                            TempData["SwalType"] = "success";
+                        }
+                        return RedirectToAction("OTPVerification", "Account");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "InvalidEmail";
+                        return RedirectToAction("Register", "Account");
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "Please enter your registered email to continue!";
+                    return RedirectToAction("ForgotPassword", "Account");
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Please enter your registered email to continue!";
+                return RedirectToAction("ForgotPassword", "Account");
+            }
 
 
-		}
+        }
 
         [HttpPost]
         public IActionResult PatForgot(Signup Obj)
@@ -627,9 +627,9 @@ namespace Zencareservice.Controllers
                     else
                     {
                         ViewBag.Message = "InvalidEmail";
-						TempData["SwalMessage"] = "Invalid";
-						TempData["SwalType"] = "error";
-						return RedirectToAction("PatientRegister", "Account");
+                        TempData["SwalMessage"] = "Invalid";
+                        TempData["SwalType"] = "error";
+                        return RedirectToAction("PatientRegister", "Account");
                     }
                 }
                 else
@@ -668,13 +668,13 @@ namespace Zencareservice.Controllers
                 //ViewBag.Message = "Your Account may be validated!";
                 //return RedirectToAction("PatientLogin", "Account");
             }
-			ViewBag.Message = "Your Account may be validated!";
-			return Json(new { redirectToLogin = true });
+            ViewBag.Message = "Your Account may be validated!";
+            return Json(new { redirectToLogin = true });
 
 
-		}
+        }
 
-		private bool IsDateOfBirthValid(DateTime dob)
+        private bool IsDateOfBirthValid(DateTime dob)
         {
 
             return dob.AddYears(18) <= DateTime.Now && dob > DateTime.Now.AddYears(-100); // Assuming a reasonable upper limit for age
@@ -769,51 +769,47 @@ namespace Zencareservice.Controllers
         {
             try
             {
-                using (TcpClient tClient = new TcpClient(smtpServer,25))
-                using (NetworkStream netStream = tClient.GetStream())
-                using (StreamReader reader = new StreamReader(netStream))
+                using (var client = new TcpClient())
                 {
-                    string CRLF = "\r\n";
-                    byte[] dataBuffer;
-                    string responseString;
-
-                    /* Perform HELO to SMTP Server and get Response */
-                    dataBuffer = BytesFromString("HELO Hi" + CRLF);
-                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                    responseString = reader.ReadLine();
-                    // Check response for success
-
-                    dataBuffer = BytesFromString($"MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
-                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                    responseString = reader.ReadLine();
-                    // Check response for success
-
-                    /* Read Response of the RCPT TO Message to know from google if it exists or not */
-                    dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
-                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                    responseString = reader.ReadLine();
-                    var responseCode = GetResponseCode(responseString);
-
-                    if (responseCode == 550)
+                    client.Connect(smtpServer, 587); // Using port 587 for secure SMTP
+                    using (var netStream = client.GetStream())
+                    using (var reader = new StreamReader(netStream))
                     {
-                        return false;
-                    }
+                        netStream.ReadTimeout = 10000; // Set timeout to 10 seconds
+                        netStream.WriteTimeout = 10000; // Set timeout to 10 seconds
 
-                    /* QUIT CONNECTION */
-                    dataBuffer = BytesFromString("QUIT" + CRLF);  // Correct typo "QUITE"
-                    netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        string CRLF = "\r\n";
+                        byte[] dataBuffer;
+                        string responseString;
+
+                        dataBuffer = BytesFromString("EHLO Hi" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
+
+                        dataBuffer = BytesFromString("MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
+
+                        dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
+                        int responseCode = GetResponseCode(responseString);
+
+                        dataBuffer = BytesFromString("QUIT" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+
+                        return responseCode != 550;
+                    }
                 }
-                return true;
             }
             catch (Exception ex)
             {
-                // Log exception details for debugging
                 Console.WriteLine("Error checking email: " + ex.Message);
                 return false;
             }
         }
 
-       
+
         [HttpPost]
         public IActionResult PatientRegister(Signup Obj, string returnUrl)
         {
@@ -862,173 +858,20 @@ namespace Zencareservice.Controllers
                                     Obj.RCategory = "Patient";
 
                                     Obj.Age = userAge;
-                                        
+
                                     int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                    
+
                                     string fname = Obj.Firstname;
                                     string lname = Obj.Lastname;
 
                                     string password = Obj.Password;
-                               
+
                                     TempData["Password"] = password;
 
                                     string confirmpassword = Obj.Confirmpassword;
 
                                     string username = Obj.Username;
-									TempData["User"] = username;
-									string phoneno = Obj.Phonenumber;
-
-
-                                    DateTime Dob = Obj.Dob;
-                                    Obj.Status = 1;
-
-                                    if (!String.IsNullOrEmpty(validemail))
-                                    {
-
-                                        string generatedCode = Codegenerator();
-
-                                        _generatedOtp = Convert.ToInt32(generatedCode);
-                                        CookieOptions options = new CookieOptions();
-                                        options.Expires = DateTime.Now.AddMinutes(5);
-                                        Response.Cookies.Append("OTP", generatedCode, options);
-
-                                    }
-
-                                    SendingEmail(Obj);
-
-                                    //ValidateOtp(Obj);
-
-                                    DataAccess Obj_DataAccess2 = new DataAccess();
-                                    DataSet ds = new DataSet();
-                                    ds = Obj_DataAccess2.SaveRegister(Obj);
-                                    
-                                    ViewBag.Message = "success";                                  
-                                    TempData["SwalMessage"] = "User AccountCreated!";
-                                    TempData["SwalType"] = "success";
-
-                                    return RedirectToAction("VerifyOtp", "Account");
-
-
-
-
-                                }
-
-
-                                catch (Exception ex)
-                                {
-                                    string msg = ex.Message.ToString();
-                                    ViewBag.Message = msg;
-                                }
-                            }
-                            else
-                            {
-                                ViewBag.Message = "UserAlreadyExists";
-                                TempData["SwalMessage"] = "UserAlreadyExists";
-                                TempData["SwalType"] = "warning";
-                            }
-                        }
-                        else
-                        {
-                           
-
-                            ViewBag.Message = "InvalidEmailaddress";
-
-                            TempData["Email"] = "InvalidUser";
-                            TempData["SwalMessage"] = "InvalidEmailaddress";
-                            TempData["SwalType"] = "warning";
-
-                            return View();
-
-                           
-
-                        }
-                    }
-
-                    else
-                    {
-                        ModelState.AddModelError(nameof(Signup.agreeterm), "Pls  agree to terms of service and condition.");
-                    }
-
-                }
-                else
-                {
-                     ViewBag.Message = "Legal";
-                     TempData["SwalMessage"] = "Age Restriction";
-                    TempData["SwalType"] = "warning";
-                    ModelState.AddModelError(nameof(Signup.Dob), "User must be at least 18 years old.");
-                }
-            }
-
-            else
-            {
-                ViewBag.Message = "PleaseTryAgain";
-                TempData["SwalMessage"] = "Pls tryagain";
-                TempData["SwalType"] = "warning";
-                return RedirectToAction("Index", "Home");
-            }
-
-             return View();
-
-
-        }
-
-        [HttpPost]
-        public IActionResult Register(Signup Obj, string returnUrl)
-        {
-
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-              
-               
-                if (IsDateOfBirthValid(Obj.Dob))
-                {
-
-                    int userAge = CalculateAge(Obj.Dob);
-
-                    bool agreeToTerms = true;
-
-                    if (agreeToTerms == true)
-                    {
-
-                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
-
-
-
-                        if (gMail == true)
-                        {
-                            DataAccess Obj_DataAccess = new DataAccess();
-                            DataSet dse = new DataSet();
-                            dse = Obj_DataAccess.CheckEmail(Obj);
-
-                            if (dse.Tables[0].Rows.Count == 0 && dse.Tables[1].Rows.Count == 0)
-                            {
-
-                                try
-                                {
-                                    string validemail = Obj.Email;
-                                    TempData["MyEmail"] = validemail;
-
-
-
-                                    //Console.WriteLine($"Gmail account is valid - {gMail.ToString()}");
-
-                                    // var live = IsEmailAccountValid("live-com.olc.protection.outlook.com", "aa.aa@live.com");
-                                    //Console.WriteLine($"Live account is valid - {live.ToString()}");
-
-
-                                    Obj.RoleId = "Doctor";
-                                    Obj.RCategory = "Employee";
-                                    Obj.Username = "";
-
-                                    Obj.Age = userAge;
-                                    int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                    string fname = Obj.Firstname;
-                                    string lname = Obj.Lastname;
-                                    string password = Obj.Password;
-                                    TempData["Password"] = password;
-                                    string confirmpassword = Obj.Confirmpassword;
-                                    
-                                    
+                                    TempData["User"] = username;
                                     string phoneno = Obj.Phonenumber;
 
 
@@ -1120,7 +963,160 @@ namespace Zencareservice.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            
+            return View();
+
+
+        }
+
+        [HttpPost]
+        public IActionResult Register(Signup Obj, string returnUrl)
+        {
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+
+
+                if (IsDateOfBirthValid(Obj.Dob))
+                {
+
+                    int userAge = CalculateAge(Obj.Dob);
+
+                    bool agreeToTerms = true;
+
+                    if (agreeToTerms == true)
+                    {
+
+                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+
+
+
+                        if (gMail == true)
+                        {
+                            DataAccess Obj_DataAccess = new DataAccess();
+                            DataSet dse = new DataSet();
+                            dse = Obj_DataAccess.CheckEmail(Obj);
+
+                            if (dse.Tables[0].Rows.Count == 0 && dse.Tables[1].Rows.Count == 0)
+                            {
+
+                                try
+                                {
+                                    string validemail = Obj.Email;
+                                    TempData["MyEmail"] = validemail;
+
+
+
+                                    //Console.WriteLine($"Gmail account is valid - {gMail.ToString()}");
+
+                                    // var live = IsEmailAccountValid("live-com.olc.protection.outlook.com", "aa.aa@live.com");
+                                    //Console.WriteLine($"Live account is valid - {live.ToString()}");
+
+
+                                    Obj.RoleId = "Doctor";
+                                    Obj.RCategory = "Employee";
+                                    Obj.Username = "";
+
+                                    Obj.Age = userAge;
+                                    int agreeterms = Convert.ToInt32(Obj.agreeterm);
+                                    string fname = Obj.Firstname;
+                                    string lname = Obj.Lastname;
+                                    string password = Obj.Password;
+                                    TempData["Password"] = password;
+                                    string confirmpassword = Obj.Confirmpassword;
+
+
+                                    string phoneno = Obj.Phonenumber;
+
+
+                                    DateTime Dob = Obj.Dob;
+                                    Obj.Status = 1;
+
+                                    if (!String.IsNullOrEmpty(validemail))
+                                    {
+
+                                        string generatedCode = Codegenerator();
+
+                                        _generatedOtp = Convert.ToInt32(generatedCode);
+                                        CookieOptions options = new CookieOptions();
+                                        options.Expires = DateTime.Now.AddMinutes(5);
+                                        Response.Cookies.Append("OTP", generatedCode, options);
+
+                                    }
+
+                                    SendingEmail(Obj);
+
+                                    //ValidateOtp(Obj);
+
+                                    DataAccess Obj_DataAccess2 = new DataAccess();
+                                    DataSet ds = new DataSet();
+                                    ds = Obj_DataAccess2.SaveRegister(Obj);
+
+                                    ViewBag.Message = "success";
+                                    TempData["SwalMessage"] = "User AccountCreated!";
+                                    TempData["SwalType"] = "success";
+
+                                    return RedirectToAction("VerifyOtp", "Account");
+
+
+
+
+                                }
+
+
+                                catch (Exception ex)
+                                {
+                                    string msg = ex.Message.ToString();
+                                    ViewBag.Message = msg;
+                                }
+                            }
+                            else
+                            {
+                                ViewBag.Message = "UserAlreadyExists";
+                                TempData["SwalMessage"] = "UserAlreadyExists";
+                                TempData["SwalType"] = "warning";
+                            }
+                        }
+                        else
+                        {
+
+
+                            ViewBag.Message = "InvalidEmailaddress";
+
+                            TempData["Email"] = "InvalidUser";
+                            TempData["SwalMessage"] = "InvalidEmailaddress";
+                            TempData["SwalType"] = "warning";
+
+                            return View();
+
+
+
+                        }
+                    }
+
+                    else
+                    {
+                        ModelState.AddModelError(nameof(Signup.agreeterm), "Pls  agree to terms of service and condition.");
+                    }
+
+                }
+                else
+                {
+                    ViewBag.Message = "Legal";
+                    TempData["SwalMessage"] = "Age Restriction";
+                    TempData["SwalType"] = "warning";
+                    ModelState.AddModelError(nameof(Signup.Dob), "User must be at least 18 years old.");
+                }
+            }
+
+            else
+            {
+                ViewBag.Message = "PleaseTryAgain";
+                TempData["SwalMessage"] = "Pls tryagain";
+                TempData["SwalType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+
+
             return View();
 
 
@@ -1297,138 +1293,138 @@ namespace Zencareservice.Controllers
                 return RedirectToAction("Index", "Home");
 
             }
-     
+
             return View();
 
-    }
-      
+        }
+
         [HttpPost]
         public IActionResult AdminRegister(Signup Obj)
         {
 
-          
-                // Perform additional validation
-                if (IsDateOfBirthValid(Obj.Dob))
+
+            // Perform additional validation
+            if (IsDateOfBirthValid(Obj.Dob))
+            {
+
+                int userAge = CalculateAge(Obj.Dob);
+
+                bool agreeToTerms = true;
+
+                if (agreeToTerms == true)
                 {
 
-                    int userAge = CalculateAge(Obj.Dob);
+                    var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
 
-                    bool agreeToTerms = true;
-
-                    if (agreeToTerms == true)
+                    if (gMail == true)
                     {
+                        DataAccess Obj_DataAccess = new DataAccess();
+                        DataSet dse = new DataSet();
+                        dse = Obj_DataAccess.CheckEmail(Obj);
 
-                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
-
-                        if (gMail == true)
+                        if (dse.Tables[0].Rows.Count == 0)
                         {
-                            DataAccess Obj_DataAccess = new DataAccess();
-                            DataSet dse = new DataSet();
-                            dse = Obj_DataAccess.CheckEmail(Obj);
 
-                            if (dse.Tables[0].Rows.Count == 0)
+                            try
                             {
+                                string validemail = Obj.Email;
+                                TempData["MyEmail"] = validemail;
 
-                                try
+                                //string SelectedRoleId = "Admin";
+
+                                Obj.RoleId = "Admin";
+
+                                if (Obj.RoleId == "Admin")
                                 {
-                                    string validemail = Obj.Email;
-                                    TempData["MyEmail"] = validemail;
-
-                                    //string SelectedRoleId = "Admin";
-
-                                    Obj.RoleId = "Admin";
-
-                                    if (Obj.RoleId == "Admin")
-                                    {
-                                        Obj.RCategory = "Admin";
-                                    }
-                                    else if (Obj.RoleId == "Doctor")
-                                    {
-                                        Obj.RCategory = "Employee";
-                                    }
-                                    else
-                                    {
-                                        Obj.RCategory = "Patient";
-                                    }
+                                    Obj.RCategory = "Admin";
+                                }
+                                else if (Obj.RoleId == "Doctor")
+                                {
+                                    Obj.RCategory = "Employee";
+                                }
+                                else
+                                {
+                                    Obj.RCategory = "Patient";
+                                }
 
 
-                                    Obj.Age = userAge;
-                                    int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                    string fname = Obj.Firstname;
-                                    string lname = Obj.Lastname;
-                                    string password = Obj.Password;
-                                    string confirmpassword = Obj.Confirmpassword;
-                                    string username = Obj.Username;
-                                    string phoneno = Obj.Phonenumber;
+                                Obj.Age = userAge;
+                                int agreeterms = Convert.ToInt32(Obj.agreeterm);
+                                string fname = Obj.Firstname;
+                                string lname = Obj.Lastname;
+                                string password = Obj.Password;
+                                string confirmpassword = Obj.Confirmpassword;
+                                string username = Obj.Username;
+                                string phoneno = Obj.Phonenumber;
 
-                                    DateTime Dob = Obj.Dob;
-                                    Obj.Status = 1;
+                                DateTime Dob = Obj.Dob;
+                                Obj.Status = 1;
 
-                                    if (!String.IsNullOrEmpty(validemail))
-                                    {
+                                if (!String.IsNullOrEmpty(validemail))
+                                {
 
-                                        string generatedCode = Codegenerator();
+                                    string generatedCode = Codegenerator();
 
-                                        _generatedOtp = Convert.ToInt32(generatedCode);
-                                        CookieOptions options = new CookieOptions();
-                                        options.Expires = DateTime.Now.AddMinutes(2);
-                                        Response.Cookies.Append("OTP", generatedCode, options);
+                                    _generatedOtp = Convert.ToInt32(generatedCode);
+                                    CookieOptions options = new CookieOptions();
+                                    options.Expires = DateTime.Now.AddMinutes(2);
+                                    Response.Cookies.Append("OTP", generatedCode, options);
 
-                                    }
+                                }
 
-                                    SendingEmail(Obj);
+                                SendingEmail(Obj);
 
 
-                                    DataAccess Obj_DataAccess2 = new DataAccess();
-                                    DataSet ds = new DataSet();
-                                    ds = Obj_DataAccess2.SaveRegister(Obj);
-                                    ViewBag.Message = "success";
-                                    TempData["SwalMessage"] = "User AccountCreated!";
-                                    TempData["SwalType"] = "success";
+                                DataAccess Obj_DataAccess2 = new DataAccess();
+                                DataSet ds = new DataSet();
+                                ds = Obj_DataAccess2.SaveRegister(Obj);
+                                ViewBag.Message = "success";
+                                TempData["SwalMessage"] = "User AccountCreated!";
+                                TempData["SwalType"] = "success";
 
                                 return RedirectToAction("VerifyOtp", "Account");
 
 
-                                }
+                            }
 
 
-                                catch (Exception ex)
-                                {
-                                    string msg = ex.Message.ToString();
-                                    ViewBag.Message = msg;
-                                    TempData["SwalMessage"] = msg;
-								    TempData["SwalType"] = "error";
-
-
-							}
-						}
-                            else
+                            catch (Exception ex)
                             {
-                                ViewBag.Message = "UserAlready Exsits";
-							    TempData["SwalMessage"] = "User Exists!";
-							    TempData["SwalType"] = "warning!";
+                                string msg = ex.Message.ToString();
+                                ViewBag.Message = msg;
+                                TempData["SwalMessage"] = msg;
+                                TempData["SwalType"] = "error";
 
 
-						}
-					}
+                            }
+                        }
                         else
                         {
-                            TempData["Email"] = "InvalidUser";
-                            ViewBag.Message = "Invalid Emailaddress UserAccount can't create.Pls Enter a valid email address!";
-                            return View();
+                            ViewBag.Message = "UserAlready Exsits";
+                            TempData["SwalMessage"] = "User Exists!";
+                            TempData["SwalType"] = "warning!";
+
 
                         }
-
                     }
                     else
                     {
-                        ModelState.AddModelError(nameof(Signup.agreeterm), "Pls  agree to terms of service and condition.");
+                        TempData["Email"] = "InvalidUser";
+                        ViewBag.Message = "Invalid Emailaddress UserAccount can't create.Pls Enter a valid email address!";
+                        return View();
+
                     }
 
                 }
-              
- 
-      
+                else
+                {
+                    ModelState.AddModelError(nameof(Signup.agreeterm), "Pls  agree to terms of service and condition.");
+                }
+
+            }
+
+
+
 
 
             return View();
@@ -1519,13 +1515,13 @@ namespace Zencareservice.Controllers
 
         }
 
-		private string SendingOTPEmail(Login Obj)
-		{
-			string FName = Obj.OTPEmail;
-			SendMail sendMail = new SendMail();
-			SmtpClient client = new SmtpClient();
+        private string SendingOTPEmail(Login Obj)
+        {
+            string FName = Obj.OTPEmail;
+            SendMail sendMail = new SendMail();
+            SmtpClient client = new SmtpClient();
 
-			string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "fhshxafzjysuwxjw", "2FAuthentication", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "fhshxafzjysuwxjw", "2FAuthentication", $@"
 
 
 
@@ -1598,17 +1594,17 @@ namespace Zencareservice.Controllers
                             </div>
                         </body>
                         </html>", "smtp.gmail.com", 587);
-			return mail;
+            return mail;
 
-		}
+        }
 
-		private string SendingResetEmail(Signup Obj)
-		{
-            
-			SendMail sendMail = new SendMail();
-			SmtpClient client = new SmtpClient();
+        private string SendingResetEmail(Signup Obj)
+        {
 
-			string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "fhshxafzjysuwxjw", "ResetEmailVerification", $@"
+            SendMail sendMail = new SendMail();
+            SmtpClient client = new SmtpClient();
+
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "fhshxafzjysuwxjw", "ResetEmailVerification", $@"
 
 
 
@@ -1681,11 +1677,11 @@ namespace Zencareservice.Controllers
                             </div>
                         </body>
                         </html>", "smtp.gmail.com", 587);
-			return mail;
+            return mail;
 
-		}
+        }
 
-		public IActionResult RegistrationSuccess()
+        public IActionResult RegistrationSuccess()
         {
             return View();
         }
@@ -1710,16 +1706,16 @@ namespace Zencareservice.Controllers
 
 
         [HttpPost]
-		public async Task<IActionResult> Login(Login Obj)
+        public async Task<IActionResult> Login(Login Obj)
         {
-            
-             string username = Obj.Username;
 
-             string password = Obj.Password;
+            string username = Obj.Username;
+
+            string password = Obj.Password;
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
-              
+
 
                 DataAccess Obj_DataAccess = new DataAccess();
                 DataSet ds = new DataSet();
@@ -1733,8 +1729,8 @@ namespace Zencareservice.Controllers
                     Status = Convert.ToInt32(ds.Tables[0].Rows[0]["LStatus"]);
                     if (Status == 1)
                     {
-                        
-                        string UsrId= ds.Tables[0].Rows[0]["RId"].ToString();
+
+                        string UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
 
                         string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
 
@@ -1751,7 +1747,7 @@ namespace Zencareservice.Controllers
 
                         string Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
 
-                        TempData["FirstName"] =  Fname;
+                        TempData["FirstName"] = Fname;
 
                         string RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
 
@@ -1762,9 +1758,9 @@ namespace Zencareservice.Controllers
                         var userData = new Signup
                         {
                             UserId = UsrId,
-                            Rcode = RCode,  
+                            Rcode = RCode,
                             Email = Email,
-                            RoleName = Role, 
+                            RoleName = Role,
                             Firstname = Fname
                         };
 
@@ -1809,21 +1805,21 @@ namespace Zencareservice.Controllers
                         // Get the cookie value
                         HttpContext.Session.SetString("UsrId", UsrId);
 
-						var claims = new[]
-					   {
-						new Claim(ClaimTypes.Name, username),
-						new Claim(ClaimTypes.Role, Role),
-						new Claim("UserId", UsrId)
-					};
+                        var claims = new[]
+                       {
+                        new Claim(ClaimTypes.Name, username),
+                        new Claim(ClaimTypes.Role, Role),
+                        new Claim("UserId", UsrId)
+                    };
 
-						var identity = new ClaimsIdentity(claims, "login");
+                        var identity = new ClaimsIdentity(claims, "login");
 
-						var principal = new ClaimsPrincipal(identity);
+                        var principal = new ClaimsPrincipal(identity);
 
-						await HttpContext.SignInAsync(principal);
+                        await HttpContext.SignInAsync(principal);
 
 
-						HttpContext.Session.SetString("FirstName", Fname);
+                        HttpContext.Session.SetString("FirstName", Fname);
 
                         string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
 
@@ -1834,7 +1830,7 @@ namespace Zencareservice.Controllers
                         ViewBag.Message = "Login";
                         TempData["SwalMessage"] = "Login Succesfull";
                         TempData["SwalType"] = "success";
- 
+
 
                         return RedirectToAction("Dashboard", "Report");
 
@@ -1843,16 +1839,16 @@ namespace Zencareservice.Controllers
             }
             else
             {
-                        ViewBag.Message = "Invalid";
-                        TempData["SwalMessage"] = "Invalid Username or Password!";
-                        TempData["SwalType"] = "error";
-                        return RedirectToAction("Login", "Account");
+                ViewBag.Message = "Invalid";
+                TempData["SwalMessage"] = "Invalid Username or Password!";
+                TempData["SwalType"] = "error";
+                return RedirectToAction("Login", "Account");
 
             }
-                        ViewBag.Message = "Invalid";
-                        TempData["SwalMessage"] = "Invalid Username or Password!";
-                        TempData["SwalType"] = "error";
-                         return RedirectToAction("PatientLogin", "Account");
+            ViewBag.Message = "Invalid";
+            TempData["SwalMessage"] = "Invalid Username or Password!";
+            TempData["SwalType"] = "error";
+            return RedirectToAction("PatientLogin", "Account");
 
         }
 
@@ -1895,10 +1891,10 @@ namespace Zencareservice.Controllers
 
                                 SendingOTPEmail(Obj);
 
-                                 ViewBag.Message = "otpgenerated";
+                                ViewBag.Message = "otpgenerated";
                                 TempData["SwalMessage"] = "OTP sent";
-                                TempData["SwalType"] = "success"; 
- 
+                                TempData["SwalType"] = "success";
+
                                 return RedirectToAction("VerifyOtp", "Account");
                             }
                         }
@@ -1906,9 +1902,9 @@ namespace Zencareservice.Controllers
                         {
                             Console.WriteLine("Error checking email: " + ex.Message);
                             ViewBag.Message = "User is not created!";
-                                ViewBag.Message = "notchecked";
-                                TempData["SwalMessage"] = "Useraccount not checked";
-                                TempData["SwalType"] = "success";
+                            ViewBag.Message = "notchecked";
+                            TempData["SwalMessage"] = "Useraccount not checked";
+                            TempData["SwalType"] = "success";
                             return View();
                         }
                     }
@@ -1917,34 +1913,34 @@ namespace Zencareservice.Controllers
                 {
                     TempData["Email"] = "InvalidUser";
 
-                     ViewBag.Message = "Invalid";
-                     TempData["SwalMessage"] = "Pls Enter Registered Email to Continue!";
+                    ViewBag.Message = "Invalid";
+                    TempData["SwalMessage"] = "Pls Enter Registered Email to Continue!";
                     TempData["SwalType"] = "warning";
 
-                   
+
                 }
 
 
             }
             else
             {
-				ViewBag.Message = "Pls tryagain!";
-				return RedirectToAction("Index", "Home");
-			}
-			return View();
-		}
+                ViewBag.Message = "Pls tryagain!";
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
 
-		[ValidateAntiForgeryToken]
-		public IActionResult Logout()
-		{         
+        [ValidateAntiForgeryToken]
+        public IActionResult Logout()
+        {
             HttpContext.Session.Clear();
             // Clear authentication cookies
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    ViewBag.Message = "Logout";
-                     TempData["SwalMessage"] = "User Logged out";
-                    TempData["SwalType"] = "success";
-			// Redirect to the home page or another appropriate page
-			return RedirectToAction("Index", "Home");
-		}
-	}
+            ViewBag.Message = "Logout";
+            TempData["SwalMessage"] = "User Logged out";
+            TempData["SwalType"] = "success";
+            // Redirect to the home page or another appropriate page
+            return RedirectToAction("Index", "Home");
+        }
+    }
 }

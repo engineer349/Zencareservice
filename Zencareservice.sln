@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34221.43
+VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zencareservice", "Zencareservice.csproj", "{345E7AC3-2D58-4D6D-B283-2AE30B1B821D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zencareservice", "Zencareservice.csproj", "{9C39FF07-1E41-45FA-A540-9421F9152B38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{345E7AC3-2D58-4D6D-B283-2AE30B1B821D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{345E7AC3-2D58-4D6D-B283-2AE30B1B821D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{345E7AC3-2D58-4D6D-B283-2AE30B1B821D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{345E7AC3-2D58-4D6D-B283-2AE30B1B821D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C39FF07-1E41-45FA-A540-9421F9152B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C39FF07-1E41-45FA-A540-9421F9152B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C39FF07-1E41-45FA-A540-9421F9152B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C39FF07-1E41-45FA-A540-9421F9152B38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C1354C71-8DF1-4228-8CF0-66BD02837B03}
+		SolutionGuid = {48C8DF86-1764-4436-A4E4-A7F5144382B4}
 	EndGlobalSection
 EndGlobal
