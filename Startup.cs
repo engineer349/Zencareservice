@@ -8,17 +8,18 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Hosting;
 using Zencareservice.Data;
 using Zencareservice.Repository;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace Zencareservice
 {
     public class Startup
     {
 
-        public IConfiguration ConfigRoot { get; set; }
+        public IConfiguration Configuration { get; set; }
 
         public Startup(IConfiguration configuration)
         {
-            ConfigRoot = configuration;
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection Services)
@@ -49,20 +50,40 @@ namespace Zencareservice
                 options.Secure = CookieSecurePolicy.Always;
             });
 
-            Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/Account/Login"; 
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-                    options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to access denied page if not authorized
-                    options.LogoutPath = "/Account/Logout";
+			//Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+			//    .AddCookie(options =>
+			//    {
+			//        options.LoginPath = "/Account/Login"; 
+			//        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+			//        options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to access denied page if not authorized
+			//        options.LogoutPath = "/Account/Logout";
 
-                });
-            Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(10); // Set the session timeout to 1 minute
-            });
-        }
+
+			//    });
+			        Services.AddAuthentication(options =>
+			        {
+				        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;  
+				        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				    
+			        })
+	        .AddCookie(options =>
+	        {
+		        options.LoginPath = "/Account/Login";
+		        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+		        options.AccessDeniedPath = "/Account/AccessDenied";
+		        options.LogoutPath = "/Account/Logout";
+	        })
+	        .AddGoogle(options =>
+	        {
+		        options.ClientId = "your-client-id";
+		        options.ClientSecret = "your-client-secret";
+		        options.CallbackPath = "/signin-google";
+	        });
+			        Services.AddSession(options =>
+                    {
+                        options.IdleTimeout = TimeSpan.FromMinutes(10); // Set the session timeout to 1 minute
+                    });
+                }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
         {

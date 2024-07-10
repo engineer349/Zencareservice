@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using Zencareservice;
 using Zencareservice.Data;
+using Zencareservice.Models;
 using Zencareservice.Repository;
 
 //var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,8 @@ using Zencareservice.Repository;
 //startup.Configure(app, builder.Environment);
 
 var builder = WebApplication.CreateBuilder(args);
+var ConnectionStrings = builder.Configuration.GetConnectionString("ZencareserviceConnection");
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -30,49 +34,58 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-//// Add services to the container.
 builder.Services.AddControllersWithViews();
+//builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConnectionStrings));
+//builder.Services.AddIdentity<AppUser, IdentityRole>(
+//    options =>
+//    {
+//        options.Password.RequiredUniqueChars = 0;
+//        options.Password.RequireUppercase = true;
+//        options.Password.RequiredLength = 8;
+//        options.Password.RequireNonAlphanumeric = true;
+//        options.Password.RequireLowercase = true;
+//    }
+//    )
+//    .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddRazorPages();
 builder.Services.AddDataProtection();
 builder.Services.AddSignalR();
-/*DataAccess page addd */
-
-
-
-builder.Services.AddScoped<DataAccess>();
-builder.Services.AddScoped<SqlDataAccess>();
+builder.Services.AddSingleton<DataAccess>();
+builder.Services.AddSingleton<SqlDataAccess>();
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
     options.MinimumSameSitePolicy = SameSiteMode.None;
     options.HttpOnly = HttpOnlyPolicy.Always;
     options.Secure = CookieSecurePolicy.Always;
 });
-
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         //options.Cookie.Name = "YourCookieName";
         //options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"path-to-keys-directory"));
-        options.LoginPath = "/Account/Login"; // Redirect to login page if not authenticated
+        options.LoginPath = "/Account/PatientLogin"; 
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to access denied page if not authorized
+        options.AccessDeniedPath = "/Account/AccessDenied";
         options.LogoutPath = "/Account/Logout";
 
     });
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(10); // Set the session timeout to 1 minute
-});
-
+    builder.Services.AddAuthorization(
+		options =>
+		{
+			options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+			options.AddPolicy("PatientPolicy", policy => policy.RequireRole("Patient"));
+			options.AddPolicy("DoctorPolicy", policy => policy.RequireRole("Doctor"));
+		}
+		);
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(10); 
+    });
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
 var connectionString = $"Data Source{dbHost}; Inital Catalog ={dbName}; User ID=sa; Password={dbPassword}";
-
-
 var app = builder.Build();
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");

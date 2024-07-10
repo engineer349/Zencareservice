@@ -95,8 +95,8 @@
 
         var message = '@ViewBag.Message';
         switch (message) {
-            case 'notchecked':
-                showSweetAlert('warning', 'Pls Tryagain.', 'Invalid!');
+			case 'Error':
+                showSweetAlert('warning', 'Pls Tryagain.', 'Internal SMTP Server Issue!');
                 break;
 			case 'Invalid:'
            		showSweetAlert('warning', 'Ooops.', 'Pls Enter Registered Email!');

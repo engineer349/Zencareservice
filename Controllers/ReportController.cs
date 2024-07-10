@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System;
@@ -10,9 +11,10 @@ using Zencareservice.Repository;
 
 namespace Zencareservice.Controllers
 {
+    [Authorize]
     public class ReportController : Controller
     {
-    
+
         public IActionResult Report()
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -171,7 +173,8 @@ namespace Zencareservice.Controllers
 
         }
 
-        public IActionResult Dashboard(Dashboard Obj)
+        [Authorize(Roles ="Admin, Patient, Doctor")]
+		public IActionResult Dashboard(Dashboard Obj)
         {
             string UserId = Request.Cookies["UsrId"];
             string UsrName = Request.Cookies["UsrName"];

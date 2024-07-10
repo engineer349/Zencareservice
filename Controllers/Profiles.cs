@@ -11,6 +11,7 @@ using System;
 
 namespace Zencareservice.Controllers
 {
+    [Authorize]
     public class Profiles : Controller
     {
 
@@ -442,7 +443,8 @@ namespace Zencareservice.Controllers
         }
 
 
-        public IActionResult Userlist(Signup user)
+		[Authorize(Roles = "Admin")]
+		public IActionResult Userlist(Signup user)
         {
             string UsrId = Request.Cookies["UsrId"];
 

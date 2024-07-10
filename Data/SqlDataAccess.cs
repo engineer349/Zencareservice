@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.CodeDom;
 using System.Data;
-using System.Data.Entity;
+
 using System.Data.SqlClient;
 using System.Reflection.Emit;
 using Zencareservice.Models;
@@ -20,14 +20,12 @@ namespace Zencareservice.Data
         SqlCommand cmd = new SqlCommand();
         SqlDataAdapter da = new SqlDataAdapter();
 
-        public SqlDataAccess()
-        {
+            public SqlDataAccess()
+            {
                
+                 DbConnectionString = _configuration.GetConnectionString("ZencareserviceConnection");
 
-        DbConnectionString = _configuration.GetConnectionString("DefaultConnection");
-      
-
-    }
+             }
         public DataSet GetDataWithStoredprocedure(string StrSpName)
         {
             DataTable dt = new DataTable();
@@ -53,7 +51,7 @@ namespace Zencareservice.Data
             }
             return ds;
         }
-        public DbSet<Signup> Roles { get; set; }
+      
 
     
         public DataSet GetDataWithParamStoredprocedure(string StrSpName, SqlParameter[] Param)

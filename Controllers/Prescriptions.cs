@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System;
 using System.Data;
-using System.Data.Entity;
 using System.Reflection.Emit;
 using System.Reflection.Metadata.Ecma335;
 using System.Web;
@@ -14,14 +13,16 @@ using Zencareservice.Repository;
 
 namespace Zencareservice.Controllers
 {
-    public class Prescriptions : Controller
+	[Authorize]
+	public class Prescriptions : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Prescrt(Prescs prc)
+		[Authorize(Roles = "Doctor")]
+		public IActionResult Prescrt(Prescs prc)
         {
             string UsrId = Request.Cookies["UsrId"];
 
@@ -48,7 +49,8 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Prscedit(Prescs psc, string Id)
+		[Authorize(Roles = "Doctor")]
+		public async Task<IActionResult> Prscedit(Prescs psc, string Id)
         {
             string UsrId = Request.Cookies["UsrId"];
 
@@ -99,45 +101,46 @@ namespace Zencareservice.Controllers
                 return View();
             }
         }
- 
-        //[HttpPost]
-        //public IActionResult Prescedit([FromBody] Prescs[] medications)
-        //{
-        //    string UsrId = Request.Cookies["UsrId"];
-        //    TempData["UserId"] = UsrId;
 
-        //    if (string.IsNullOrEmpty(UsrId))
-        //    {
-        //        return RedirectToAction("PatientLogin", "Account");
-        //    }
-        //    else
-        //    {
-        //        try
-        //        {
-        //            foreach (var medication in medications)
-        //            {
-        //                int slno = medication.SlNo;
-        //                string prescription = medication.Prescription;
-        //                int dosage = medication.Dosage;
-        //                int noofdays = medication.NoOfDays;
-        //                string aptcode = medication.AptCode;
-        //                string prscode = medication.PrsCode;
+		//[HttpPost]
+		//public IActionResult Prescedit([FromBody] Prescs[] medications)
+		//{
+		//    string UsrId = Request.Cookies["UsrId"];
+		//    TempData["UserId"] = UsrId;
 
-        //                // Save medication
-        //                DataAccess Obj_DataAccess = new DataAccess();
-        //                DataSet ds = Obj_DataAccess.SaveUpdatePrescription(slno, prescription, dosage, noofdays, aptcode, prscode);
-        //            }
+		//    if (string.IsNullOrEmpty(UsrId))
+		//    {
+		//        return RedirectToAction("PatientLogin", "Account");
+		//    }
+		//    else
+		//    {
+		//        try
+		//        {
+		//            foreach (var medication in medications)
+		//            {
+		//                int slno = medication.SlNo;
+		//                string prescription = medication.Prescription;
+		//                int dosage = medication.Dosage;
+		//                int noofdays = medication.NoOfDays;
+		//                string aptcode = medication.AptCode;
+		//                string prscode = medication.PrsCode;
 
-        //            return Json(new { success = true });
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return Json(new { success = false, message = ex.Message });
-        //        }
-        //    }
-        //}
+		//                // Save medication
+		//                DataAccess Obj_DataAccess = new DataAccess();
+		//                DataSet ds = Obj_DataAccess.SaveUpdatePrescription(slno, prescription, dosage, noofdays, aptcode, prscode);
+		//            }
 
-        [HttpPost]
+		//            return Json(new { success = true });
+		//        }
+		//        catch (Exception ex)
+		//        {
+		//            return Json(new { success = false, message = ex.Message });
+		//        }
+		//    }
+		//}
+
+		[Authorize(Roles = "Doctor")]
+		[HttpPost]
         public IActionResult Prescedit( [FromBody] Prescs[] medications)
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -254,12 +257,10 @@ namespace Zencareservice.Controllers
             string prescdetails = JsonConvert.SerializeObject(ds.Tables[0]);
             return Json(prescdetails);
         }
-
-        [HttpPost]
+		[Authorize(Roles = "Doctor")]
+		[HttpPost]
         public IActionResult SaveItemPrescription([FromBody] Prescs[] medications)
         {
-            
-
             foreach (var medication in medications)
             {
                 
@@ -278,8 +279,8 @@ namespace Zencareservice.Controllers
             return RedirectToAction("Dashboard", "Report");
         }
 
-
-        [HttpPost]
+		[Authorize(Roles = "Doctor")]
+		[HttpPost]
         public IActionResult SaveHeadPrescription(Prescs Obj)
         {
             //if (TempData["aptcode"] != null && TempData["aptcode"].ToString() == Obj.AppointmentCode)
@@ -315,7 +316,8 @@ namespace Zencareservice.Controllers
         }
 
 
-        [HttpPost]
+		[Authorize(Roles = "Doctor")]
+		[HttpPost]
         public IActionResult UpdateHeadPrescription(Prescs Obj)
         {
             //if (TempData["aptcode"] != null && TempData["aptcode"].ToString() == Obj.AppointmentCode)
@@ -350,12 +352,14 @@ namespace Zencareservice.Controllers
 
             return RedirectToAction("Dashboard", "Report");
         }
-        public IActionResult Prescedit()
+		
+        [Authorize(Roles = "Doctor")]
+		public IActionResult Prescedit()
         {
-
             return View();
         }
-        public IActionResult Presclist(Prescs prescs)
+		[Authorize(Roles = "Patient,Doctor")]
+		public IActionResult Presclist(Prescs prescs)
         {
             string UsrId = Request.Cookies["UsrId"];
 
@@ -402,7 +406,7 @@ namespace Zencareservice.Controllers
             
 			return View(prescs);
 		}
-
+		[Authorize(Roles = "Patient")]
 		public IActionResult DPresclist(Prescs prescs)
 		{
 			string UsrId = Request.Cookies["UsrId"];

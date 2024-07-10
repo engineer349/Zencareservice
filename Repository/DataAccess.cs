@@ -21,8 +21,7 @@ namespace Zencareservice.Repository
     {
         SqlDataAccess Obj_SqlDataAccess = new SqlDataAccess();
 
-
-        public static string HashPassword(string password)
+		public static string HashPassword(string password)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
@@ -31,7 +30,9 @@ namespace Zencareservice.Repository
                 return hashedPassword;
             }
         }
-        public DataSet SaveRegister(Signup Obj)
+
+		
+	   public DataSet SaveRegister(Signup Obj)
         {
 
             try
@@ -166,7 +167,28 @@ namespace Zencareservice.Repository
 
         }
 
-        public DataSet GetDashboardvalues(Dashboard Obj)
+
+        public DataSet SaveGLogin(string email)
+        {
+
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "SaveGLogin_SP";
+
+				SqlParameter[] param = new SqlParameter[1];
+
+				param[0] = new SqlParameter("@Email", SqlDbType.Int);
+                param[0].Value =email;
+
+                return ds;
+			}
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+		public DataSet GetDashboardvalues(Dashboard Obj)
         {
             try
             {

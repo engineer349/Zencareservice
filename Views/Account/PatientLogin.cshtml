@@ -73,6 +73,71 @@
 								<button id="otpLoginBtn" class="btn btn-primary btn-block" onclick="OTPLogging()">
 											OTP Login
 								</button>
+								<p style="text-align:center">Or</p>
+								<div id="googleSignInContainer">
+									<div id="g_id_onload"
+										 data-client_id="YOUR_GOOGLE_CLIENT_ID"
+										 data-context="signin"
+										 data-ux_mode="redirect"
+										 data-login_uri="https://yourdomain.com/signin-google"
+										 data-auto_prompt="false">
+									</div>
+
+									<div class="g_id_signin"
+										 data-type="standard">
+									</div>
+								</div>
+
+								<!-- Email Sign-In Form -->
+								<div id="emailSignInContainer" style="display: none;">
+									<h2>Sign in with Gmail</h2>
+									<form id="emailSignInForm" onsubmit="return signInWithEmail()">
+										<input type="email" id="emailInput" placeholder="Enter your Gmail address" required>
+										<button type="submit">Sign in</button>
+									</form>
+								</div>
+
+								<!-- Google Sign-In Library -->
+								<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+								<!-- Handle Google Sign-In Callback -->
+								<script>
+									window.onload = function () {
+										google.accounts.id.initialize({
+											client_id: 'YOUR_GOOGLE_CLIENT_ID',
+											callback: handleCredentialResponse
+										});
+									};
+
+									function handleCredentialResponse(response) {
+										if (response.credential) {
+											var id_token = response.credential;
+											console.log("ID Token:", id_token);
+											// Redirect to your server-side endpoint for further processing
+											window.location.href = '/Account/GoogleSignInCallback?code=' + encodeURIComponent(id_token);
+										} else {
+											console.error("No credential available");
+											showEmailSignInForm(); // Display email sign-in form if Google sign-in fails
+										}
+									}
+
+									function showEmailSignInForm() {
+										document.getElementById('googleSignInContainer').style.display = 'none';
+										document.getElementById('emailSignInContainer').style.display = 'block';
+									}
+
+									function signInWithEmail() {
+										var email = document.getElementById('emailInput').value;
+										if (email.trim() === '') {
+											alert('Please enter your Gmail address.');
+											return false;
+										}
+										// Handle email sign-in logic (optional)
+										// Example: redirect to a server-side endpoint for validation or sign-in
+										window.location.href = '/Account/EmailSignIn?email=' + encodeURIComponent(email);
+										return false; // Prevent form submission
+									}
+								</script>
 								<div class="mt-4 text-center">
 									Don't have an account? <a asp-action="PatientRegister" asp-controller="Account">Create One</a>
 								</div>
@@ -84,6 +149,7 @@
 					</div> *@
 				</div>
 			</div>
+		</div>
 		</div>
 	</section>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

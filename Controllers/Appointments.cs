@@ -5,9 +5,11 @@ using Zencareservice.Models;
 using Zencareservice.Repository;
 using System.Text;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Zencareservice.Controllers
 {
+    [Authorize]
     public class Appointments : Controller
     {
         
@@ -77,7 +79,7 @@ namespace Zencareservice.Controllers
 
         }
 
-
+        [Authorize(Roles ="Admin, Patient")]
         public IActionResult Aptlist(Appts apt)
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -249,6 +251,7 @@ namespace Zencareservice.Controllers
 
         }
 
+        [Authorize(Roles ="Doctor")]
         public IActionResult PAptlist(Appts apt)
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -415,9 +418,9 @@ namespace Zencareservice.Controllers
             return Json(details);
         }
 
-       
 
 
+        [Authorize(Roles ="Patient")]
         [HttpGet]
         public IActionResult Apptcrt(Appts apt)
         {
@@ -523,7 +526,9 @@ namespace Zencareservice.Controllers
             return View(apt);
         }
 
-        [HttpPost]
+		[Authorize(Roles = "Doctor")]
+
+		[HttpPost]
         public IActionResult Aptedit( Appts Obj)
         {
            
@@ -584,6 +589,7 @@ namespace Zencareservice.Controllers
            
         }
 
+        [Authorize(Roles ="Doctor")]
         public IActionResult Aptedit(Appts apt,int Id)
         {
             string UsrId = Request.Cookies["UsrId"];
@@ -659,7 +665,8 @@ namespace Zencareservice.Controllers
             return Json(cities);
         }
 
-        [HttpPost]
+		[Authorize(Roles = "Doctor")]
+		[HttpPost]
         public IActionResult ConfirmAppointment([FromBody] Appts Obj)
         {
 
@@ -677,7 +684,8 @@ namespace Zencareservice.Controllers
         }
 
 
-        [HttpPost]
+        [Authorize(Roles ="Patient")]
+		[HttpPost]
         public IActionResult CreateAppointment(Aptcrt Obj)
         {
                 AptsDropdown();

@@ -6,7 +6,8 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Reflection;
 using System.Text;
-
+using Google.Apis.Auth;
+using System.Threading.Tasks;
 using Zencareservice.Models;
 using Zencareservice.Repository;
 using System;
@@ -14,7 +15,7 @@ using System.IO;
 using System.Net;
 using System.Data.SqlTypes;
 using System.Text.RegularExpressions;
-using System.Data.Entity.Infrastructure;
+
 using System.Globalization;
 using System.CodeDom.Compiler;
 using System.Xml.Linq;
@@ -33,8 +34,9 @@ using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
-using System.Data.Entity;
+
 using System.Runtime.Intrinsics.X86;
+using Google.Apis.Auth;
 
 namespace Zencareservice.Controllers
 {
@@ -44,18 +46,19 @@ namespace Zencareservice.Controllers
 
 
         private readonly IDataProtector _dataProtector;
+		private readonly string _connectionString;
 
-        //private readonly UserManager<Signup> _userManager;
-        //private readonly SignInManager<Signup> _signInManager;
+		//private readonly UserManager<Signup> _userManager;
+		//private readonly SignInManager<Signup> _signInManager;
 
-        //public AccountController(UserManager<Signup> userManager,
-        //                              SignInManager<Signup> signInManager)
-        //{
-        //    _userManager = userManager;
-        //    _signInManager = signInManager;
-        //}
+		//public AccountController(UserManager<Signup> userManager,
+		//                              SignInManager<Signup> signInManager)
+		//{
+		//    _userManager = userManager;
+		//    _signInManager = signInManager;
+		//}
 
-        private int _generatedOtp;
+		private int _generatedOtp;
 
         private int _regeneratedOtp;
 
@@ -65,12 +68,13 @@ namespace Zencareservice.Controllers
 
         private readonly SqlDataAccess _sqldataaccess;
 
-        public AccountController(DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider)
+        public AccountController(DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
         {
             _dataaccess = dataaccess;
             _sqldataaccess = sqldataaccess;
-            _dataProtector = dataProtectionProvider.CreateProtector("YourPurpose");
-        }
+            _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
+			_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
+		}
 
         public IActionResult Index()
         {
@@ -118,12 +122,12 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        public IActionResult Login()
-        {
-            string returnUrl = "/Account/Login";
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
+        //public IActionResult Login()
+        //{
+        //    string returnUrl = "/Account/Login";
+        //    ViewData["ReturnUrl"] = returnUrl;
+        //    return View();
+        //}
         public IActionResult PatientLogin()
         {
             string returnUrl = "/Account/PatientLogin";
@@ -471,8 +475,6 @@ namespace Zencareservice.Controllers
             return RedirectToAction("VerifyOtp", "Account");
         }
 
-
-
         [HttpPost]
         public IActionResult ResetPassword(Signup Obj)
         {
@@ -504,6 +506,7 @@ namespace Zencareservice.Controllers
                 return View();
             }
         }
+
         [HttpPost]
         public IActionResult PatReset(Signup Obj)
         {
@@ -539,6 +542,7 @@ namespace Zencareservice.Controllers
             }
 
         }
+
         [HttpPost]
         public IActionResult ForgotPassword(Signup Obj)
         {
@@ -1805,19 +1809,24 @@ namespace Zencareservice.Controllers
                         // Get the cookie value
                         HttpContext.Session.SetString("UsrId", UsrId);
 
-                        var claims = new[]
-                       {
+                        var claims = new List<Claim>
+					   {
                         new Claim(ClaimTypes.Name, username),
                         new Claim(ClaimTypes.Role, Role),
                         new Claim("UserId", UsrId)
                     };
 
-                        var identity = new ClaimsIdentity(claims, "login");
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                        var principal = new ClaimsPrincipal(identity);
+						var authProperties = new AuthenticationProperties
+						{
+							// Allow refresh
+							IsPersistent = true,
+							ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+						};
 
-                        await HttpContext.SignInAsync(principal);
 
+						await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                         HttpContext.Session.SetString("FirstName", Fname);
 
@@ -1852,7 +1861,113 @@ namespace Zencareservice.Controllers
 
         }
 
-        [HttpPost]
+		[HttpGet("/Account/GoogleSignInCallback")]
+		public async Task<IActionResult> GoogleSignInCallback(string idToken)
+		{
+			// Validate ID token and get email
+			var email = await DecodeIdTokenAndGetEmailAsync(idToken);
+
+			if (email == null)
+			{
+				return BadRequest("Invalid ID token.");
+			}
+
+			// Check if email exists and fetch user data
+			var userData = await GetUserDataByEmailAsync(email);
+
+			if (userData == null)
+			{
+				return RedirectToAction("ShowRegisterAlert");
+			}
+
+			var userDataJson = JsonConvert.SerializeObject(userData);
+			var protectedData = _dataProtector.Protect(userDataJson);
+
+			var cookieOptions = new CookieOptions
+			{
+				Expires = DateTime.Now.AddDays(1), // Set the expiration date
+				HttpOnly = true, // Makes the cookie accessible only to the server-side code
+				Secure = true,
+				SameSite = SameSiteMode.None
+			};
+
+			Response.Cookies.Append("EncryptCookie", protectedData, cookieOptions);
+			Response.Cookies.Append("UserId", userData.UserId, cookieOptions);
+			Response.Cookies.Append("UsrName", userData.Firstname, cookieOptions);
+			Response.Cookies.Append("Role", userData.RoleName, cookieOptions);
+			Response.Cookies.Append("RCode", userData.Rcode, cookieOptions);
+
+			HttpContext.Session.SetString("UsrId", userData.UserId);
+			HttpContext.Session.SetString("FirstName", userData.Firstname);
+
+			var claims = new[]
+			{
+			new Claim(ClaimTypes.Name, userData.Firstname),
+			new Claim(ClaimTypes.Role, userData.RoleName),
+			new Claim("UserId", userData.UserId)
+		};
+
+			var identity = new ClaimsIdentity(claims, "login");
+			var principal = new ClaimsPrincipal(identity);
+
+			await HttpContext.SignInAsync(principal);
+
+			TempData["SwalMessage"] = "Login Successful";
+			TempData["SwalType"] = "success";
+
+			return RedirectToAction("Dashboard", "Report");
+		}
+
+		private async Task<string> DecodeIdTokenAndGetEmailAsync(string idToken)
+		{
+			try
+			{
+				var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+				return payload.Email;
+			}
+			catch (Exception ex)
+			{
+				// Handle validation errors
+				return null;
+			}
+		}
+
+		public async Task<Signup?> GetUserDataByEmailAsync(string email)
+		{
+			return await Task.Run(() =>
+			{
+				DataAccess obj_DataAccess = new DataAccess();
+				DataSet ds = obj_DataAccess.SaveGLogin(email);
+
+				if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+				{
+					var row = ds.Tables[0].Rows[0];
+					if (Convert.ToInt32(row["LStatus"]) == 1)
+					{
+						var userData = new Signup
+						{
+							UserId = row["RId"].ToString(),
+							Firstname = row["Fname"].ToString(),
+							RoleName = row["Role"].ToString(),
+							Rcode = row["RCode"].ToString(),
+							Email = email
+						};
+
+						return userData;
+					}
+				}
+				return null;
+			});
+		}
+
+		public IActionResult ShowRegisterAlert()
+		{
+			TempData["SwalMessage"] = "Please register";
+			TempData["SwalType"] = "warning";
+			return RedirectToAction("Register", "Account");
+		}
+
+		[HttpPost]
         public IActionResult OTPLogin(Login Obj, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -1900,11 +2015,10 @@ namespace Zencareservice.Controllers
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error checking email: " + ex.Message);
-                            ViewBag.Message = "User is not created!";
-                            ViewBag.Message = "notchecked";
+                            Console.WriteLine("Error checking email: " + ex.Message);                     
+                            ViewBag.Message = "Error";
                             TempData["SwalMessage"] = "Useraccount not checked";
-                            TempData["SwalType"] = "success";
+                            TempData["SwalType"] = "warning";
                             return View();
                         }
                     }
