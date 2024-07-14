@@ -37,6 +37,7 @@ using System.Security.Claims;
 
 using System.Runtime.Intrinsics.X86;
 using Google.Apis.Auth;
+using System.ComponentModel.DataAnnotations;
 
 namespace Zencareservice.Controllers
 {
@@ -68,13 +69,19 @@ namespace Zencareservice.Controllers
 
         private readonly SqlDataAccess _sqldataaccess;
 
-        public AccountController(DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
+        private readonly EmailVerifier _emailVerifier;
+
+        public AccountController(EmailVerifier emailVerifier)
         {
-            _dataaccess = dataaccess;
-            _sqldataaccess = sqldataaccess;
-            _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
-			_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
-		}
+            _emailVerifier = emailVerifier;
+        }
+  //      public AccountController(DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
+  //      {
+  //          _dataaccess = dataaccess;
+  //          _sqldataaccess = sqldataaccess;
+  //          _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
+		//	_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
+		//}
 
         public IActionResult Index()
         {
@@ -115,6 +122,7 @@ namespace Zencareservice.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+        [HttpGet("/Account/PatientRegister")]
         public IActionResult PatientRegister()
         {
             string returnUrl = "/Account/PatientRegister";
@@ -602,7 +610,9 @@ namespace Zencareservice.Controllers
             string ResetEmail = Obj.Email;
             if (ResetEmail != null)
             {
-                var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+                var mmm = IsValidEmail2(Obj.Email);
+
+				var gMail = IsEmailAccountValid("smtp.gmail.com", Obj.Email);
 
                 if (gMail == true)
                 {
@@ -769,59 +779,85 @@ namespace Zencareservice.Controllers
             return int.Parse(responseString.Substring(0, 3));
         }
 
-        private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
-        {
-            try
-            {
-                using (var client = new TcpClient())
-                {
-                    client.Connect(smtpServer, 587); // Using port 587 for secure SMTP
-                    using (var netStream = client.GetStream())
-                    using (var reader = new StreamReader(netStream))
-                    {
-                        netStream.ReadTimeout = 10000; // Set timeout to 10 seconds
-                        netStream.WriteTimeout = 10000; // Set timeout to 10 seconds
+		public bool IsValidEmail3(string source)
+		{
+			EmailAddressAttribute e = new EmailAddressAttribute();
+			if (e.IsValid(source))
+				return true;
+			else
+				return false;
+		}
+		public bool IsValidEmail2(string email)
+		{
+			var trimmedEmail = email.Trim();
 
-                        string CRLF = "\r\n";
-                        byte[] dataBuffer;
-                        string responseString;
+			if (trimmedEmail.EndsWith("."))
+			{
+				return false; // suggested by @TK-421
+			}
+			try
+			{
+				var addr = new System.Net.Mail.MailAddress(email);
+				return addr.Address == trimmedEmail;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
+		{
+		    try
+		    {
+		        using (var client = new TcpClient())
+		        {
+		            client.Connect(smtpServer, 587);  
+		            using (var netStream = client.GetStream())
+		            using (var reader = new StreamReader(netStream))
+		            {
+		                netStream.ReadTimeout = 10000;  
+		                netStream.WriteTimeout = 10000;  //Set timeout to 10 seconds
 
-                        dataBuffer = BytesFromString("EHLO Hi" + CRLF);
-                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                        responseString = reader.ReadLine();
+		                string CRLF = "\r\n";
+		                byte[] dataBuffer;
+		                string responseString;
 
-                        dataBuffer = BytesFromString("MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
-                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                        responseString = reader.ReadLine();
+		                dataBuffer = BytesFromString("EHLO Hi" + CRLF);
+		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
+		                responseString = reader.ReadLine();
 
-                        dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
-                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
-                        responseString = reader.ReadLine();
-                        int responseCode = GetResponseCode(responseString);
+		                dataBuffer = BytesFromString("MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
+		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
+		                responseString = reader.ReadLine();
 
-                        dataBuffer = BytesFromString("QUIT" + CRLF);
-                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+		                dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
+		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
+		                responseString = reader.ReadLine();
+		                int responseCode = GetResponseCode(responseString);
 
-                        return responseCode != 550;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error checking email: " + ex.Message);
-                return false;
-            }
-        }
+		                dataBuffer = BytesFromString("QUIT" + CRLF);
+		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
 
+		                return responseCode != 550;
+		            }
+		        }
+		    }
+		    catch (Exception ex)
+		    {
+		        Console.WriteLine("Error checking email: " + ex.Message);
+		        return false;
+		    }
+		}
 
-        [HttpPost]
-        public IActionResult PatientRegister(Signup Obj, string returnUrl)
+		
+
+		[HttpPost]
+        public async Task<IActionResult> PatientRegister(Signup Obj, string returnUrl)
         {
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
 
-                // Perform additional validation
                 if (IsDateOfBirthValid(Obj.Dob))
                 {
 
@@ -834,9 +870,9 @@ namespace Zencareservice.Controllers
                     if (agreeToTerms == true)
                     {
 
-                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+                        bool isEmailValid = await _emailVerifier.VerifyEmailAsync(Obj.Email);
 
-                        if (gMail == true)
+                        if (isEmailValid)
                         {
                             DataAccess Obj_DataAccess = new DataAccess();
                             DataSet dse = new DataSet();
@@ -1442,7 +1478,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "fhshxafzjysuwxjw", "Autoverification", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "dlqvxmukerahbqdo", "Autoverification", $@"
 
 
 
@@ -1525,7 +1561,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "fhshxafzjysuwxjw", "2FAuthentication", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "dlqvxmukerahbqdo", "2FAuthentication", $@"
 
 
 
@@ -1976,8 +2012,8 @@ namespace Zencareservice.Controllers
                 string email = Obj.OTPEmail;
 
                 TempData["OTPuser"] = email;
-
-                var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.OTPEmail);
+				var mmm = IsValidEmail3(Obj.OTPEmail);
+				var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.OTPEmail);
 
                 if (gMail == true)
                 {

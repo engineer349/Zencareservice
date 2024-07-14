@@ -7,10 +7,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Security.Claims;
 using Zencareservice;
 using Zencareservice.Data;
 using Zencareservice.Models;
 using Zencareservice.Repository;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
+
 
 //var builder = WebApplication.CreateBuilder(args);
 //var startup = new Startup(builder.Configuration);
@@ -35,6 +41,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
 //builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConnectionStrings));
 //builder.Services.AddIdentity<AppUser, IdentityRole>(
 //    options =>
@@ -58,16 +65,28 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.HttpOnly = HttpOnlyPolicy.Always;
     options.Secure = CookieSecurePolicy.Always;
 });
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
     .AddCookie(options =>
     {
-        //options.Cookie.Name = "YourCookieName";
-        //options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"path-to-keys-directory"));
+        
         options.LoginPath = "/Account/PatientLogin"; 
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.LogoutPath = "/Account/Logout";
 
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = "YOUR_GOOGLE_CLIENT_ID";
+        options.ClientSecret = "YOUR_GOOGLE_CLIENT_SECRET";
+        options.Scope.Add("email");
+        options.Scope.Add("profile");
+        options.SaveTokens = true;
+        options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
     });
     builder.Services.AddAuthorization(
 		options =>
@@ -81,6 +100,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.IdleTimeout = TimeSpan.FromMinutes(10); 
     });
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<EmailVerifier>(provider =>
+{
+    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+    var apiKey = "a23bb3c665924806bbf7b19854e5a4ec";
+    return new EmailVerifier(httpClientFactory, apiKey);
+});
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");

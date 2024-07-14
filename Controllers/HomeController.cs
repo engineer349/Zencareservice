@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Xml.Linq;
 using Zencareservice.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Zencareservice.Controllers
 {
@@ -32,6 +33,7 @@ namespace Zencareservice.Controllers
         {
             return View();
         }
+        [AllowAnonymous]
         public IActionResult Index(string user)
         {
             user = "Hi ZencareUser!";
