@@ -71,17 +71,17 @@ namespace Zencareservice.Controllers
 
         private readonly EmailVerifier _emailVerifier;
 
-        public AccountController(EmailVerifier emailVerifier)
+        public AccountController(EmailVerifier emailVerifier, DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
         {
             _emailVerifier = emailVerifier;
+                   _dataaccess = dataaccess;
+                      _sqldataaccess = sqldataaccess;
+                      _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
+            	_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
         }
-  //      public AccountController(DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
-  //      {
-  //          _dataaccess = dataaccess;
-  //          _sqldataaccess = sqldataaccess;
-  //          _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
-		//	_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
-		//}
+
+
+
 
         public IActionResult Index()
         {
@@ -122,7 +122,7 @@ namespace Zencareservice.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-        [HttpGet("/Account/PatientRegister")]
+        [HttpGet("/Account/PatientRegister/")]
         public IActionResult PatientRegister()
         {
             string returnUrl = "/Account/PatientRegister";
@@ -130,12 +130,7 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        //public IActionResult Login()
-        //{
-        //    string returnUrl = "/Account/Login";
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    return View();
-        //}
+        
         public IActionResult PatientLogin()
         {
             string returnUrl = "/Account/PatientLogin";
@@ -1009,7 +1004,7 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(Signup Obj, string returnUrl)
+        public  async Task<IActionResult> Register(Signup Obj, string returnUrl)
         {
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -1026,11 +1021,9 @@ namespace Zencareservice.Controllers
                     if (agreeToTerms == true)
                     {
 
-                        var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
+                        bool isEmailValid = await _emailVerifier.VerifyEmailAsync(Obj.Email);
 
-
-
-                        if (gMail == true)
+                        if (isEmailValid)
                         {
                             DataAccess Obj_DataAccess = new DataAccess();
                             DataSet dse = new DataSet();
@@ -2003,82 +1996,84 @@ namespace Zencareservice.Controllers
 			return RedirectToAction("Register", "Account");
 		}
 
-		[HttpPost]
-        public IActionResult OTPLogin(Login Obj, string returnUrl)
+        [HttpPost]
+        public async Task<IActionResult> OTPLogin(Login Obj, string returnUrl)
         {
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            try
             {
 
-                string email = Obj.OTPEmail;
-
-                TempData["OTPuser"] = email;
-				var mmm = IsValidEmail3(Obj.OTPEmail);
-				var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.OTPEmail);
-
-                if (gMail == true)
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    DataAccess Obj_DataAccess = new DataAccess();
-                    DataSet dse = new DataSet();
-                    dse = Obj_DataAccess.CheckLoginEmail(Obj);
+                    string email = Obj.OTPEmail;
+                    TempData["OTPuser"] = email;
 
+                    bool isEmailValid = await _emailVerifier.VerifyEmailAsync(Obj.OTPEmail);
 
-                    if (dse.Tables[0].Rows.Count != 0 && dse.Tables[1].Rows.Count != 0)
+                    if (isEmailValid)
                     {
-
-                        try
+                        DataAccess Obj_DataAccess = new DataAccess();
+                        DataSet dse = Obj_DataAccess.CheckLoginEmail(Obj);
+                        if (dse.Tables[0].Rows.Count != 0 && dse.Tables[1].Rows.Count != 0)
                         {
-                            string validemail = Obj.OTPEmail;
-                            TempData["MyEmail"] = validemail;
-
-                            if (!String.IsNullOrEmpty(validemail))
+                            try
                             {
+                                string validemail = Obj.OTPEmail;
+                                TempData["MyEmail"] = validemail;
 
-                                string generatedCode = Codegenerator();
+                                if (!string.IsNullOrEmpty(validemail))
+                                {
+                                    string generatedCode = Codegenerator();
+                                    _generatedOtp = Convert.ToInt32(generatedCode);
 
-                                _generatedOtp = Convert.ToInt32(generatedCode);
-                                CookieOptions options = new CookieOptions();
-                                options.Expires = DateTime.Now.AddMinutes(5);
-                                Response.Cookies.Append("OTP", generatedCode, options);
+                                    CookieOptions options = new CookieOptions
+                                    {
+                                        Expires = DateTime.Now.AddMinutes(5)
+                                    };
+                                    Response.Cookies.Append("OTP", generatedCode, options);
 
-                                SendingOTPEmail(Obj);
+                                    SendingOTPEmail(Obj);
 
-                                ViewBag.Message = "otpgenerated";
-                                TempData["SwalMessage"] = "OTP sent";
-                                TempData["SwalType"] = "success";
+                                    ViewBag.Message = "otpgenerated";
+                                    TempData["SwalMessage"] = "OTP sent";
+                                    TempData["SwalType"] = "success";
 
-                                return RedirectToAction("VerifyOtp", "Account");
+                                    return RedirectToAction("VerifyOtp", "Account");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Error checking email: " + ex.Message);
+                                ViewBag.Message = "Error";
+                                TempData["SwalMessage"] = "User account not checked";
+                                TempData["SwalType"] = "warning";
+                                return View();
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error checking email: " + ex.Message);                     
-                            ViewBag.Message = "Error";
-                            TempData["SwalMessage"] = "Useraccount not checked";
-                            TempData["SwalType"] = "warning";
-                            return View();
-                        }
+                    }
+                    else
+                    {
+                        TempData["Email"] = "InvalidUser";
+                        ViewBag.Message = "Invalid";
+                        TempData["SwalMessage"] = "Please enter a registered email to continue!";
+                        TempData["SwalType"] = "warning";
                     }
                 }
                 else
                 {
-                    TempData["Email"] = "InvalidUser";
-
-                    ViewBag.Message = "Invalid";
-                    TempData["SwalMessage"] = "Pls Enter Registered Email to Continue!";
-                    TempData["SwalType"] = "warning";
-
-
+                    ViewBag.Message = "Please try again!";
+                    return RedirectToAction("Index", "Home");
                 }
-
-
+                return View();
             }
-            else
+            catch (Exception ex)
             {
-                ViewBag.Message = "Pls tryagain!";
-                return RedirectToAction("Index", "Home");
+                // Log the exception
+             
+                ViewBag.Message = "An error occurred. Please try again.";
+                return View();
             }
-            return View();
         }
+
 
         [ValidateAntiForgeryToken]
         public IActionResult Logout()

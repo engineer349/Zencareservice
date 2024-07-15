@@ -1,43 +1,30 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using Newtonsoft.Json.Linq;
+using NeverBounce;
 
 namespace Zencareservice.Models
 {
     public class EmailVerifier
     {
+        private readonly NeverBounceApiClient _client;
 
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _apiKey;
-
-        public EmailVerifier(IHttpClientFactory httpClientFactory, string apiKey)
+        public EmailVerifier(string apiKey)
         {
-            _httpClientFactory = httpClientFactory;
-            _apiKey = apiKey;
+            _client = new NeverBounceApiClient(apiKey);
         }
 
         public async Task<bool> VerifyEmailAsync(string email)
         {
-            var client = _httpClientFactory.CreateClient();
-            var requestUri = $"https://api.zerobounce.net/v2/validate?api_key={_apiKey}&email={email}";
-
-            var response = await client.GetAsync(requestUri);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine("Error verifying email.");
+                var response = await _client.SingleCheck(email);
+                return response.Result == NeverBounce.Models.SingleCheckResponseResult.Valid;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying email: {ex.Message}");
                 return false;
             }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var jsonResponse = JObject.Parse(content);
-
-            var status = jsonResponse["status"]?.ToString();
-            return status == "valid";
         }
     }
-
-    }
+}

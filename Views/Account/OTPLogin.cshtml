@@ -1,119 +1,54 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "OTPLogin";
     Layout = "";
 }
 @model Zencareservice.Models.Login
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title> OTP Login</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="~/css/my-login.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OTP Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
-
 <body class="my-login-page">
-	<section class="h-100">
-		<div class="container h-100">
-			<div class="row justify-content-md-center h-100">
-				<div class="card-wrapper">
-					<div class="brand">
-						<img src="~/images/signup-zencare.png" alt="logo">
-					</div>
-					<div class="card fat">
-						<div class="card-body">
-							<h4 class="card-title" style="text-align:center"> LOGIN </h4>
-							<h5 style="color:red" class="form-title"> @ViewBag.Message</h5>
-							<form method="POST" class="my-login-validation" novalidate="" asp-action="OTPLogin" asp-controller="Account">
-								<div class="form-group">
-									<label asp-for="OTPEmail">Email Address</label>
-									<input id="email" type="email" class="form-control" asp-for="OTPEmail"  required autofocus/>
-									<div class="invalid-feedback">
-										<span asp-validation-for="OTPEmail">EmailAddress is invalid</span>
-									</div>
-								</div>
-								<div>
+    <section class="h-100">
+        <div class="container h-100">
+            <div class="row justify-content-md-center h-100">
+                <div class="card-wrapper">
+                    <div class="brand">
+                        <img src="~/images/signup-zencare.png" alt="logo">
+                    </div>
+                    <div class="card fat">
+                        <div class="card-body">
+                            <h4 class="card-title" style="text-align:center">LOGIN</h4>
+                            <h5 style="color:red" class="form-title">@ViewBag.Message</h5>
+                            <form method="POST" class="my-login-validation" novalidate="" asp-action="OTPLogin" asp-controller="Account">
+                                <div class="form-group">
+                                    <label asp-for="OTPEmail">Email Address</label>
+                                    <input id="email" type="email" class="form-control" asp-for="OTPEmail" required autofocus />
+                                    <div class="invalid-feedback">
+                                        <span asp-validation-for="OTPEmail">Email Address is invalid</span>
+                                    </div>
+                                </div>
+                                <div class="form-group m-0">
+                                    <button type="submit" class="btn btn-primary btn-block">GENERATE OTP</button>
+                                </div>
+                                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                                <div class="mt-4 text-center">
+                                    <a asp-action="PatientLogin" asp-controller="Account">Back</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-								</div>
-								<div class="form-group m-0">
-									<button type="submit" class="btn btn-primary btn-block" onclick="validate()">
-										 GENERATE OTP
-									</button>
-								</div>
-								<input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-								<div class="mt-4 text-center">
-									 <a asp-action="PatientLogin" asp-controller="Account">Back</a>
-								</div>
-							</form>
-						</div>
-					</div>
-					@* <div class="footer">
-						Copyright &copy; 2023 &mdash; Zencareservice
-					</div> *@
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	<script src="~/js/my-login.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="~/js/toast.js"></script>
-	<script>
-		function validate() {
-			var email = document.getElementById('email').value;
-			if (email === "") {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: 'Please enter your email address!'
-				});
-			} 
-		}
-
-		// Function to display toast alert
-		function showToast(title, message) {
-			Swal.fire({
-				icon: 'success',
-				title: title,
-				text: message
-			});
-		}
-	</script>
-	<script type="text/javascript">
-   	 $(document).ready(function () {
-        var swalMessage = '@TempData["SwalMessage"]';
-        var swalType = '@TempData["SwalType"]';
-
-        if (swalMessage !== '') {
-            showSweetAlert(swalType, swalMessage);
-        }
-
-        var message = '@ViewBag.Message';
-        switch (message) {
-			case 'Error':
-                showSweetAlert('warning', 'Pls Tryagain.', 'Internal SMTP Server Issue!');
-                break;
-			case 'Invalid:'
-           		showSweetAlert('warning', 'Ooops.', 'Pls Enter Registered Email!');
-                break;
-        }
-    });
-
-    function showSweetAlert(icon, title, text) {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            text: text,
-            showConfirmButton: false,
-            timer: 1500 // Adjust the timer as needed
-        });
-    }
-</script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
-
