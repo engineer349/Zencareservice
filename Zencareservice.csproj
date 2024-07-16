@@ -81,6 +81,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="NeverBounce.SDK" Version="4.2.0" />
+    <PackageReference Include="NeverBounce.SDK.Samples" Version="4.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SimpleTCP" Version="1.0.24" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />

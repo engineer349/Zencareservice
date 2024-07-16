@@ -1637,7 +1637,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "fhshxafzjysuwxjw", "ResetEmailVerification", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "dlqvxmukerahbqdo", "ResetEmailVerification", $@"
 
 
 
@@ -1999,79 +1999,67 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public async Task<IActionResult> OTPLogin(Login Obj, string returnUrl)
         {
-            try
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
+                string email = Obj.OTPEmail;
+                TempData["OTPuser"] = email;
 
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                bool isEmailValid = await _emailVerifier.VerifyEmailAsync(email);
+                if (isEmailValid)
                 {
-                    string email = Obj.OTPEmail;
-                    TempData["OTPuser"] = email;
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet dse = Obj_DataAccess.CheckLoginEmail(Obj);
 
-                    bool isEmailValid = await _emailVerifier.VerifyEmailAsync(Obj.OTPEmail);
-
-                    if (isEmailValid)
+                    if (dse.Tables[0].Rows.Count != 0 && dse.Tables[1].Rows.Count != 0)
                     {
-                        DataAccess Obj_DataAccess = new DataAccess();
-                        DataSet dse = Obj_DataAccess.CheckLoginEmail(Obj);
-                        if (dse.Tables[0].Rows.Count != 0 && dse.Tables[1].Rows.Count != 0)
+                        try
                         {
-                            try
-                            {
-                                string validemail = Obj.OTPEmail;
-                                TempData["MyEmail"] = validemail;
+                            string validemail = Obj.OTPEmail;
+                            TempData["MyEmail"] = validemail;
 
-                                if (!string.IsNullOrEmpty(validemail))
+                            if (!string.IsNullOrEmpty(validemail))
+                            {
+                                string generatedCode = Codegenerator();
+                                _generatedOtp = Convert.ToInt32(generatedCode);
+                                CookieOptions options = new CookieOptions
                                 {
-                                    string generatedCode = Codegenerator();
-                                    _generatedOtp = Convert.ToInt32(generatedCode);
+                                    Expires = DateTime.Now.AddMinutes(5)
+                                };
+                                Response.Cookies.Append("OTP", generatedCode, options);
 
-                                    CookieOptions options = new CookieOptions
-                                    {
-                                        Expires = DateTime.Now.AddMinutes(5)
-                                    };
-                                    Response.Cookies.Append("OTP", generatedCode, options);
+                                SendingOTPEmail(Obj);
 
-                                    SendingOTPEmail(Obj);
+                                ViewBag.Message = "otpgenerated";
+                                TempData["SwalMessage"] = "OTP sent";
+                                TempData["SwalType"] = "success";
 
-                                    ViewBag.Message = "otpgenerated";
-                                    TempData["SwalMessage"] = "OTP sent";
-                                    TempData["SwalType"] = "success";
-
-                                    return RedirectToAction("VerifyOtp", "Account");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Error checking email: " + ex.Message);
-                                ViewBag.Message = "Error";
-                                TempData["SwalMessage"] = "User account not checked";
-                                TempData["SwalType"] = "warning";
-                                return View();
+                                return RedirectToAction("VerifyOtp", "Account");
                             }
                         }
-                    }
-                    else
-                    {
-                        TempData["Email"] = "InvalidUser";
-                        ViewBag.Message = "Invalid";
-                        TempData["SwalMessage"] = "Please enter a registered email to continue!";
-                        TempData["SwalType"] = "warning";
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error checking email: " + ex.Message);
+                            ViewBag.Message = "Error";
+                            TempData["SwalMessage"] = "User account not checked";
+                            TempData["SwalType"] = "warning";
+                            return View();
+                        }
                     }
                 }
                 else
                 {
-                    ViewBag.Message = "Please try again!";
-                    return RedirectToAction("Index", "Home");
+                    TempData["Email"] = "InvalidUser";
+                    ViewBag.Message = "Invalid";
+                    TempData["SwalMessage"] = "Please enter registered email to continue!";
+                    TempData["SwalType"] = "warning";
                 }
-                return View();
             }
-            catch (Exception ex)
+            else
             {
-                // Log the exception
-             
-                ViewBag.Message = "An error occurred. Please try again.";
-                return View();
+                ViewBag.Message = "Please try again!";
+                return RedirectToAction("Index", "Home");
             }
+            return View();
         }
 
 

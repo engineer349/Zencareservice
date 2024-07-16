@@ -33,6 +33,9 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionStrings = builder.Configuration.GetConnectionString("ZencareserviceConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ZencareserviceConnection")));
+
 
 builder.Services.AddHttpClient();
 
@@ -90,9 +93,10 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddSingleton<EmailVerifier>(provider =>
 {
-    var apiKey = "YOUR_NEVERBOUNCE_API_KEY";
+    var apiKey = "live_03bfd7d2d809b5719cd750c91fb31a0a29467508545e7279d34cb5086ea8b256";
     return new EmailVerifier(apiKey);
 });
+
 
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 var dbName = Environment.GetEnvironmentVariable("DB_NAME");
@@ -112,18 +116,17 @@ app.Use(async (context, next) =>
     await next();
 
     if (context.Response.StatusCode == 401)
-    {
-        // Redirect to the custom 401 error page
+    {      
         context.Response.Redirect("/Home/401.html");
     }
     else if (context.Response.StatusCode == 404)
     {
-        // Redirect to the custom 404 error page
+        
         context.Response.Redirect("/Home/404.html");
     }
     else if (context.Response.StatusCode == 500)
     {
-        // Redirect to the custom 401 error page
+       
         context.Response.Redirect("/Home/500.html");
     }
 });

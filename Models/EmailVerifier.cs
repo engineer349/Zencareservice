@@ -1,24 +1,35 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
-using NeverBounce;
+using Newtonsoft.Json.Linq;
 
 namespace Zencareservice.Models
 {
     public class EmailVerifier
     {
-        private readonly NeverBounceApiClient _client;
+        private readonly HttpClient _httpClient;
+        private readonly string _apiKey;
 
         public EmailVerifier(string apiKey)
         {
-            _client = new NeverBounceApiClient(apiKey);
+            _apiKey = apiKey;
+            _httpClient = new HttpClient();
         }
 
         public async Task<bool> VerifyEmailAsync(string email)
         {
             try
             {
-                var response = await _client.SingleCheck(email);
-                return response.Result == NeverBounce.Models.SingleCheckResponseResult.Valid;
+                var requestUri = $"https://api.kickbox.com/v2/verify?email={email}&apikey={_apiKey}";
+                var response = await _httpClient.GetAsync(requestUri);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JObject.Parse(content);
+                Console.WriteLine(content);
+
+                // Check if the email is deliverable
+                return jsonResponse["result"]?.ToString() == "deliverable";
             }
             catch (Exception ex)
             {

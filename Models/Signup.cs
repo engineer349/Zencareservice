@@ -61,13 +61,14 @@ namespace Zencareservice.Models
 
         [Required(ErrorMessage = "ResetPassword required")]
         [DataType(DataType.Password)]
-        [RegularExpression(PasswordRegexPattern, ErrorMessage = "Password must be alphanumeric with at least one special character and be 8 to 16 characters long.")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long")]
+        [RegularExpression(@"^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$", ErrorMessage = "Password must be alphanumeric")]
         public string ?RPassword { get; set; }
 
         [NotMapped]
         [Required(ErrorMessage = "Confirm ResetPassword required")]
         [Compare("RPassword", ErrorMessage = "Password doesn't match.")]
-        [RegularExpression(PasswordRegexPattern, ErrorMessage = "Password must be alphanumeric with at least one special character and be 8 to 16 characters long.")]
+  
 
         public string ?CRPassword { get; set; }
 

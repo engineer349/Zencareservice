@@ -1,92 +1,62 @@
 ﻿@{
-	ViewData["Title"] = "PatReset";
-	Layout = "";
+    ViewData["Title"] = "PatReset";
+    Layout = "";
 }
-@model Zencareservice.Models.Signup;
+@model Zencareservice.Models.Signup
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Patient Reset</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="~/css/my-login.css">
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Patient Reset</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/jquery.validate.unobtrusive.min.js"></script>
 </head>
 <body class="my-login-page">
-	<section class="h-100">
-		<div class="container h-100">
-			<div class="row justify-content-md-center align-items-center h-100">
-				<div class="card-wrapper">
-					<div class="brand">
-						<img src="~/images/signin-zencare.png" alt="zencareservice_logo">
-					</div>
-					<div class="card fat">
-						<div class="card-body">
-							<h4 class="card-title">Reset Password</h4>						
-							<form class="my-login-validation" novalidate="" asp-action="PatReset" asp-controller="Account" method="post">
-								<div class="form-group">
-									<label asp-for="RPassword">Reset Password</label>
-									<input asp-for="RPassword" class="form-control" type="password" required data-eye />
-									<span asp-validation-for="RPassword" class="invalid-feedback"></span>
-									<div class="invalid-feedback">
-										Reset Password is required
-									</div>
-								</div>
-								<div class="form-group">
-									<label asp-for="CRPassword">Confirm Password</label>
-									<input asp-for="CRPassword" class="form-control" type="password" required data-eye />
-									
-									<div class="invalid-feedback">
-									Confirm Reset	Password is required
-									</div>
-								</div>
-								<button type="submit" class="btn btn-primary btn-block">Reset Password</button>
-								<input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-							</form>
-						</div>
-					</div>
-					<div class="footer">
-						Copyright &copy; 2023 &mdash; Zencareservice
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+    <section class="h-100">
+        <div class="container h-100">
+            <div class="row justify-content-md-center align-items-center h-100">
+                <div class="card-wrapper">
+                    <div class="brand">
+                        <img src="~/images/signin-zencare.png" alt="zencareservice_logo">
+                    </div>
+                    <div class="card fat">
+                        <div class="card-body">
+                            <h4 class="card-title">Reset Password</h4>
+                            <form asp-action="PatReset" asp-controller="Account" method="post" id="resetPasswordForm">
+                                <div class="form-group">
+                                    <label asp-for="RPassword"></label>
+                                    <input asp-for="RPassword" class="form-control" type="password" required />
+                                    <span asp-validation-for="RPassword" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="CRPassword"></label>
+                                    <input asp-for="CRPassword" class="form-control" type="password" required />
+                                    <span asp-validation-for="CRPassword" class="text-danger"></span>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+                                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                            </form>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        Copyright &copy; 2023 &mdash; Zencareservice
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	<script src="js/my-login.js"></script>
-	<script type="text/javascript">
-   	 $(document).ready(function () {
-        var swalMessage = '@TempData["SwalMessage"]';
-        var swalType = '@TempData["SwalType"]';
-
-        if (swalMessage !== '') {
-            showSweetAlert(swalType, swalMessage);
-        }
-
-        var message = '@ViewBag.Message';
-        switch (message) {
-            case 'VerificationOTP':
-                showSweetAlert('success', 'OTP Verified', 'Pls Enter Password to Continue!');
-                break;
-			case 'OTPFailed:'
-           		showSweetAlert('error', 'OTP Failed.', 'Pls Enter Correct OTP!');
-                break;
-        }
-    });
-
-    function showSweetAlert(icon, title, text) {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            text: text,
-            showConfirmButton: false,
-            timer: 1500 // Adjust the timer as needed
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            $("#resetPasswordForm").validate();
         });
-    }
-</script>
+    </script>
 </body>
 </html>
