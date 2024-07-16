@@ -92,6 +92,7 @@
 
   <ItemGroup>
     <Folder Include="scripts\" />
+    <Folder Include="wwwroot\img\" />
   </ItemGroup>
 
 

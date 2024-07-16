@@ -1536,7 +1536,7 @@ namespace Zencareservice.Controllers
                             <div class=""verification-container"">
         
                                 <h2>Hi {FName},</p>
-                                <p>Thank you for using Zenhealthcareservice! </p>
+                                <p>Thank you for using Zencareserviceservice! </p>
                                 <p>To ensure the security of your account, we have generated a One-Time Password (OTP) for you.</p>
                                 <p class=""verification-code"">Your Verification Code:{_generatedOtp}</p>
                                 <p class=""verification-instructions"">Please use the above code to verify your email address.</p>
@@ -1619,7 +1619,7 @@ namespace Zencareservice.Controllers
                             <div class=""verification-container"">
         
                                 <h2>Hi {FName},</p>
-                                <p>Thank you for using Zenhealthcareservice! </p>
+                                <p>Thank you for using Zencareserviceservice! </p>
                                 <p>To ensure the security of your account, we have generated a One-Time Password (OTP) for you.</p>
                                 <p class=""verification-code"">Your Verification Code:{_generatedOtp}</p>
                                 <p class=""verification-instructions"">Please use the above code to verify your email address.</p>
@@ -1702,7 +1702,7 @@ namespace Zencareservice.Controllers
                             <div class=""verification-container"">
         
                                 <h2>Hi ,</p>
-                                <p>Thank you for using Zenhealthcareservice! </p>
+                                <p>Thank you for using Zencareserviceservice! </p>
                                 <p>To ensure the security of your account, we have generated a One-Time Password (OTP) for you.</p>
                                 <p class=""verification-code"">Your Verification Code:{_generatedOtp}</p>
                                 <p class=""verification-instructions"">Please use the above code to verify your email address.</p>

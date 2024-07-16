@@ -11,6 +11,7 @@
     <title>OTP Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon.png">
 </head>
 
 <body class="my-login-page">
@@ -27,8 +28,8 @@
                             <h5 style="color:red" class="form-title">@ViewBag.Message</h5>
                             <form method="post" class="my-login-validation" asp-action="OTPLogin" asp-controller="Account">
                                 <div class="form-group">
-                                    <label asp-for="OTPEmail"></label>
-                                    <input id="email" type="email" class="form-control" asp-for="OTPEmail" required autofocus />
+                                    <label asp-for="OTPEmail">Email</label>
+                                    <input id="email" type="email" class="form-control" asp-for="OTPEmail" required  />
                                     <span class="text-danger" asp-validation-for="OTPEmail"></span>
                                 </div>
                                 <div class="form-group m-0">

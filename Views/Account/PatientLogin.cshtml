@@ -2,7 +2,7 @@
     ViewData["Title"] = "PatientLogin";
     Layout = "";
 }
-@model Zencareservice.Models.Login;
+@model Zencareservice.Models.Login
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +13,7 @@
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
 
@@ -30,10 +31,8 @@
                             <form method="POST" class="my-login-validation" novalidate="" asp-action="Login" asp-controller="Account">
                                 <div class="form-group">
                                     <label asp-for="Username">UserName or Email Address</label>
-                                    <input id="username" type="text" class="form-control" asp-for="Username" name="username" required autofocus />
-                                    <div class="invalid-feedback">
-                                        <span asp-validation-for="Username">Username is invalid</span>
-                                    </div>
+                                    <input id="username" type="text" class="form-control" asp-for="Username" required autofocus />
+                                    <span asp-validation-for="Username" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
@@ -41,11 +40,8 @@
                                         Password
                                         <a asp-action="PatForgot" asp-controller="Account" class="float-right">Forgot Password?</a>
                                     </label>
-                                    <input asp-for="Password" id="password" type="password" class="form-control" name="password" required data-eye>
-                                    <span asp-validation-for="Password"></span>
-                                    <div class="invalid-feedback">
-                                        Password is required
-                                    </div>
+                                    <input asp-for="Password" id="password" type="password" class="form-control" required data-eye>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group m-0">
@@ -127,21 +123,19 @@
         </div>
     </section>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js" crossorigin="anonymous"></script>
+
     <script src="~/js/my-login.js"></script>
     <script src="~/js/toast.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script type="text/javascript">
         function OTPLogging() {
             var otpLoginUrl = "/Account/OTPLogin";
             window.location.href = otpLoginUrl;
         }
-    </script>
 
-    <script type="text/javascript">
         $(document).ready(function () {
             var swalMessage = '@TempData["SwalMessage"]';
             var swalType = '@TempData["SwalType"]';

@@ -78,7 +78,7 @@ namespace Zencareservice.Controllers
                     // Create the email message
                     MailMessage mailMessage = new MailMessage();
                     mailMessage.From = new MailAddress("your-email@yourprovider.com");
-                    mailMessage.To.Add("zenhealthcareservice@gmail.com"); // Change this to the recipient's email address
+                    mailMessage.To.Add("Zencareserviceservice@gmail.com"); // Change this to the recipient's email address
                     mailMessage.Subject = subject;
                     mailMessage.Body = $"Name: {name}\nEmail: {email}\n\n{message}";
 

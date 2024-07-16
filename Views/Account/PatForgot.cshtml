@@ -2,45 +2,19 @@
     ViewData["Title"] = "PatForgot";
     Layout = "";
 }
-@model Zencareservice.Models.Signup;
+@model Zencareservice.Models.Signup
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title> PatForgot  </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PatForgot</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="~/js/my-login.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var swalMessage = '@TempData["SwalMessage"]';
-            var swalType = '@TempData["SwalType"]';
-
-            if (swalMessage !== '') {
-                Swal.fire({
-                    icon: swalType,
-                    title: swalMessage,
-                    showConfirmButton: false,
-                    timer: 1500 // Adjust the timer as needed
-                });
-            }
-
-            // Add this block to trigger SweetAlert for "UserAlready Exsits"
-            var message = '@ViewBag.Message';
-            if (message === 'InvalidEmail') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'User already exists!'
-                });
-            }
-        });
-    </script>
-
 </head>
 <body class="my-login-page">
     <section class="h-100">
@@ -55,13 +29,11 @@
                             <h4 class="card-title">Forgot Password</h4>
                             <form method="POST" class="my-login-validation" asp-action="PatForgot" asp-controller="Account" novalidate="">
                                 <div class="form-group">
-                                    <label for="email">E-Mail Address</label>
+                                    <label asp-for="Email">E-Mail Address</label>
                                     <input id="email" type="email" class="form-control" asp-for="Email" required autofocus>
-                                    <div class="invalid-feedback">
-                                        Email is invalid
-                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                     <div class="form-text text-muted">
-                                        By clicking "Reset Password" we will send a password reset link
+                                        By clicking "Reset Password" we will send a OTP and need to verify!
                                     </div>
                                 </div>
 
@@ -78,10 +50,36 @@
         </div>
     </section>
 
-    
-    
-    @section script {
-    <script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/my-login.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var swalMessage = '@TempData["SwalMessage"]';
+            var swalType = '@TempData["SwalType"]';
+
+            if (swalMessage !== '') {
+                Swal.fire({
+                    icon: swalType,
+                    title: swalMessage,
+                    showConfirmButton: false,
+                    timer: 1500 // Adjust the timer as needed
+                });
+            }
+
+            // Add this block to trigger SweetAlert for "UserAlready Exists"
+            var message = '@ViewBag.Message';
+            if (message === 'InvalidEmail') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'User not exists!'
+                });
+            }
+        });
+
         $(document).ready(function () {
             var message = '@ViewBag.Message';
             if (message === 'OTP Sent') {
@@ -89,10 +87,6 @@
             }
         });
     </script>
-    
-     
-    }
-    
 
 </body>
 </html>

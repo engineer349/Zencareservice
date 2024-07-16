@@ -59,18 +59,16 @@ namespace Zencareservice.Models
 
         public string ?Confirmpassword { get; set; }
 
-        [Required(ErrorMessage = "ResetPassword required")]
+        [Required(ErrorMessage = "Password is required.")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long.")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$", ErrorMessage = "Password must be alphanumeric and at least 8 characters long.")]
         [DataType(DataType.Password)]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long")]
-        [RegularExpression(@"^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+$", ErrorMessage = "Password must be alphanumeric")]
-        public string ?RPassword { get; set; }
+        public string RPassword { get; set; }
 
-        [NotMapped]
-        [Required(ErrorMessage = "Confirm ResetPassword required")]
-        [Compare("RPassword", ErrorMessage = "Password doesn't match.")]
-  
-
-        public string ?CRPassword { get; set; }
+        [Required(ErrorMessage = "Confirm password is required.")]
+        [Compare("RPassword", ErrorMessage = "Passwords do not match.")]
+        [DataType(DataType.Password)]
+        public string CRPassword { get; set; }
 
         [Required(ErrorMessage = "Enter Username")]
         [StringLength(10, MinimumLength = 6, ErrorMessage = "Username must be between 6 and  10 characters.")]

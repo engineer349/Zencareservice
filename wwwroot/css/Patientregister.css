@@ -1,2 +1,53 @@
-﻿body {
+﻿/* styles.css */
+
+/* General body styles */
+body.my-login-page {
+    background: url('~/images/.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
 }
+
+/* Card styles */
+.card {
+    border-radius: 15px;
+    opacity: 0.9;
+    transition: transform 0.2s;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+/* Animation for form submission */
+.my-login-validation {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+/* Custom checkbox */
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Add additional styles as needed */

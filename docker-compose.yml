@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  zenhealthcareapp: 
+  Zencareserviceapp: 
 
 services: 
   zencareservice:
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./scripts:/scripts  # Fix the volume mapping
     networks:
-      - zenhealthcareapp
+      - Zencareserviceapp
 
   zencareserviceserverapp:
     container_name: Zencareservice-app
@@ -32,7 +32,7 @@ services:
       DB_NAME: zencareservice  # Adjust the database name if necessary
       DB_SA_PASSWORD: Devops@22  # Adjust the password if necessary
     networks:
-      - zenhealthcareapp
+      - Zencareserviceapp
   
     healthcheck:
       test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S zencareservice -U sa -P Devops@22 -d zencareservice -Q 'SELECT 1'" ]
