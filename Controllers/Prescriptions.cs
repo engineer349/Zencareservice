@@ -22,7 +22,7 @@ namespace Zencareservice.Controllers
         }
 
 		[Authorize(Roles = "Doctor")]
-		public IActionResult Prescrt(Prescs prc)
+		public IActionResult Prescrt()
         {
             string UsrId = Request.Cookies["UsrId"];
 
@@ -296,14 +296,14 @@ namespace Zencareservice.Controllers
 
             TempData["aptcode"] = aptcode;
 
-            string pfname = Obj.PatientFirstName;
-            string plname = Obj.PatientLastName;
-            string patphoneno = Obj.Patientphoneno;
-            string patemail = Obj.PatientEmail;
-            string patage = Obj.PatientAge;
-            string patbloodgroup = Obj.PatBloodgroup;
-            string patweight = Obj.PatWeight;
-            string dfname = Obj.DoctorFirstName;
+            //string pfname = Obj.PatientFirstName;
+            //string plname = Obj.PatientLastName;
+            //string patphoneno = Obj.Patientphoneno;
+            //string patemail = Obj.PatientEmail;
+            //string patage = Obj.PatientAge;
+            //string patbloodgroup = Obj.PatBloodgroup;
+            //string patweight = Obj.PatWeight;
+            //string dfname = Obj.DoctorFirstName;
 
 
 

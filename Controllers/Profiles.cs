@@ -191,7 +191,7 @@ namespace Zencareservice.Controllers
 
             TempData["UserId"] = UsrId;
 
-            string RCode = Request.Cookies["RCode"];
+            string RCode =Request.Cookies["RCode"];
         
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(RCode))

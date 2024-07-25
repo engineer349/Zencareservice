@@ -2,7 +2,7 @@
     Layout ="";
     ViewData["Title"] = "OTPVerification";
 }
-@model Zencareservice.Models.Login
+@model Zencareservice.Models.OtpVerificationModel
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,11 +27,16 @@
 					<div class="card fat">
 						<div class="card-body">
 							   <h4 class="card-title" style="text-align:center; font-weight:bold;">OTP Verification</h4>
-                            <form method="POST" class="my-login-validation" novalidate="" asp-action="ValidateResetOtp" asp-controller="Account">
+                            <form method="POST" class="my-login-validation" novalidate="" asp-action="VerifyOtp" asp-controller="Account">
+                                    <div class="form-group">
+                                        <label asp-for="OTPEmail">Email</label>
+                                        <input asp-for="OTPEmail" id="otpEmail" class="form-control" readonly />
+                                        <span asp-validation-for="OTPEmail" class="text-danger"></span>
+                                    </div>
                                      <div class="form-group">
                                         <div class="input-group">
-                                        <input type="text" id="otpInput" class="form-control" oninput="limitLength()"   maxlength="5" placeholder="Enter OTP" onpaste="return false" ondrop="return false" asp-for="ResendOTP" />
-                                            <span asp-validation-for="ResendOTP"></span>
+                                        <input type="text" id="otpInput" class="form-control" oninput="limitLength()" maxlength="6" placeholder="Enter OTP" onpaste="return false" ondrop="return false" asp-for="OTP" />
+                                            <span asp-validation-for="OTP"></span>
                                             <div class="input-group-append">
                                                 <span class="input-group-text">
                                                     <span id="timer" style="font-size: smaller;"></span>
@@ -39,6 +44,7 @@
                                             </div>
                                         </div>
                                     </div>
+                             
                                     <div class="form-group m-0">
                                         <button type="button" onclick="validateOTP()" id="validateBtn" class="btn btn-primary btn-block">Validate</button>
                                         <button type="button" onclick="resendOTP()" id="resendBtn" class="btn btn-primary btn-block" style="display: none;">Resend</button>
@@ -51,149 +57,125 @@
             </div>
         </div>
     </section>
-<script type="text/javascript">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var timer;
+            var timeLeft;
 
-    $(document).ready(function () {
-    var timer;
-    var timeLeft;
-
-    function startTimer() {
-        timeLeft = 300;
-        clearInterval(timer);
-        timer = setInterval(updateTimer, 1000);
-        $("#otpInput").prop("disabled", false);
-        $("#validateBtn").prop("disabled", false); // Ensure OTP button is enabled
-    }
-
-    function updateTimer() {
-        var minutes = Math.floor(timeLeft / 60);
-        var seconds = timeLeft % 60;
-        $("#timer").text(minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0'));
-        timeLeft--;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            $("#timer").text("0:00");
-            $("#otpInput").prop("disabled", true);
-            $("#validateBtn").prop("disabled", true);
-            $("#resendBtn").show();
-        }
-    }
-
-    function showSweetAlert(icon, title, text) {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            text: text,
-            showConfirmButton: false,
-            timer: 1500
-        });
-    }
-           
-
-
-    function validateOTP() {
-        var otp = $("#otpInput").val();
-
-        if (otp.length != 5 || isNaN(otp)) {
-            showSweetAlert('error', 'Oops...', 'Please enter a valid 5-digit OTP!');
-            return;
-        }
-
-        var data = { ResendOTP: otp };
-
-        $.ajax({
-            url: '@Url.Action("ValidateResetOtp", "Account")',
-            type: 'POST',
-            data: data,
-            success: function (response) {
-                showSweetAlert('success', 'Success!', 'OTP validated successfully!');
-                        window.history.pushState(null, null, window.location.href);
-                        window.onpopstate = function () {
-                            window.history.go(1);
-                        };
-                        // Redirect to the specified URL
-                        window.location.href = response.redirectUrl;
-            },
-            error: function (xhr, status, error) {                 
-                showSweetAlert('warning', 'WrongOTP!', 'OTP unvalidated!');
+            function startTimer() {
+                timeLeft = 300;
+                clearInterval(timer);
+                timer = setInterval(updateTimer, 1000);
+                $("#otpInput").prop("disabled", false);
+                $("#validateBtn").prop("disabled", false);
             }
-        });
-    }
 
-    function resendOTP() {
-        startTimer();
-        $("#resendBtn").hide();
-    }
-            function checkInput() {
-                var input = $("#otpInput").val();
-                if (isNaN(input)) {
-                    showSweetAlert('error', 'Oops...', 'Please enter numbers only for OTP!');
+            function updateTimer() {
+                var minutes = Math.floor(timeLeft / 60);
+                var seconds = timeLeft % 60;
+                $("#timer").text(minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0'));
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    $("#timer").text("0:00");
+                    $("#otpInput").prop("disabled", true);
+                    $("#validateBtn").prop("disabled", true);
+                    $("#resendBtn").show();
                 }
+            }
+
+            function showSweetAlert(icon, title, text) {
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+
+            function validateOTP() {
+                var otp = $("#otpInput").val();
+                var email = $("#otpEmail").val();
+                if (otp.length != 6 || isNaN(otp)) {
+                    showSweetAlert('error', 'Oops...', 'Please enter a valid 6-digit OTP!');
+                    return;
+                }
+
+                var data = { OTP: otp, OTPEmail: email };
+
+                $.ajax({
+                    url: '@Url.Action("VerifyOtp", "Account")',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if (response.success) {
+                            showSweetAlert('success', 'Success!', 'OTP validated successfully!');
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            showSweetAlert('error', 'Oops...', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        showSweetAlert('error', 'Oops...', 'An error occurred while validating OTP!');
+                    }
+                });
+            }
+
+            function resendOTP() {
+                startTimer();
+                $("#resendBtn").hide();
             }
 
             function limitLength() {
                 var input = $("#otpInput");
-                if (input.val().length > 5) {
-                    input.val(input.val().slice(0, 5));
+                if (input.val().length > 6) {
+                    input.val(input.val().slice(0, 6));
                 }
             }
 
-    function validatePresence() {
-        var otp = $("#otpInput").val();
-        if (otp.length == 0) {
-            showSweetAlert('warning', 'Oops...', 'Please enter the OTP!');
-        }
-    }
+            var swalMessage = '@TempData["SwalMessage"]';
+            var swalType = '@TempData["SwalType"]';
 
-    function limitLength() {
-        var input = $("#otpInput");
-        if (input.val().length > 5) {
-            input.val(input.val().slice(0, 5));
-        }
-    }
+            if (swalMessage !== '') {
+                showSweetAlert(swalType, swalMessage);
+            }
 
-    var swalMessage = '@TempData["SwalMessage"]';
-    var swalType = '@TempData["SwalType"]';
+            var message = '@ViewBag.Message';
+            switch (message) {
+                case 'VerificationOTP':
+                    showSweetAlert('success', 'OTP Sent', 'Please enter the OTP to continue!');
+                    break;
+                case 'OTPFailed':
+                    showSweetAlert('error', 'Oops...', 'Please try again!');
+                    break;
+                case 'InvalidOTP':
+                    showSweetAlert('warning', 'Oops...', 'Please try again!');
+                    break;
+            }
 
-    if (swalMessage !== '') {
-        showSweetAlert(swalType, swalMessage);
-    }
+            startTimer();
 
-    var message = '@ViewBag.Message';
-    switch (message) {
-        case 'VerificationOTP':
-            showSweetAlert('success', 'OTPSent', 'Please enter password to continue!');
-            break;
-        case 'OTPFailed':
-            showSweetAlert('error', 'Oops.', 'Please try again!');
-            break;
-        case 'InvalidOTP':
-            showSweetAlert('warning', 'Oops.', 'Please try again!');
-            break;
-    }
+            $("#validateBtn").on("click", function () {
+                validateOTP();
+            });
 
-    startTimer(); // Start the timer when the page loads
+            $("#resendBtn").on("click", function () {
+                resendOTP();
+            });
 
-    // Event listeners
-    $("#validateBtn").on("click", function() {
-        validateOTP();
-    });
+            $("#otpInput").on("input", function () {
+                limitLength();
+            });
 
-    $("#resendBtn").on("click", function() {
-        resendOTP();
-    });
-
-    $("#otpInput").on("input", function() {
-        limitLength();
-    });
-
-    $("form").on("submit", function() {
-        validatePresence();
-        return false; // Prevent form submission
-    });
-});
+            $("form").on("submit", function () {
+                validatePresence();
+                return false;
+            });
+        });
+    </script>
 
 
-</script>
 </body>
 </html>

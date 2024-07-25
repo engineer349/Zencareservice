@@ -27,21 +27,25 @@
                     </div>
                     <div class="card fat">
                         <div class="card-body">
-                            <h4 class="card-title" style="text-align:center">LOGIN</h4>
+                            <h4 class="card-title" style="text-align:center"> LOGIN</h4>
                             <form method="POST" class="my-login-validation" novalidate="" asp-action="Login" asp-controller="Account">
                                 <div class="form-group">
                                     <label asp-for="Username">UserName or Email Address</label>
                                     <input id="username" type="text" class="form-control" asp-for="Username" required autofocus />
                                     <span asp-validation-for="Username" class="text-danger"></span>
+                                    <a asp-action="OTPLogin" asp-controller="Account" class="float-right">
+                                        &#x1F512; OTPLogin
+                                    </a>
+
                                 </div>
 
                                 <div class="form-group">
                                     <label asp-for="Password">
-                                        Password
-                                        <a asp-action="PatForgot" asp-controller="Account" class="float-right">Forgot Password?</a>
+                                        Password                                       
                                     </label>
                                     <input asp-for="Password" id="password" type="password" class="form-control" required data-eye>
                                     <span asp-validation-for="Password" class="text-danger"></span>
+                                    <a asp-action="PatForgot" asp-controller="Account" class="float-right">Forgot Password?</a>
                                 </div>
 
                                 <div class="form-group m-0">
@@ -49,7 +53,7 @@
                                 </div>
                             </form>
 
-                            <div class="form-group m-0">
+             @*                <div class="form-group m-0">
                                 <br />
                                 <p style="text-align:center">Or</p>
                                 <button id="otpLoginBtn" class="btn btn-primary btn-block" onclick="OTPLogging()">OTP Login</button>
@@ -110,7 +114,7 @@
                                         window.location.href = '/Account/EmailSignIn?email=' + encodeURIComponent(email);
                                         return false;
                                     }
-                                </script>
+                                </script> *@
 
                                 <div class="mt-4 text-center">
                                     Don't have an account? <a asp-action="PatientRegister" asp-controller="Account">Create One</a>

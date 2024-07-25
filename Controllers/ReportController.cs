@@ -173,56 +173,44 @@ namespace Zencareservice.Controllers
 
         }
 
-        [Authorize(Roles ="Admin, Patient, Doctor")]
-		public IActionResult Dashboard(Dashboard Obj)
+        [Authorize(Roles = "Admin, Patient, Doctor")]
+        public IActionResult Dashboard(Dashboard Obj)
         {
-            string UserId = Request.Cookies["UsrId"];
-            string UsrName = Request.Cookies["UsrName"];
-            string RoleName = Request.Cookies["Role"];
+            string userId = Request.Cookies["UsrId"];
+            string usrName = Request.Cookies["UsrName"];
+            string roleName = Request.Cookies["Role"];
 
-            if (string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(UsrName) || string.IsNullOrEmpty(RoleName))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(usrName) || string.IsNullOrEmpty(roleName))
             {
                 return RedirectToAction("Login", "Account");
             }
-            else
+
+            Obj.UsrId = Convert.ToInt32(userId);
+            Obj.Role = roleName;
+
+            DataAccess objDataAccess = new DataAccess();
+            DataSet ds = new DataSet();
+
+            try
             {
-                Obj.UsrId = Convert.ToInt32(UserId);
-                Obj.Role = RoleName;
+                ds = objDataAccess.GetDashboardvalues(Obj);
 
-                DataAccess Obj_DataAccess = new DataAccess();
-                DataSet ds = new DataSet();
-
-                try
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    ds = Obj_DataAccess.GetDashboardvalues(Obj);
+                    DataRow row = ds.Tables[0].Rows[0];
 
-                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                    {
-                        DataRow row = ds.Tables[0].Rows[0];
-
-                        ViewBag.Appointments = row["AptCount"].ToString();
-                        ViewBag.Users = row["RegisterCount"].ToString();
-                        ViewBag.AppointmentStatus = row["AptstatusCount"].ToString();
-                        ViewBag.Prescriptions = row["PrescriptionCount"].ToString();
-                    }
-                    else
-                    {
-                        // Handle case when there are no rows returned from the database
-                        // You can set default values or display an error message
-                        ViewBag.Appointments = "0";
-                        ViewBag.Users = "0";
-                        ViewBag.AppointmentStatus = "0";
-                        ViewBag.Prescriptions = "0";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Handle the exception appropriately, such as logging it
-                    ViewBag.ErrorMessage = "An error occurred while retrieving dashboard data.";
-                    // Optionally, you can also throw the exception to be handled at a higher level
-                    // throw ex;
+                    ViewBag.Appointments = row["AptCount"].ToString();
+                    ViewBag.Users = row["RegisterCount"].ToString();
+                    ViewBag.AppointmentStatus = row["AptstatusCount"].ToString();
+                    ViewBag.Prescriptions = row["PrescriptionCount"].ToString();
                 }
             }
+            catch (Exception ex)
+            {
+                // Handle exception
+                // Log the exception if necessary
+            }
+
             return View();
         }
 

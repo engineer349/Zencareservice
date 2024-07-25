@@ -574,12 +574,14 @@ namespace Zencareservice.Controllers
                     }
 
                 }
-                catch(Exception ex)
+                catch
                 {
                     TempData["SwalMessage"] = "An error occurred while processing your request.";
                     TempData["SwalType"] = "error";
 
+                   
                     return RedirectToAction("Error", "Home");
+
                 }
              
 

@@ -31,6 +31,31 @@ namespace Zencareservice.Repository
             }
         }
 
+
+        public DataSet SaveOTP(string email, string otp)
+        {
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "SaveOTP_SP";
+
+                SqlParameter[] param = new SqlParameter[3];
+                param[0] = new SqlParameter("@Email", SqlDbType.NVarChar);
+                param[0].Value = email;
+                param[1] = new SqlParameter("@Otp", SqlDbType.NVarChar);
+                param[1].Value = otp;
+                param[2] = new SqlParameter("@Expirytime", SqlDbType.DateTime);
+                param[2].Value = DateTime.Now.AddMinutes(5);
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            }
 		
 	   public DataSet SaveRegister(Signup Obj)
         {
@@ -368,6 +393,29 @@ namespace Zencareservice.Repository
 
         }
 
+        public DataSet OTPLogging(OtpVerificationModel model)
+        {
+
+            try
+            {
+                DataSet ds = new DataSet();
+                string StrSPName = "GetAllUserdetails_SP";
+
+                SqlParameter[] param = new SqlParameter[1];
+
+                param[0] = new SqlParameter("@Email", SqlDbType.NVarChar);
+                param[0].Value = model.OTPEmail;
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
+
+                return ds;
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+        }
+
 
         public DataSet CheckEmail(Signup Obj )
         {
@@ -391,7 +439,7 @@ namespace Zencareservice.Repository
                 throw ex;
             }
         }
-		public DataSet CheckLoginEmail(Login Obj)
+		public DataSet CheckLoginEmail(OTPLoginModel Obj)
 		{
 
 			try

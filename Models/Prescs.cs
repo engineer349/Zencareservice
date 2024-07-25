@@ -38,9 +38,9 @@
         public int Dosage { get; set; }
         public int NoOfDays { get; set; }
 
-        public string Status { get; set; }
-        public string PrsCode { get; set; }
-        public string AptCode { get; set; }
+        public string ?Status { get; set; }
+        public string? PrsCode { get; set; }
+        public string ?AptCode { get; set; }
     
         public DateTime Prscdate { get; set; }
     }

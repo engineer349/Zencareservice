@@ -47,19 +47,11 @@ namespace Zencareservice.Controllers
 
 
         private readonly IDataProtector _dataProtector;
-		private readonly string _connectionString;
+        private readonly string _connectionString;
 
-		//private readonly UserManager<Signup> _userManager;
-		//private readonly SignInManager<Signup> _signInManager;
+        private readonly OtpService _otpService;
 
-		//public AccountController(UserManager<Signup> userManager,
-		//                              SignInManager<Signup> signInManager)
-		//{
-		//    _userManager = userManager;
-		//    _signInManager = signInManager;
-		//}
-
-		private int _generatedOtp;
+        private int _generatedOtp;
 
         private int _regeneratedOtp;
 
@@ -71,13 +63,14 @@ namespace Zencareservice.Controllers
 
         private readonly EmailVerifier _emailVerifier;
 
-        public AccountController(EmailVerifier emailVerifier, DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration)
+        public AccountController(EmailVerifier emailVerifier, DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration, OtpService otpService)
         {
             _emailVerifier = emailVerifier;
-                   _dataaccess = dataaccess;
-                      _sqldataaccess = sqldataaccess;
-                      _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
-            	_connectionString = configuration.GetConnectionString("ZencareserviceConnection");
+            _dataaccess = dataaccess;
+            _sqldataaccess = sqldataaccess;
+            _dataProtector = dataProtectionProvider.CreateProtector("MyCookieProtection");
+            _otpService = otpService;
+            _connectionString = configuration.GetConnectionString("ZencareserviceConnection");
         }
 
 
@@ -116,9 +109,9 @@ namespace Zencareservice.Controllers
         {
             return View();
         }
-        public IActionResult Register()
+        public IActionResult DoctorRegister()
         {
-            string returnUrl = "/Account/Register";
+            string returnUrl = "/Account/DoctorRegister";
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -130,7 +123,7 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        
+
         public IActionResult PatientLogin()
         {
             string returnUrl = "/Account/PatientLogin";
@@ -607,7 +600,7 @@ namespace Zencareservice.Controllers
             {
                 var mmm = IsValidEmail2(Obj.Email);
 
-				var gMail = IsEmailAccountValid("smtp.gmail.com", Obj.Email);
+                var gMail = IsEmailAccountValid("smtp.gmail.com", Obj.Email);
 
                 if (gMail == true)
                 {
@@ -668,7 +661,7 @@ namespace Zencareservice.Controllers
                 SendMail sendMail = new SendMail();
                 SmtpClient client = new SmtpClient();
 
-                string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "fhshxafzjysuwxjw", "Autoverification", "Your Zencareservice  Account  OTP verification of Email is " + +_regeneratedOtp, "smtp.gmail.com", 587);
+                string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "noiauctkdrybniwx", "Autoverification", "Your Zencareservice  Account  OTP verification of Email is " + +_regeneratedOtp, "smtp.gmail.com", 587);
 
                 return RedirectToAction("OTPVerification", "Account");
             }
@@ -751,7 +744,7 @@ namespace Zencareservice.Controllers
         private string Codegenerator()
         {
             Random random = new Random();
-            int randomCode = random.Next(10000, 100000);
+            int randomCode = random.Next(100000, 999999);
             _generatedOtp = randomCode;
             TempData["GOTP"] = _generatedOtp;
 
@@ -774,79 +767,79 @@ namespace Zencareservice.Controllers
             return int.Parse(responseString.Substring(0, 3));
         }
 
-		public bool IsValidEmail3(string source)
-		{
-			EmailAddressAttribute e = new EmailAddressAttribute();
-			if (e.IsValid(source))
-				return true;
-			else
-				return false;
-		}
-		public bool IsValidEmail2(string email)
-		{
-			var trimmedEmail = email.Trim();
+        public bool IsValidEmail3(string source)
+        {
+            EmailAddressAttribute e = new EmailAddressAttribute();
+            if (e.IsValid(source))
+                return true;
+            else
+                return false;
+        }
+        public bool IsValidEmail2(string email)
+        {
+            var trimmedEmail = email.Trim();
 
-			if (trimmedEmail.EndsWith("."))
-			{
-				return false; // suggested by @TK-421
-			}
-			try
-			{
-				var addr = new System.Net.Mail.MailAddress(email);
-				return addr.Address == trimmedEmail;
-			}
-			catch
-			{
-				return false;
-			}
-		}
-		private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
-		{
-		    try
-		    {
-		        using (var client = new TcpClient())
-		        {
-		            client.Connect(smtpServer, 587);  
-		            using (var netStream = client.GetStream())
-		            using (var reader = new StreamReader(netStream))
-		            {
-		                netStream.ReadTimeout = 10000;  
-		                netStream.WriteTimeout = 10000;  //Set timeout to 10 seconds
+            if (trimmedEmail.EndsWith("."))
+            {
+                return false; // suggested by @TK-421
+            }
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
+        {
+            try
+            {
+                using (var client = new TcpClient())
+                {
+                    client.Connect(smtpServer, 587);
+                    using (var netStream = client.GetStream())
+                    using (var reader = new StreamReader(netStream))
+                    {
+                        netStream.ReadTimeout = 10000;
+                        netStream.WriteTimeout = 10000;  //Set timeout to 10 seconds
 
-		                string CRLF = "\r\n";
-		                byte[] dataBuffer;
-		                string responseString;
+                        string CRLF = "\r\n";
+                        byte[] dataBuffer;
+                        string responseString;
 
-		                dataBuffer = BytesFromString("EHLO Hi" + CRLF);
-		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
-		                responseString = reader.ReadLine();
+                        dataBuffer = BytesFromString("EHLO Hi" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
 
-		                dataBuffer = BytesFromString("MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
-		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
-		                responseString = reader.ReadLine();
+                        dataBuffer = BytesFromString("MAIL FROM:<zencareservice.noreply@gmail.com>" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
 
-		                dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
-		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
-		                responseString = reader.ReadLine();
-		                int responseCode = GetResponseCode(responseString);
+                        dataBuffer = BytesFromString($"RCPT TO:<{emailAddress}>" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        responseString = reader.ReadLine();
+                        int responseCode = GetResponseCode(responseString);
 
-		                dataBuffer = BytesFromString("QUIT" + CRLF);
-		                netStream.Write(dataBuffer, 0, dataBuffer.Length);
+                        dataBuffer = BytesFromString("QUIT" + CRLF);
+                        netStream.Write(dataBuffer, 0, dataBuffer.Length);
 
-		                return responseCode != 550;
-		            }
-		        }
-		    }
-		    catch (Exception ex)
-		    {
-		        Console.WriteLine("Error checking email: " + ex.Message);
-		        return false;
-		    }
-		}
+                        return responseCode != 550;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error checking email: " + ex.Message);
+                return false;
+            }
+        }
 
-		
 
-		[HttpPost]
+
+        [HttpPost]
         public async Task<IActionResult> PatientRegister(Signup Obj, string returnUrl)
         {
 
@@ -1004,7 +997,7 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
-        public  async Task<IActionResult> Register(Signup Obj, string returnUrl)
+        public async Task<IActionResult> DoctorRegister(Signup Obj, string returnUrl)
         {
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -1471,7 +1464,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "dlqvxmukerahbqdo", "Autoverification", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "noiauctkdrybniwx", "Autoverification", $@"
 
 
 
@@ -1548,13 +1541,13 @@ namespace Zencareservice.Controllers
 
         }
 
-        private string SendingOTPEmail(Login Obj)
+        private string SendingOTPEmail(OTPLoginModel Obj)
         {
             string FName = Obj.OTPEmail;
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "dlqvxmukerahbqdo", "2FAuthentication", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.OTPEmail, "noiauctkdrybniwx", "2FAuthentication", $@"
 
 
 
@@ -1617,13 +1610,13 @@ namespace Zencareservice.Controllers
                         <body>
                             <img src=""~/images/zencare-logo1.png"" alt=""Your Logo"" class=""logo"">
                             <div class=""verification-container"">
-        
+
                                 <h2>Hi {FName},</p>
                                 <p>Thank you for using Zencareserviceservice! </p>
                                 <p>To ensure the security of your account, we have generated a One-Time Password (OTP) for you.</p>
                                 <p class=""verification-code"">Your Verification Code:{_generatedOtp}</p>
                                 <p class=""verification-instructions"">Please use the above code to verify your email address.</p>
-        
+
                             </div>
                         </body>
                         </html>", "smtp.gmail.com", 587);
@@ -1637,7 +1630,7 @@ namespace Zencareservice.Controllers
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
-            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "dlqvxmukerahbqdo", "ResetEmailVerification", $@"
+            string mail = sendMail.EmailSend("zencareservice.noreply@gmail.com", Obj.Email, "noiauctkdrybniwx", "ResetEmailVerification", $@"
 
 
 
@@ -1736,7 +1729,12 @@ namespace Zencareservice.Controllers
             return View();
         }
 
+        [HttpGet]
 
+        public IActionResult Login()
+        {
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Login(Login Obj)
@@ -1839,7 +1837,7 @@ namespace Zencareservice.Controllers
                         HttpContext.Session.SetString("UsrId", UsrId);
 
                         var claims = new List<Claim>
-					   {
+                       {
                         new Claim(ClaimTypes.Name, username),
                         new Claim(ClaimTypes.Role, Role),
                         new Claim("UserId", UsrId)
@@ -1847,15 +1845,15 @@ namespace Zencareservice.Controllers
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-						var authProperties = new AuthenticationProperties
-						{
-							// Allow refresh
-							IsPersistent = true,
-							ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
-						};
+                        var authProperties = new AuthenticationProperties
+                        {
+                            // Allow refresh
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                        };
 
 
-						await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                         HttpContext.Session.SetString("FirstName", Fname);
 
@@ -1890,114 +1888,114 @@ namespace Zencareservice.Controllers
 
         }
 
-		[HttpGet("/Account/GoogleSignInCallback")]
-		public async Task<IActionResult> GoogleSignInCallback(string idToken)
-		{
-			// Validate ID token and get email
-			var email = await DecodeIdTokenAndGetEmailAsync(idToken);
+        [HttpGet("/Account/GoogleSignInCallback")]
+        public async Task<IActionResult> GoogleSignInCallback(string idToken)
+        {
+            // Validate ID token and get email
+            var email = await DecodeIdTokenAndGetEmailAsync(idToken);
 
-			if (email == null)
-			{
-				return BadRequest("Invalid ID token.");
-			}
+            if (email == null)
+            {
+                return BadRequest("Invalid ID token.");
+            }
 
-			// Check if email exists and fetch user data
-			var userData = await GetUserDataByEmailAsync(email);
+            // Check if email exists and fetch user data
+            var userData = await GetUserDataByEmailAsync(email);
 
-			if (userData == null)
-			{
-				return RedirectToAction("ShowRegisterAlert");
-			}
+            if (userData == null)
+            {
+                return RedirectToAction("ShowRegisterAlert");
+            }
 
-			var userDataJson = JsonConvert.SerializeObject(userData);
-			var protectedData = _dataProtector.Protect(userDataJson);
+            var userDataJson = JsonConvert.SerializeObject(userData);
+            var protectedData = _dataProtector.Protect(userDataJson);
 
-			var cookieOptions = new CookieOptions
-			{
-				Expires = DateTime.Now.AddDays(1), // Set the expiration date
-				HttpOnly = true, // Makes the cookie accessible only to the server-side code
-				Secure = true,
-				SameSite = SameSiteMode.None
-			};
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(1), // Set the expiration date
+                HttpOnly = true, // Makes the cookie accessible only to the server-side code
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
 
-			Response.Cookies.Append("EncryptCookie", protectedData, cookieOptions);
-			Response.Cookies.Append("UserId", userData.UserId, cookieOptions);
-			Response.Cookies.Append("UsrName", userData.Firstname, cookieOptions);
-			Response.Cookies.Append("Role", userData.RoleName, cookieOptions);
-			Response.Cookies.Append("RCode", userData.Rcode, cookieOptions);
+            Response.Cookies.Append("EncryptCookie", protectedData, cookieOptions);
+            Response.Cookies.Append("UserId", userData.UserId, cookieOptions);
+            Response.Cookies.Append("UsrName", userData.Firstname, cookieOptions);
+            Response.Cookies.Append("Role", userData.RoleName, cookieOptions);
+            Response.Cookies.Append("RCode", userData.Rcode, cookieOptions);
 
-			HttpContext.Session.SetString("UsrId", userData.UserId);
-			HttpContext.Session.SetString("FirstName", userData.Firstname);
+            HttpContext.Session.SetString("UsrId", userData.UserId);
+            HttpContext.Session.SetString("FirstName", userData.Firstname);
 
-			var claims = new[]
-			{
-			new Claim(ClaimTypes.Name, userData.Firstname),
-			new Claim(ClaimTypes.Role, userData.RoleName),
-			new Claim("UserId", userData.UserId)
-		};
+            var claims = new[]
+            {
+            new Claim(ClaimTypes.Name, userData.Firstname),
+            new Claim(ClaimTypes.Role, userData.RoleName),
+            new Claim("UserId", userData.UserId)
+        };
 
-			var identity = new ClaimsIdentity(claims, "login");
-			var principal = new ClaimsPrincipal(identity);
+            var identity = new ClaimsIdentity(claims, "login");
+            var principal = new ClaimsPrincipal(identity);
 
-			await HttpContext.SignInAsync(principal);
+            await HttpContext.SignInAsync(principal);
 
-			TempData["SwalMessage"] = "Login Successful";
-			TempData["SwalType"] = "success";
+            TempData["SwalMessage"] = "Login Successful";
+            TempData["SwalType"] = "success";
 
-			return RedirectToAction("Dashboard", "Report");
-		}
+            return RedirectToAction("Dashboard", "Report");
+        }
 
-		private async Task<string> DecodeIdTokenAndGetEmailAsync(string idToken)
-		{
-			try
-			{
-				var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
-				return payload.Email;
-			}
-			catch (Exception ex)
-			{
-				// Handle validation errors
-				return null;
-			}
-		}
+        private async Task<string> DecodeIdTokenAndGetEmailAsync(string idToken)
+        {
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+                return payload.Email;
+            }
+            catch (Exception ex)
+            {
+                // Handle validation errors
+                return null;
+            }
+        }
 
-		public async Task<Signup?> GetUserDataByEmailAsync(string email)
-		{
-			return await Task.Run(() =>
-			{
-				DataAccess obj_DataAccess = new DataAccess();
-				DataSet ds = obj_DataAccess.SaveGLogin(email);
+        public async Task<Signup?> GetUserDataByEmailAsync(string email)
+        {
+            return await Task.Run(() =>
+            {
+                DataAccess obj_DataAccess = new DataAccess();
+                DataSet ds = obj_DataAccess.SaveGLogin(email);
 
-				if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-				{
-					var row = ds.Tables[0].Rows[0];
-					if (Convert.ToInt32(row["LStatus"]) == 1)
-					{
-						var userData = new Signup
-						{
-							UserId = row["RId"].ToString(),
-							Firstname = row["Fname"].ToString(),
-							RoleName = row["Role"].ToString(),
-							Rcode = row["RCode"].ToString(),
-							Email = email
-						};
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var row = ds.Tables[0].Rows[0];
+                    if (Convert.ToInt32(row["LStatus"]) == 1)
+                    {
+                        var userData = new Signup
+                        {
+                            UserId = row["RId"].ToString(),
+                            Firstname = row["Fname"].ToString(),
+                            RoleName = row["Role"].ToString(),
+                            Rcode = row["RCode"].ToString(),
+                            Email = email
+                        };
 
-						return userData;
-					}
-				}
-				return null;
-			});
-		}
+                        return userData;
+                    }
+                }
+                return null;
+            });
+        }
 
-		public IActionResult ShowRegisterAlert()
-		{
-			TempData["SwalMessage"] = "Please register";
-			TempData["SwalType"] = "warning";
-			return RedirectToAction("Register", "Account");
-		}
+        public IActionResult ShowRegisterAlert()
+        {
+            TempData["SwalMessage"] = "Please register";
+            TempData["SwalType"] = "warning";
+            return RedirectToAction("Register", "Account");
+        }
 
         [HttpPost]
-        public async Task<IActionResult> OTPLogin(Login Obj, string returnUrl)
+        public async Task<IActionResult> OTPLogin(OTPLoginModel Obj, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -2019,21 +2017,27 @@ namespace Zencareservice.Controllers
 
                             if (!string.IsNullOrEmpty(validemail))
                             {
-                                string generatedCode = Codegenerator();
-                                _generatedOtp = Convert.ToInt32(generatedCode);
-                                CookieOptions options = new CookieOptions
+                                string generatedCode = Codegenerator(); // Assuming Codegenerator() returns a string
+
+                                // Step 2: Try parsing the generated code to an integer
+                                if (int.TryParse(generatedCode, out int generatedOtp))
                                 {
-                                    Expires = DateTime.Now.AddMinutes(5)
-                                };
-                                Response.Cookies.Append("OTP", generatedCode, options);
+                                    // Step 3: Send the OTP via email
+                                    _generatedOtp = generatedOtp; // Store the generated OTP
+                                    SendingOTPEmail(Obj);
 
-                                SendingOTPEmail(Obj);
+                                    // Step 4: Display success message
+                                    ViewBag.Message = "otpgenerated";
+                                    TempData["SwalMessage"] = "OTP sent";
+                                    TempData["SwalType"] = "success";
 
-                                ViewBag.Message = "otpgenerated";
-                                TempData["SwalMessage"] = "OTP sent";
-                                TempData["SwalType"] = "success";
+                                    // Step 5: Save the OTP to the database
+                                    DataAccess Obj_DataAccess1= new DataAccess();
+                                    DataSet ds = Obj_DataAccess1.SaveOTP(Obj.OTPEmail, generatedCode);
 
-                                return RedirectToAction("VerifyOtp", "Account");
+
+                                    return RedirectToAction("OTPVerification", new { email = Obj.OTPEmail });
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -2062,18 +2066,173 @@ namespace Zencareservice.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult AccountOTPLogin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearCookies()
+        {
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+
+            return RedirectToAction("Login", "Account");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RequestOtp(OTPLoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                string otp = _otpService.GenerateOtp();
+                await _otpService.SendOtpByEmail(model.OTPEmail, otp);
+                _otpService.SaveOtpToDatabase(model.OTPEmail, otp);
+
+                return RedirectToAction("OTPVerification", new { email = model.OTPEmail });
+            }
+
+            return View("AccountOTPLogin", model);
+        }
+
+        [HttpGet]
+        public IActionResult OTPVerification(string email)
+        {
+            var model = new OtpVerificationModel { OTPEmail = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyOtp([FromBody] OtpVerificationModel model)
+        {
+            bool isValid = _otpService.ValidateOtp(model.OTPEmail, model.OTP);
+
+            if (isValid)
+            {
+                DataAccess objDataAccess = new DataAccess();
+                DataSet ds = objDataAccess.OTPLogging(model);
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    int status = Convert.ToInt32(ds.Tables[0].Rows[0]["LStatus"]);
+                    if (status == 1)
+                    {
+                        foreach (var cookie in Request.Cookies.Keys)
+                        {
+                            Response.Cookies.Delete(cookie);
+                        }
+
+                        var userData = ExtractUserData(ds);
+                        SetTempData(userData);
+                        SetCookies(userData);
+                        await SetUserClaims(userData, ds);
+
+                        TempData["SwalMessage"] = "Login Successful";
+                        TempData["SwalType"] = "success";
+
+                        return Json(new { success = true, redirectUrl = Url.Action("Dashboard", "Report") });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Invalid OTP." });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new { success = false, message = "Invalid OTP." });
+            }
+
+            return Json(new { success = false, message = "OTP verification failed." });
+        }
+
+        private void SetTempData(Signup userData)
+        {
+            TempData["Username"] = userData.UserName;
+            TempData["Email"] = userData.Email;
+            TempData["Role"] = userData.RoleName;
+            TempData["FirstName"] = userData.Firstname;
+            TempData["RCode"] = userData.Rcode;
+        }
+
+        private void SetCookies(Signup userData)
+        {
+            var userDataJson = JsonConvert.SerializeObject(userData);
+            var protectedData = _dataProtector.Protect(userDataJson);
+
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(1),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
+
+            Response.Cookies.Append("EncryptCookie", protectedData, cookieOptions);
+            Response.Cookies.Append("UsrId", userData.UserId, cookieOptions);
+            Response.Cookies.Append("UsrName", userData.UserName, cookieOptions);
+            Response.Cookies.Append("Role", userData.RoleName, cookieOptions);
+        }
+
+        private async Task SetUserClaims(Signup userData, DataSet ds)
+        {
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, userData.UserName),
+        new Claim(ClaimTypes.Role, userData.RoleName),
+        new Claim("UserId", userData.UserId)
+    };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+            };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            HttpContext.Session.SetString("FirstName", userData.Firstname);
+            string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
+            HttpContext.Session.SetString("MenuList", jsonString);
+        }
+
+        private Signup ExtractUserData(DataSet ds)
+        {
+            return new Signup
+            {
+                UserId = ds.Tables[0].Rows[0]["RId"].ToString(),
+                UserName = ds.Tables[0].Rows[0]["Username"].ToString(),
+                Email = ds.Tables[0].Rows[0]["Email"].ToString(),
+                RoleName = ds.Tables[0].Rows[0]["Role"].ToString(),
+                Firstname = ds.Tables[0].Rows[0]["Fname"].ToString(),
+                Rcode = ds.Tables[0].Rows[0]["RCode"].ToString()
+            };
+        }
+
+
+
+
+
+
 
         [ValidateAntiForgeryToken]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            // Clear authentication cookies
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            ViewBag.Message = "Logout";
-            TempData["SwalMessage"] = "User Logged out";
-            TempData["SwalType"] = "success";
-            // Redirect to the home page or another appropriate page
-            return RedirectToAction("Index", "Home");
+                public IActionResult Logout()
+                {
+                    HttpContext.Session.Clear();
+                    // Clear authentication cookies
+                    HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    ViewBag.Message = "Logout";
+                    TempData["SwalMessage"] = "User Logged out";
+                    TempData["SwalType"] = "success";
+                    // Redirect to the home page or another appropriate page
+                    return RedirectToAction("Index", "Home");
+                }
+            }
         }
-    }
-}
+    

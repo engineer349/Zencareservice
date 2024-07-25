@@ -1,0 +1,46 @@
+﻿body, html {
+    height: 100%;
+}
+
+.my-login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.card-wrapper {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.brand img {
+    max-width: 100%;
+}
+
+.role-container {
+    text-align: center;
+}
+
+.role-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.role-button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .role-button:hover {
+        background-color: #0056b3;
+    }

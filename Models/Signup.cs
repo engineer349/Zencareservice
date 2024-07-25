@@ -8,6 +8,7 @@ namespace Zencareservice.Models
     public class Signup
     {
 
+        public string UserName { get; set; }
         public string RoleId { get; set; }
         public string RoleName { get; set; }
         public List<Signup> showlist { get; set; }

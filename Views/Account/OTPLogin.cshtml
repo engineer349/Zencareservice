@@ -2,7 +2,7 @@
     ViewData["Title"] = "OTPLogin";
     Layout = "";
 }
-@model Zencareservice.Models.Login
+@model Zencareservice.Models.OTPLoginModel
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +33,7 @@
                                     <span class="text-danger" asp-validation-for="OTPEmail"></span>
                                 </div>
                                 <div class="form-group m-0">
-                                    <button type="submit" class="btn btn-primary btn-block">GENERATE OTP</button>
+                                    <button type="submit" class="btn btn-primary btn-block">SEND OTP</button>
                                 </div>
                                 <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
                                 <div class="mt-4 text-center">

@@ -20,21 +20,21 @@ namespace Zencareservice.Models
        
         public int EmpExp { get; set; }
 
-        public string EmpQualification { get; set; }
+        public string ?EmpQualification { get; set; }
 
-        public string specialistid { get; set; }
+        public string ?specialistid { get; set; }
 
            
 
-        public string Emphistory { get; set; }  
+        public string? Emphistory { get; set; }  
 
          
 
-        public string DQualification { get; set; }
+        public string? DQualification { get; set; }
 
        
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
       
 
@@ -72,13 +72,8 @@ namespace Zencareservice.Models
        
         public string? State { get; set; }
 
-      
-       
 
         public string? City { get; set; }
-
- 
-
         public string? Country { get; set; }
 
         public string? Zipcode { get; set; }
@@ -99,9 +94,9 @@ namespace Zencareservice.Models
         public List<string>? States { get; set; }
         public List<string>? Cities { get; set; }
 
-         public string PatientHistory { get; set; }
+         public string? PatientHistory { get; set; }
         
-        public string Diagnosisdetails { get; set; }
+        public string?  Diagnosisdetails { get; set; }
 
         public string? Otherdetails { get; set; }
 
