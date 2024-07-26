@@ -12,7 +12,8 @@ namespace Zencareservice.Models
         [MaxLength(6)]
         public string ? OTP { get; set; }
 
-       
+        public string ? Source { get; set; }
+
         [MaxLength(6)]
         public string? ResendOTP { get; set; }
     }

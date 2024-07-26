@@ -63,8 +63,11 @@ namespace Zencareservice.Controllers
 
         private readonly EmailVerifier _emailVerifier;
 
+       
+
         public AccountController(EmailVerifier emailVerifier, DataAccess dataaccess, SqlDataAccess sqldataaccess, IDataProtectionProvider dataProtectionProvider, IConfiguration configuration, OtpService otpService)
         {
+            
             _emailVerifier = emailVerifier;
             _dataaccess = dataaccess;
             _sqldataaccess = sqldataaccess;
@@ -169,22 +172,24 @@ namespace Zencareservice.Controllers
             return View();
         }
 
-        public IActionResult OTPVerification()
-        {
-            string otp = TempData["OTP"] as string;
+        //public IActionResult OTPVerification()
+        //{
+        //    string otpEmail = TempData["OTPEmail"] as string;
 
-            if (string.IsNullOrEmpty(otp))
-            {
-                return RedirectToAction("AccessDenied", "Account");
-            }
+        //    if (string.IsNullOrEmpty(otpEmail))
+        //    {
+        //        return RedirectToAction("AccessDenied", "Account");
+        //    }
 
-            // Store OTP in ViewBag to pass it to the view
-            ViewBag.OTP = otp;
+        //    // Store OTPEmail in ViewBag to pass it to the view
+        //    ViewBag.OTPEmail = otpEmail;
 
-            HttpContext.Session.SetString("AccessDenied", DateTime.Now.AddMinutes(1).ToString());
+        //    // Optionally, store OTPEmail in TempData again if it needs to persist for the next request
+        //    TempData["OTPEmail"] = otpEmail;
 
-            return RegistrationSuccess();
-        }
+        //    return View(new OtpVerificationModel { OTPEmail = otpEmail });
+        //}
+
 
         public IActionResult OTPLogin()
         {
@@ -592,60 +597,7 @@ namespace Zencareservice.Controllers
 
         }
 
-        [HttpPost]
-        public IActionResult PatForgot(Signup Obj)
-        {
-            string ResetEmail = Obj.Email;
-            if (ResetEmail != null)
-            {
-                var mmm = IsValidEmail2(Obj.Email);
-
-                var gMail = IsEmailAccountValid("smtp.gmail.com", Obj.Email);
-
-                if (gMail == true)
-                {
-                    DataAccess Obj_DataAccess = new DataAccess();
-                    DataSet ds = new DataSet();
-                    ds = Obj_DataAccess.CheckEmail(Obj);
-                    if (ds.Tables[0].Rows.Count > 0)
-                    {
-                        string validemail = Obj.Email;
-                        TempData["MyEmail"] = validemail;
-                        if (!String.IsNullOrEmpty(validemail))
-                        {
-                            string generatedCode = Codegenerator();
-                            _generatedOtp = Convert.ToInt32(generatedCode);
-                            // Store OTP in TempData for verification
-                            TempData["OTP"] = generatedCode;
-                            SendingResetEmail(Obj);
-                            TempData.Keep("OTP");
-
-                            ViewBag.Message = "VerificationOTP";
-                            TempData["SwalMessage"] = "OTP sent";
-                            TempData["SwalType"] = "success";
-                        }
-                        return RedirectToAction("OTPVerification", "Account");
-                    }
-                    else
-                    {
-                        ViewBag.Message = "InvalidEmail";
-                        TempData["SwalMessage"] = "Invalid";
-                        TempData["SwalType"] = "error";
-                        return RedirectToAction("PatientRegister", "Account");
-                    }
-                }
-                else
-                {
-                    ViewBag.Message = "Please enter your registered email to continue!";
-                    return RedirectToAction("PatForgot", "Account");
-                }
-            }
-            else
-            {
-                ViewBag.Message = "Please enter your registered email to continue!";
-                return RedirectToAction("PatForgot", "Account");
-            }
-        }
+      
 
         public IActionResult ResendEmail(Signup Obj)
         {
@@ -1995,12 +1947,77 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
+        public IActionResult PatForgot(Signup Obj)
+        {
+            string ResetEmail = Obj.Email;
+            if (ResetEmail != null)
+            {
+
+
+                var gMail = true;
+
+                if (gMail == true)
+                {
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet ds = new DataSet();
+                    ds = Obj_DataAccess.CheckEmail(Obj);
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        string validemail = Obj.Email;
+
+                        TempData["OTPEmail"] = validemail;
+                        TempData["Source"] = "PatForgot";
+                        TempData["Title"] = "PatForgot";
+
+                        if (!String.IsNullOrEmpty(validemail))
+                        {
+                            string generatedCode = Codegenerator();
+                            _generatedOtp = Convert.ToInt32(generatedCode);
+                            // Store OTP in TempData for verification
+                            TempData["OTP"] = generatedCode;
+                            SendingResetEmail(Obj);
+                            TempData.Keep("OTP");
+
+                            ViewBag.Message = "VerificationOTP";
+                            TempData["SwalMessage"] = "OTP sent";
+                            TempData["SwalType"] = "success";
+                            DataAccess Obj_DataAccess1 = new DataAccess();
+                            DataSet dse = Obj_DataAccess1.SaveOTP(Obj.Email, generatedCode);
+
+                        }
+                        return RedirectToAction("OTPVerification", "Account");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "InvalidEmail";
+                        TempData["SwalMessage"] = "Invalid";
+                        TempData["SwalType"] = "error";
+                        return RedirectToAction("PatientRegister", "Account");
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "Please enter your registered email to continue!";
+                    return RedirectToAction("PatForgot", "Account");
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Please enter your registered email to continue!";
+                return RedirectToAction("PatForgot", "Account");
+            }
+        }
+
+
+
+        [HttpPost]
         public async Task<IActionResult> OTPLogin(OTPLoginModel Obj, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 string email = Obj.OTPEmail;
-                TempData["OTPuser"] = email;
+                TempData["OTPEmail"] = email;
+                TempData["Source"] = "OTPLogin"; // Indicate the source of the request
 
                 bool isEmailValid = await _emailVerifier.VerifyEmailAsync(email);
                 if (isEmailValid)
@@ -2017,26 +2034,21 @@ namespace Zencareservice.Controllers
 
                             if (!string.IsNullOrEmpty(validemail))
                             {
-                                string generatedCode = Codegenerator(); // Assuming Codegenerator() returns a string
+                                string generatedCode = Codegenerator();
 
-                                // Step 2: Try parsing the generated code to an integer
                                 if (int.TryParse(generatedCode, out int generatedOtp))
                                 {
-                                    // Step 3: Send the OTP via email
                                     _generatedOtp = generatedOtp; // Store the generated OTP
                                     SendingOTPEmail(Obj);
 
-                                    // Step 4: Display success message
                                     ViewBag.Message = "otpgenerated";
                                     TempData["SwalMessage"] = "OTP sent";
                                     TempData["SwalType"] = "success";
 
-                                    // Step 5: Save the OTP to the database
-                                    DataAccess Obj_DataAccess1= new DataAccess();
+                                    DataAccess Obj_DataAccess1 = new DataAccess();
                                     DataSet ds = Obj_DataAccess1.SaveOTP(Obj.OTPEmail, generatedCode);
 
-
-                                    return RedirectToAction("OTPVerification", new { email = Obj.OTPEmail });
+                                    return RedirectToAction("OTPVerification", "Account");
                                 }
                             }
                         }
@@ -2065,6 +2077,8 @@ namespace Zencareservice.Controllers
             }
             return View();
         }
+
+
 
         [HttpGet]
         public IActionResult AccountOTPLogin()
@@ -2100,15 +2114,42 @@ namespace Zencareservice.Controllers
         }
 
         [HttpGet]
-        public IActionResult OTPVerification(string email)
+        public IActionResult OTPVerification()
         {
-            var model = new OtpVerificationModel { OTPEmail = email };
+            // Retrieve the title from TempData
+            ViewBag.Title = TempData["Title"] as string;
+
+            // Retrieve email and source if needed
+            string email = TempData["OTPEmail"] as string;
+            string source = TempData["Source"] as string;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            // Create the model and pass the retrieved data
+            var model = new OtpVerificationModel
+            {
+                OTPEmail = email,
+                Source = source
+            };
+
+            // Return the view with the model
             return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> VerifyOtp([FromBody] OtpVerificationModel model)
         {
+            string source = model.Source;
+            
+            if (model == null || string.IsNullOrEmpty(model.Source))
+            {
+                return Json(new { success = false, message = "Invalid data received." });
+            }
+
             bool isValid = _otpService.ValidateOtp(model.OTPEmail, model.OTP);
 
             if (isValid)
@@ -2133,22 +2174,47 @@ namespace Zencareservice.Controllers
 
                         TempData["SwalMessage"] = "Login Successful";
                         TempData["SwalType"] = "success";
+                        string redirectUrl;
+                        switch (model.Source)
+                        {
+                            case "PatForgot":
+                                redirectUrl = Url.Action("PatReset", "Account");
+                                break;
+                            case "OTPLogin":
+                                redirectUrl = Url.Action("Dashboard", "Report");
+                                break;
+                            default:
+                                redirectUrl = Url.Action("Index", "Home");
+                                break;
+                        }
 
-                        return Json(new { success = true, redirectUrl = Url.Action("Dashboard", "Report") });
+                        return Json(new { success = true, redirectUrl });
+
+
+                      
+
                     }
                     else
                     {
                         return Json(new { success = false, message = "Invalid OTP." });
                     }
                 }
+                else
+                {
+                    return Json(new { success = false, message = "OTP logging failed." });
+                }
             }
             else
             {
                 return Json(new { success = false, message = "Invalid OTP." });
             }
-
-            return Json(new { success = false, message = "OTP verification failed." });
         }
+
+
+
+
+
+
 
         private void SetTempData(Signup userData)
         {
