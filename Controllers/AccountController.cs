@@ -38,6 +38,7 @@ using System.Security.Claims;
 using System.Runtime.Intrinsics.X86;
 using Google.Apis.Auth;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Zencareservice.Controllers
 {
@@ -142,6 +143,7 @@ namespace Zencareservice.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin, Patient, Doctor")]
         public IActionResult PatReset()
         {
             string returnUrl = "/Account/PatReset";
@@ -265,6 +267,7 @@ namespace Zencareservice.Controllers
                         ViewBag.Message = "VerificationOTP";
                         TempData["SwalMessage"] = "OTP Verified";
                         TempData["SwalType"] = "success";
+
 
                         return RedirectToAction("PatReset", "Account");
 
@@ -496,6 +499,16 @@ namespace Zencareservice.Controllers
                     ds = Obj_DataAccess.ResetPassword(Obj, email);
 
                 }
+                HttpContext.Session.Clear();
+
+                // Delete cookies
+                foreach (var cookie in Request.Cookies.Keys)
+                {
+                    Response.Cookies.Delete(cookie);
+                }
+
+                // Sign out the user to remove authorization
+                HttpContext.SignOutAsync().Wait();
                 ViewBag.Message = "UpdatedPassword";
                 TempData["SwalMessage"] = "Successfully Updated";
                 TempData["SwalType"] = "success";
@@ -508,6 +521,7 @@ namespace Zencareservice.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin, Patient, Doctor")]
         [HttpPost]
         public IActionResult PatReset(Signup Obj)
         {
@@ -525,6 +539,15 @@ namespace Zencareservice.Controllers
                     DataSet ds = new DataSet();
                     ds = Obj_DataAccess.ResetPassword(Obj, email);
 
+                    HttpContext.Session.Clear();
+
+                    // Delete cookies
+                    foreach (var cookie in Request.Cookies.Keys)
+                    {
+                        Response.Cookies.Delete(cookie);
+                    }
+                    HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+             
                     ViewBag.Message = "UpdatedPassword";
                     TempData["SwalMessage"] = "Successfully Updated";
                     TempData["SwalType"] = "success";
@@ -2178,6 +2201,7 @@ namespace Zencareservice.Controllers
                         switch (model.Source)
                         {
                             case "PatForgot":
+                                TempData["MyEmail"] = model.OTPEmail;
                                 redirectUrl = Url.Action("PatReset", "Account");
                                 break;
                             case "OTPLogin":
@@ -2287,7 +2311,7 @@ namespace Zencareservice.Controllers
 
 
 
-        [ValidateAntiForgeryToken]
+                [ValidateAntiForgeryToken]
                 public IActionResult Logout()
                 {
                     HttpContext.Session.Clear();

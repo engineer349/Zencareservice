@@ -62,9 +62,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("PatientPolicy", policy => policy.RequireRole("Patient"));
-    options.AddPolicy("DoctorPolicy", policy => policy.RequireRole("Doctor"));
+    options.AddPolicy("RequireAdminPatientDoctorRole", policy => policy.RequireRole("Admin", "Patient", "Doctor"));
 });
 builder.Services.AddSingleton<EmailVerifier>(provider =>
 {
