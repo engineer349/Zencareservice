@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using Zencareservice.Data;
 using Zencareservice.Models;
 using Zencareservice.Repository;
@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionStrings = builder.Configuration.GetConnectionString("ZencareserviceConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionStrings));
 
@@ -21,13 +22,15 @@ builder.Services.AddHttpClient();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(3);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddDataProtection();
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\keys")) // Ensure this directory exists
+    .SetApplicationName("Zencareservice");
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<DataAccess>();
 builder.Services.AddSingleton<SqlDataAccess>();
@@ -38,8 +41,14 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.Secure = CookieSecurePolicy.Always;
 });
 
+builder.Configuration.AddUserSecrets<Program>(); // Ensure user secrets are loaded
+
+var clientId = builder.Configuration["GoogleAuth:ClientId"];
+var clientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+
 builder.Services.AddAuthentication(options =>
 {
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
@@ -52,33 +61,43 @@ builder.Services.AddAuthentication(options =>
 })
 .AddGoogle(options =>
 {
-    options.ClientId = "YOUR_GOOGLE_CLIENT_ID";
-    options.ClientSecret = "YOUR_GOOGLE_CLIENT_SECRET";
-    options.Scope.Add("email");
-    options.Scope.Add("profile");
+    options.ClientId = clientId;
+    options.ClientSecret = clientSecret;
+    options.CallbackPath = new PathString("/Account/GoogleSignInCallback");
     options.SaveTokens = true;
-    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+    options.Events = new OAuthEvents
+    {
+        OnRedirectToAuthorizationEndpoint = context =>
+        {
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminPatientDoctorRole", policy => policy.RequireRole("Admin", "Patient", "Doctor"));
 });
+
 builder.Services.AddSingleton<EmailVerifier>(provider =>
 {
-    var apiKey = "live_03bfd7d2d809b5719cd750c91fb31a0a29467508545e7279d34cb5086ea8b256";
+    var apiKey = builder.Configuration["EmailVerifier:ApiKey"];
     return new EmailVerifier(apiKey);
 });
 
 var app = builder.Build();
-
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+}
 
-app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

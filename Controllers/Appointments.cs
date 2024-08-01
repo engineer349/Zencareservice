@@ -15,7 +15,7 @@ namespace Zencareservice.Controllers
         
         public void AptsDropdown()
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
             TempData["UserId"] = UsrId;
             DataAccess Obj_DataAccess = new DataAccess();
             DataSet ds = new DataSet();
@@ -82,11 +82,11 @@ namespace Zencareservice.Controllers
         [Authorize(Roles ="Admin, Patient")]
         public IActionResult Aptlist(Appts apt)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId =Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
-            string Role = Request.Cookies["Role"];
+            string Role = Request.Cookies["Role"] ?? string.Empty;
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
             {
@@ -254,11 +254,11 @@ namespace Zencareservice.Controllers
         [Authorize(Roles ="Doctor")]
         public IActionResult PAptlist(Appts apt)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
-            string Role = Request.Cookies["Role"];
+            string Role = Request.Cookies["Role"] ?? string.Empty;
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
             {
@@ -288,8 +288,8 @@ namespace Zencareservice.Controllers
                         apts.PatientFirstName = row["PFname"].ToString();
                         apts.PatientLastName = row["PLname"].ToString();
 
-                        string pfname = apts.PatientFirstName;
-                        string plname = apts.PatientLastName;
+                        string? pfname = apts.PatientFirstName;
+                        string? plname = apts.PatientLastName;
 
                         builder1.Append(pfname);
                         builder1.Append(plname);
@@ -300,7 +300,7 @@ namespace Zencareservice.Controllers
 
                         apts.AptId = ((int)row["AptId"]);
 
-                        apts.Aptcode = row["Aptcode"].ToString();
+                        apts.Aptcode = row["Aptcode"].ToString() ?? string.Empty;
 
                         apts.Patientphoneno = row["Patphone"].ToString();
                         apts.PatientEmail = row["PatientEmail"].ToString();
@@ -378,7 +378,7 @@ namespace Zencareservice.Controllers
         public IActionResult CreateAppointment()
         {          
 
-            string UsrId = Request.Cookies["UsrId"];
+            string ?UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;
 
@@ -403,7 +403,7 @@ namespace Zencareservice.Controllers
        
         public IActionResult GetAppointment(string type)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string? UsrId = Request.Cookies["UsrId"];
             DataSet ds = new DataSet();
 
             if (type == "self")
@@ -425,11 +425,11 @@ namespace Zencareservice.Controllers
         public IActionResult Apptcrt(Appts apt)
         {
 
-            string UsrId = Request.Cookies["UsrId"];
+            string ?UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;
 
-            string RCode = Request.Cookies["RCode"];
+            string ?RCode = Request.Cookies["RCode"];
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(RCode))
             {
@@ -499,13 +499,13 @@ namespace Zencareservice.Controllers
                     ViewBag.DataSet = ds.Tables[1];
                     ViewBag.SelectedValue = "Tamil Nadu";
 
-                    string fname = ds.Tables[1].Rows[0]["Fname"].ToString();
-                    string lname = ds.Tables[1].Rows[0]["Lname"].ToString();
-                    string phoneno = ds.Tables[1].Rows[0]["Phoneno"].ToString();
-                    string email = ds.Tables[1].Rows[0]["Email"].ToString();
-                    string gender = ds.Tables[1].Rows[0]["Gender"].ToString();
-                    string address1 = ds.Tables[1].Rows[0]["Addressline1"].ToString();
-                    string patage = ds.Tables[1].Rows[0]["Age"].ToString();
+                    string ?fname = ds.Tables[1].Rows[0]["Fname"].ToString();
+                    string? lname = ds.Tables[1].Rows[0]["Lname"].ToString();
+                    string? phoneno = ds.Tables[1].Rows[0]["Phoneno"].ToString();
+                    string? email = ds.Tables[1].Rows[0]["Email"].ToString();
+                    string ?gender = ds.Tables[1].Rows[0]["Gender"].ToString();
+                    string ?address1 = ds.Tables[1].Rows[0]["Addressline1"].ToString();
+                    string ?patage = ds.Tables[1].Rows[0]["Age"].ToString();
 
 
                     apt = new Appts();
@@ -532,7 +532,7 @@ namespace Zencareservice.Controllers
         public IActionResult Aptedit( Appts Obj)
         {
            
-            string UsrId = Request.Cookies["UsrId"];
+            string? UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;
 
@@ -594,7 +594,7 @@ namespace Zencareservice.Controllers
         [Authorize(Roles ="Doctor")]
         public IActionResult Aptedit(Appts apt,int Id)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string ?UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;           
 
@@ -621,12 +621,12 @@ namespace Zencareservice.Controllers
                     {
 
                         int aptid = Convert.ToInt32(ds.Tables[1].Rows[0]["AptId"].ToString());
-                        string pfname = ds.Tables[1].Rows[0]["PFname"].ToString();
-                        string plname = ds.Tables[1].Rows[0]["PLname"].ToString();
-                        string dfname = ds.Tables[1].Rows[0]["DFname"].ToString();                       
-                        string reasontype = ds.Tables[1].Rows[0]["Reasontype"].ToString();
-                        string patphone = ds.Tables[1].Rows[0]["Patphone"].ToString();
-                        string patemail = ds.Tables[1].Rows[0]["PatientEmail"].ToString();
+                        string ?pfname = ds.Tables[1].Rows[0]["PFname"].ToString();
+                        string ?plname = ds.Tables[1].Rows[0]["PLname"].ToString();
+                        string ?dfname = ds.Tables[1].Rows[0]["DFname"].ToString();                       
+                        string ?reasontype = ds.Tables[1].Rows[0]["Reasontype"].ToString();
+                        string ?patphone = ds.Tables[1].Rows[0]["Patphone"].ToString();
+                        string ?patemail = ds.Tables[1].Rows[0]["PatientEmail"].ToString();
                         DateTime aptbookingdate = Convert.ToDateTime( ds.Tables[1].Rows[0]["AptBookingdate"]);
                         TimeSpan aptbookingtime =(TimeSpan)ds.Tables[1].Rows[0]["AptTime"];
 
@@ -708,12 +708,12 @@ namespace Zencareservice.Controllers
                         {
                             
                             Obj.UsrId = Convert.ToInt32(UsrId);
-                            string pfname = Obj.PatientFirstName;
-                            string plname = Obj.PatientLastName;
-                            string pemail = Obj.PatientEmail;
+                            string ?pfname = Obj.PatientFirstName;
+                            string ?plname = Obj.PatientLastName;
+                            string? pemail = Obj.PatientEmail;
                            
                             //string dlname = Obj.DoctorLastName;
-                            string gender = Obj.PatientGender;
+                            string ?gender = Obj.PatientGender;
 
                             Obj.RCode = Convert.ToString(TempData["RCode"]);
                             DateTime aptbookdate = Obj.AptBookingDate;

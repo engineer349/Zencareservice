@@ -2,4 +2,6 @@
 **/bin/*
 **/obj/*
 **/.vs/*
+**/secrets.json/*
+**/Program.cs/*
 .fake

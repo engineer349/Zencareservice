@@ -8,12 +8,12 @@ namespace Zencareservice.Models
     public class Signup
     {
 
-        public string UserName { get; set; }
-        public string RoleId { get; set; }
-        public string RoleName { get; set; }
-        public List<Signup> showlist { get; set; }
+        public string ?UserName { get; set; }
+        public string ?RoleId { get; set; }
+        public string ?RoleName { get; set; }
+        public List<Signup> ?showlist { get; set; }
 
-        public string UserId { get; set; }
+        public string ?UserId { get; set; }
         public int Age { get; set; }
         public string ?numeric1 { get; set; }
 
@@ -55,7 +55,7 @@ namespace Zencareservice.Models
         [NotMapped]
 
         [Required(ErrorMessage = "Confirm Password required")]
-        [CompareAttribute("Password", ErrorMessage = "Password doesn't match.")]
+        [Compare("Password", ErrorMessage = "Password doesn't match.")]
         [RegularExpression(PasswordRegexPattern, ErrorMessage = "Password must be alphanumeric with at least one special character and be 8 to 16 characters long.")]
 
         public string ?Confirmpassword { get; set; }
@@ -64,12 +64,12 @@ namespace Zencareservice.Models
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long.")]
         [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$", ErrorMessage = "Password must be alphanumeric and at least 8 characters long.")]
         [DataType(DataType.Password)]
-        public string RPassword { get; set; }
+        public string RPassword { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Confirm password is required.")]
         [Compare("RPassword", ErrorMessage = "Passwords do not match.")]
         [DataType(DataType.Password)]
-        public string CRPassword { get; set; }
+        public string CRPassword { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter Username")]
         [StringLength(10, MinimumLength = 6, ErrorMessage = "Username must be between 6 and  10 characters.")]

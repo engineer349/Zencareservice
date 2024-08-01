@@ -18,11 +18,11 @@ namespace Zencareservice.Controllers
   
         public IActionResult Personaldetails(Personaldetails personal, int Id)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
-            string RCode = Request.Cookies["RCode"];
+            string RCode = Request.Cookies["RCode"] ?? string.Empty;
         
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(RCode))
@@ -95,24 +95,27 @@ namespace Zencareservice.Controllers
                 ViewBag.DataSet = ds.Tables[1];
                 ViewBag.SelectedValue = "Tamil Nadu";
 
-                string fname = ds.Tables[0].Rows[0]["Fname"].ToString();
-                string lname = ds.Tables[0].Rows[0]["Lname"].ToString();              
-                string phoneno = ds.Tables[0].Rows[0]["Phoneno"].ToString();
-                string email = ds.Tables[0].Rows[0]["Email"].ToString();
-                string gender = ds.Tables[0].Rows[0]["Gender"].ToString();
-                string address1 = ds.Tables[0].Rows[0]["Addressline1"].ToString();
-                string address2 = ds.Tables[0].Rows[0]["Addressline2"].ToString();
-                string altaddress = ds.Tables[0].Rows[0]["AltAddress"].ToString();
-                string altphoneno = ds.Tables[0].Rows[0]["Aphoneno"].ToString();
-                string uniqueid = ds.Tables[0].Rows[0]["UniqueId"].ToString();
-                string zipcode = ds.Tables[0].Rows[0]["Zipcode"].ToString();
-                string state = ds.Tables[0].Rows[0]["State"].ToString();
-                int sid = Convert.ToInt32( ds.Tables[0].Rows[0]["SId"]);
-                //int sid = 0;
-                string city = ds.Tables[0].Rows[0]["City"].ToString();
-                string country = ds.Tables[0].Rows[0]["Country"].ToString();
-                string Role = ds.Tables[0].Rows[0]["Role"].ToString();
-                
+                // String variables with null checks and default values
+                string fname = ds.Tables[0].Rows[0]["Fname"].ToString() ?? string.Empty;
+                string lname = ds.Tables[0].Rows[0]["Lname"].ToString() ?? string.Empty;
+                string phoneno = ds.Tables[0].Rows[0]["Phoneno"].ToString() ?? string.Empty;
+                string email = ds.Tables[0].Rows[0]["Email"].ToString() ?? string.Empty;
+                string gender = ds.Tables[0].Rows[0]["Gender"].ToString() ?? string.Empty;
+                string address1 = ds.Tables[0].Rows[0]["Addressline1"].ToString() ?? string.Empty;
+                string address2 = ds.Tables[0].Rows[0]["Addressline2"].ToString() ?? string.Empty;
+                string altaddress = ds.Tables[0].Rows[0]["AltAddress"].ToString() ?? string.Empty;
+                string altphoneno = ds.Tables[0].Rows[0]["Aphoneno"].ToString() ?? string.Empty;
+                string uniqueid = ds.Tables[0].Rows[0]["UniqueId"].ToString() ?? string.Empty;
+                string zipcode = ds.Tables[0].Rows[0]["Zipcode"].ToString() ?? string.Empty;
+                string state = ds.Tables[0].Rows[0]["State"].ToString() ?? string.Empty;
+                string city = ds.Tables[0].Rows[0]["City"].ToString() ?? string.Empty;
+                string country = ds.Tables[0].Rows[0]["Country"].ToString() ?? string.Empty;
+                string Role = ds.Tables[0].Rows[0]["Role"].ToString() ?? string.Empty;
+
+                // Integer variable with null check and default value
+                int sid = ds.Tables[0].Rows[0]["SId"] != DBNull.Value ? Convert.ToInt32(ds.Tables[0].Rows[0]["SId"]) : 0;
+
+
 
 
                 TempData["Role"] = Role;
@@ -187,11 +190,11 @@ namespace Zencareservice.Controllers
         public IActionResult Profile(Personaldetails pers, int Id)
         {
 
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
-            string RCode =Request.Cookies["RCode"];
+            string? RCode =Request.Cookies["RCode"];
         
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(RCode))
@@ -264,23 +267,23 @@ namespace Zencareservice.Controllers
                 ViewBag.DataSet = ds.Tables[1];
                 ViewBag.SelectedValue = "Tamil Nadu";
 
-                string fname = ds.Tables[0].Rows[0]["Fname"].ToString();
-                string lname = ds.Tables[0].Rows[0]["Lname"].ToString();              
-                string phoneno = ds.Tables[0].Rows[0]["Phoneno"].ToString();
-                string email = ds.Tables[0].Rows[0]["Email"].ToString();
-                string gender = ds.Tables[0].Rows[0]["Gender"].ToString();
-                string address1 = ds.Tables[0].Rows[0]["Addressline1"].ToString();
-                string address2 = ds.Tables[0].Rows[0]["Addressline2"].ToString();
-                string altaddress = ds.Tables[0].Rows[0]["AltAddress"].ToString();
-                string altphoneno = ds.Tables[0].Rows[0]["Aphoneno"].ToString();
-                string uniqueid = ds.Tables[0].Rows[0]["UniqueId"].ToString();
-                string zipcode = ds.Tables[0].Rows[0]["Zipcode"].ToString();
-                string state = ds.Tables[0].Rows[0]["State"].ToString();
+                string ?fname = ds.Tables[0].Rows[0]["Fname"].ToString();
+                string ?lname = ds.Tables[0].Rows[0]["Lname"].ToString();              
+                string ?phoneno = ds.Tables[0].Rows[0]["Phoneno"].ToString();
+                string ?email = ds.Tables[0].Rows[0]["Email"].ToString();
+                string ?gender = ds.Tables[0].Rows[0]["Gender"].ToString();
+                string ?address1 = ds.Tables[0].Rows[0]["Addressline1"].ToString();
+                string ?address2 = ds.Tables[0].Rows[0]["Addressline2"].ToString();
+                string ?altaddress = ds.Tables[0].Rows[0]["AltAddress"].ToString();
+                string ?altphoneno = ds.Tables[0].Rows[0]["Aphoneno"].ToString();
+                string? uniqueid = ds.Tables[0].Rows[0]["UniqueId"].ToString();
+                string ?zipcode = ds.Tables[0].Rows[0]["Zipcode"].ToString();
+                string ?state = ds.Tables[0].Rows[0]["State"].ToString();
                 int sid = Convert.ToInt32( ds.Tables[0].Rows[0]["SId"]);
                 //int sid = 0;
-                string city = ds.Tables[0].Rows[0]["City"].ToString();
-                string country = ds.Tables[0].Rows[0]["Country"].ToString();
-                string Role = ds.Tables[0].Rows[0]["Role"].ToString();
+                string ?city = ds.Tables[0].Rows[0]["City"].ToString();
+                string ?country = ds.Tables[0].Rows[0]["Country"].ToString();
+                string ?Role = ds.Tables[0].Rows[0]["Role"].ToString();
                 
 
 
@@ -343,7 +346,7 @@ namespace Zencareservice.Controllers
        [HttpPost]
         public IActionResult UpdateProfile(Personaldetails Obj)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
@@ -385,38 +388,38 @@ namespace Zencareservice.Controllers
 
                     if (Obj.Role == "Patient")
                     {
-                       string phistory = Obj.PatientHistory;
-                       string dhistory = Obj.Diagnosisdetails;
-                        string other = Obj.Otherdetails;
+                       string ?phistory = Obj.PatientHistory;
+                       string ?dhistory = Obj.Diagnosisdetails;
+                        string ?other = Obj.Otherdetails;
                     }
                     else if (Obj.Role == "Doctor")
                     {
-                        int docexperience = Obj.DExp;
-                       string docspecialist = Obj.specialistid;
-                       string docqualification = Obj.DQualification;
+                        int ?docexperience = Obj.DExp;
+                       string? docspecialist = Obj.specialistid;
+                       string ?docqualification = Obj.DQualification;
                      
 
                     }
                     else
                     {
-                        string empqualification = Obj.EmpQualification;
-                       string emphistory = Obj.Emphistory;
-                       int empexp = Obj.EmpExp;
+                        string ?empqualification = Obj.EmpQualification;
+                       string ?emphistory = Obj.Emphistory;
+                       int ?empexp = Obj.EmpExp;
                      }
                     Obj.UsrId = Convert.ToInt32(UsrId);
-                    string Gender = Obj.Gender;
+                    string ?Gender = Obj.Gender;
                     // byte[] photo = Obj.ImageData;
                     // byte[] profphoto = Obj.ProfData;
-                    string Altcontact = Obj.AltPhoneno;
-                    string Addressline1 = Obj.Address1;
-                    string Addressline2 = Obj.Address2;
-                    string Altaddress = Obj.AltAddress;
-                    string State = Obj.State;
-                    string City = Obj.City;
-                    string Country = Obj.Country;
-                    string Uniqueid = Obj.Uniqueid;
-                    string zipcode = Obj.Zipcode;
-                    string Email = Obj.Email;
+                    string ?Altcontact = Obj.AltPhoneno;
+                    string ?Addressline1 = Obj.Address1;
+                    string ?Addressline2 = Obj.Address2;
+                    string ?Altaddress = Obj.AltAddress;
+                    string? State = Obj.State;
+                    string? City = Obj.City;
+                    string? Country = Obj.Country;
+                    string ?Uniqueid = Obj.Uniqueid;
+                    string ?zipcode = Obj.Zipcode;
+                    string ?Email = Obj.Email;
                     DataAccess Obj_DataAccess = new DataAccess();
                     DataSet ds = new DataSet();
                     ds = Obj_DataAccess.UpdateProfile(Obj);

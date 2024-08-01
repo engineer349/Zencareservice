@@ -17,7 +17,7 @@ namespace Zencareservice.Controllers
 
         public IActionResult Report()
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string ?UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;
 
@@ -74,7 +74,7 @@ namespace Zencareservice.Controllers
             return Json(prescdetails);
         }
 
-        public async Task<IActionResult> Prescdetails( string type, Prescs presc)
+        public IActionResult Prescdetails( string type, Prescs presc)
         {
             DataSet ds = new DataSet();
 
@@ -111,7 +111,7 @@ namespace Zencareservice.Controllers
         public void Reportdropdown()
         {
 
-            string UsrId = Request.Cookies["UsrId"];
+            string? UsrId = Request.Cookies["UsrId"];
 
             TempData["UserId"] = UsrId;
 
@@ -176,9 +176,9 @@ namespace Zencareservice.Controllers
         [Authorize(Roles = "Admin, Patient, Doctor")]
         public IActionResult Dashboard(Dashboard Obj)
         {
-            string userId = Request.Cookies["UsrId"];
-            string usrName = Request.Cookies["UsrName"];
-            string roleName = Request.Cookies["Role"];
+            string ?userId = Request.Cookies["UsrId"];
+            string ?usrName = Request.Cookies["UsrName"];
+            string? roleName = Request.Cookies["Role"];
 
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(usrName) || string.IsNullOrEmpty(roleName))
             {
@@ -209,6 +209,7 @@ namespace Zencareservice.Controllers
             {
                 // Handle exception
                 // Log the exception if necessary
+                throw ex;
             }
 
             return View();

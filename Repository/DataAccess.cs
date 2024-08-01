@@ -167,31 +167,7 @@ namespace Zencareservice.Repository
         //}
 
 
-        public DataSet FetchData()
-        {
-            try
-            {
-                DataSet ds = new DataSet();
-                
-                 
-                
-                string StrSPName = "GetAllPatientDetails";
-
-                //string StrSPName = "GetAllDoctorDetails";
-
-              
-
-
-                return ds;
-            }
-            catch (SqlException ex)
-            {
-                throw ex;
-            
-            }
-
-        }
-
+      
 
         public DataSet SaveGLogin(string email)
         {
@@ -199,12 +175,14 @@ namespace Zencareservice.Repository
             try
             {
                 DataSet ds = new DataSet();
-                string StrSPName = "SaveGLogin_SP";
+                string StrSPName = "GetAllUserdetails_SP";
 
 				SqlParameter[] param = new SqlParameter[1];
 
-				param[0] = new SqlParameter("@Email", SqlDbType.Int);
+				param[0] = new SqlParameter("@Email", SqlDbType.NVarChar);
                 param[0].Value =email;
+
+                ds = Obj_SqlDataAccess.GetDataWithParamStoredprocedure(StrSPName, param);
 
                 return ds;
 			}

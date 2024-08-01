@@ -11,7 +11,7 @@
     <meta name="author" content="PatientLogin">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="~/css/my-login.css">
     <link rel="icon" type="image/x-icon" href="~/assets/img/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -27,22 +27,17 @@
                     </div>
                     <div class="card fat">
                         <div class="card-body">
-                            <h4 class="card-title" style="text-align:center"> LOGIN</h4>
+                            <h4 class="card-title" style="text-align:center">PATIENT LOGIN</h4>
                             <form method="POST" class="my-login-validation" novalidate="" asp-action="Login" asp-controller="Account">
                                 <div class="form-group">
                                     <label asp-for="Username">UserName or Email Address</label>
                                     <input id="username" type="text" class="form-control" asp-for="Username" required autofocus />
                                     <span asp-validation-for="Username" class="text-danger"></span>
-                                    <a asp-action="OTPLogin" asp-controller="Account" class="float-right">
-                                        &#x1F512; OTPLogin
-                                    </a>
-
+                                    <a asp-action="OTPLogin" asp-controller="Account" class="float-right">&#x1F512; OTPLogin</a>
                                 </div>
 
                                 <div class="form-group">
-                                    <label asp-for="Password">
-                                        Password                                       
-                                    </label>
+                                    <label asp-for="Password">Password</label>
                                     <input asp-for="Password" id="password" type="password" class="form-control" required data-eye>
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                     <a asp-action="PatForgot" asp-controller="Account" class="float-right">Forgot Password?</a>
@@ -53,72 +48,10 @@
                                 </div>
                             </form>
 
-             @*                <div class="form-group m-0">
-                                <br />
-                                <p style="text-align:center">Or</p>
-                                <button id="otpLoginBtn" class="btn btn-primary btn-block" onclick="OTPLogging()">OTP Login</button>
-                                <p style="text-align:center">Or</p>
-
-                                <div id="googleSignInContainer">
-                                    <div id="g_id_onload"
-                                         data-client_id="YOUR_GOOGLE_CLIENT_ID"
-                                         data-context="signin"
-                                         data-ux_mode="redirect"
-                                         data-login_uri="https://yourdomain.com/signin-google"
-                                         data-auto_prompt="false">
-                                    </div>
-
-                                    <div class="g_id_signin" data-type="standard"></div>
-                                </div>
-
-                                <div id="emailSignInContainer" style="display: none;">
-                                    <h2>Sign in with Gmail</h2>
-                                    <form id="emailSignInForm" onsubmit="return signInWithEmail()">
-                                        <input type="email" id="emailInput" placeholder="Enter your Gmail address" required>
-                                        <button type="submit">Sign in</button>
-                                    </form>
-                                </div>
-
-                                <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-                                <script>
-                                    window.onload = function () {
-                                        google.accounts.id.initialize({
-                                            client_id: 'YOUR_GOOGLE_CLIENT_ID',
-                                            callback: handleCredentialResponse
-                                        });
-                                    };
-
-                                    function handleCredentialResponse(response) {
-                                        if (response.credential) {
-                                            var id_token = response.credential;
-                                            console.log("ID Token:", id_token);
-                                            window.location.href = '/Account/GoogleSignInCallback?token=' + encodeURIComponent(id_token);
-                                        } else {
-                                            console.error("No credential available");
-                                            showEmailSignInForm();
-                                        }
-                                    }
-
-                                    function showEmailSignInForm() {
-                                        document.getElementById('googleSignInContainer').style.display = 'none';
-                                        document.getElementById('emailSignInContainer').style.display = 'block';
-                                    }
-
-                                    function signInWithEmail() {
-                                        var email = document.getElementById('emailInput').value;
-                                        if (email.trim() === '') {
-                                            alert('Please enter your Gmail address.');
-                                            return false;
-                                        }
-                                        window.location.href = '/Account/EmailSignIn?email=' + encodeURIComponent(email);
-                                        return false;
-                                    }
-                                </script> *@
-
-                                <div class="mt-4 text-center">
-                                    Don't have an account? <a asp-action="PatientRegister" asp-controller="Account">Create One</a>
-                                </div>
+                            <div class="mt-4 text-center">
+                                <p>Or</p>
+                                <a class="btn btn-outline-danger btn-block"  href="/Account/GoogleLogin">Sign in with Google</a>
+                                <p>Don't have an account? <a asp-action="PatientRegister" asp-controller="Account">Create One</a></p>
                             </div>
                         </div>
                     </div>
@@ -130,16 +63,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js" crossorigin="anonymous"></script>
-
     <script src="~/js/my-login.js"></script>
     <script src="~/js/toast.js"></script>
 
     <script type="text/javascript">
-        function OTPLogging() {
-            var otpLoginUrl = "/Account/OTPLogin";
-            window.location.href = otpLoginUrl;
-        }
-
         $(document).ready(function () {
             var swalMessage = '@TempData["SwalMessage"]';
             var swalType = '@TempData["SwalType"]';

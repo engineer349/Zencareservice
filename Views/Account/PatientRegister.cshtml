@@ -8,9 +8,10 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name="author" content="PatientRegister">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Patient Registration</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="~/css/my-login.css">
 	<link rel="icon" type="image/x-icon" href="~/assets/img/favicon.png">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -25,71 +26,55 @@
 						<img src="~/images/signin-zencare.png" alt="Zencareservicelogo">
 					</div>
 					<div class="card fat">
-						<div class="card-body"> 
+						<div class="card-body">
 							<h4 class="card-title" style="text-align:center">PATIENT REGISTER</h4>
 							<h5 style="color:red"> @ViewBag.Message</h5>
-							<form method="POST" class="my-login-validation" novalidate="" asp-action="PatientRegister" asp-controller="Account">
-								<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+							<form method="POST" class="my-login-validation" novalidate="" asp-action="PatientRegister" asp-controller="Account">							
 								<div class="form-group">
 									<label asp-for="Firstname">First Name</label>
-									<input type="text" id="firstname" class="form-control" asp-for="Firstname" minlength="4" maxlength="16" required autofocus />
-									<div class="invalid-feedback">
-									<span asp-validation-for="Firstname"  class="text-danger"></span>
-									</div>
+									<input id="firstname" type="text" class="form-control" asp-for="Firstname" minlength="4" maxlength="16" required autofocus />
+										<span asp-validation-for="Firstname" class="text-danger"></span>
 								</div>
 								<div class="form-group">
 									<label asp-for="Lastname"> Last Name</label>
-									<input type="text" class="form-control" asp-for="Lastname" id="lastname" minlength="4" maxlength="16" required autofocus />			
-									<div class="invalid-feedback">
-									<span asp-validation-for="Lastname" class="text-danger"></span>
-									</div>
+									<input type="text" class="form-control" asp-for="Lastname" id="lastname" minlength="4" maxlength="16" required autofocus />
+										<span asp-validation-for="Lastname" class="text-danger"></span>
 								</div>
 								<div class="form-group">
 									<label asp-for="Email">E-Mail Address</label>
-									<input id="email" type="email" class="form-control" asp-for="Email" name="email" pattern="^[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address" required />
-									<div class="invalid-feedback">
-									<span asp-validation-for="Email" class="text-danger"></span>
-									</div>
+									<input id="email" type="email" class="form-control" asp-for="Email"   required />
+										<span asp-validation-for="Email" class="text-danger"></span>									
 								</div>
 
 								<div class="form-group">
 									<label asp-for="Password"> Password</label>
-									<input id="password" type="password" class="form-control" asp-for="Password" name="password" pattern="^(?=.*[A-Za-z0-9])(?=.*[@@$!%*#?&]).{8,16}$" title="Password must be at least 8 characters long, alphanumeric, and contain at least one special character." required data-eye />
-									<div class="invalid-feedback">
-										<span asp-validation-for="Password" class="text-danger"></span>										
-									</div>
+									<input id="password" type="password" class="form-control" asp-for="Password"  required data-eye />
+										<span asp-validation-for="Password" class="text-danger"></span>
 								</div>
 								<div class="form-group">
 									<label asp-for="Confirmpassword"> Confirm Password</label>
-									<input type="password" class="form-control" asp-for="Confirmpassword" id="confirmpassword" name="confirmpassword" title="Password must be at least 8 characters long, alphanumeric, and contain at least one special character." required data-eye />
-									<div class="invalid-feedback">
+									<input type="password" class="form-control" asp-for="Confirmpassword" id="confirmpassword" required data-eye />
 										<span asp-validation-for="Confirmpassword" class="text-danger"></span>
-									</div>
 								</div>
 								<div class="form-group">
 									<label asp-for="Username">UserName</label>
-									<input id="username" type="text" class="form-control" asp-for="Username" name="username" title="Username must be alphanumeric and between 6 and 10 characters." required />
-									<div class="invalid-feedback">
+									<input id="username" type="text" class="form-control" asp-for="Username" required />
 										<span asp-validation-for="Username" class="text-danger"></span>
-									</div>
 								</div>
 								<div class="form-group">
 									<label asp-for="Phonenumber">Phoneno</label>
-									<input type="tel" class="form-control" asp-for="Phonenumber"  id="phonenumber" name="phonenumber" pattern="[0-9]{10}" title="Enter a valid 10-digit phone number" required />
-									<div class="invalid-feedback">
-										<span asp-validation-for="Phonenumber" class="text-danger"></span>
-									</div>
+									<input type="tel" class="form-control" asp-for="Phonenumber" id="phonenumber" required maxlength="10" pattern="\d{10}" />
+									<span asp-validation-for="Phonenumber" class="text-danger"></span>
 								</div>
+
 								<div class="form-group">
-									<label asp-for="Dob">DOb</label>
+									<label asp-for="Dob">Dob</label>
 									<input id="dob" type="date" class="form-control" asp-for="Dob" name="Dob" required />
-									<div class="invalid-feedback">
 										<span asp-validation-for="Dob" class="text-danger"></span>
-									</div>
 								</div>
 								<div class="form-group">
 									<div class="custom-checkbox custom-control">
-										<input type="checkbox" name="agree" id="agree" class="custom-control-input" required/">
+										<input type="checkbox" name="agree" id="agree" class="custom-control-input" required /">
 										<label for="agree" class="custom-control-label">I agree to the <a href="~/forms/termsofservice.html" data-toggle="modal" data-target="#termsModal">Terms and Conditions</a></label>
 										<div class="invalid-feedback">
 											You must agree with our Terms and Conditions
@@ -100,7 +85,7 @@
 								</div>
 
 								<div class="form-group m-0">
-									<button type="submit" class="btn btn-primary btn-block">Register</button>									
+									<button type="submit" class="btn btn-primary btn-block">Register</button>
 								</div>
 								<div class="mt-4 text-center">
 									Already have an account? <a asp-action="PatientLogin" asp-controller="Account">Login</a>
@@ -126,7 +111,7 @@
 					</button>
 				</div>
 				<div class="modal-body" style="background-color:azure">
-					
+
 					<h5>Zencareservice System Portal Privacy Policy</h5>
 
 					<p>Effective Date: Nov 25, 2022</p>
@@ -172,51 +157,53 @@
 		</div>
 	</div>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js" crossorigin="anonymous"></script>
 	<script src="~/js/my-login.js"></script>
+	<script src="~/js/toast.js"></script>
 	<script type="text/javascript">
-   	 $(document).ready(function () {
-        var swalMessage = '@TempData["SwalMessage"]';
-        var swalType = '@TempData["SwalType"]';
+		$(document).ready(function () {
+			var swalMessage = '@TempData["SwalMessage"]';
+			var swalType = '@TempData["SwalType"]';
 
-        if (swalMessage !== '') {
-            showSweetAlert(swalType, swalMessage);
-        }
+			if (swalMessage !== '') {
+				showSweetAlert(swalType, swalMessage);
+			}
 
-        var message = '@ViewBag.Message';
-        switch (message) {
-            case 'success':
-                showSweetAlert('success', 'Success...', 'Account Created Successfully!');
-                break;
-            case 'UserAlreadyExists':
-                showSweetAlert('error', 'Oops...', 'User already exists!');
-                break;
-            case 'InvalidEmailaddress':
-                showSweetAlert('warning', 'Invalid', 'Invalid email address!');
-                break;
-            case 'PleaseTryAgain':
-                showSweetAlert('warning', 'Oops...', 'Please try again!');
-                break;
-			case 'Legal':
-			showSweetAlert('warning', 'AgeRestriction', 'User should be greater than 18 yrs old!');
-                break;
+			var message = '@ViewBag.Message';
+			switch (message) {
+				case 'success':
+					showSweetAlert('success', 'Success...', 'Account Created Successfully!');
+					break;
+				case 'UserAlreadyExists':
+					showSweetAlert('error', 'Oops...', 'User already exists!');
+					break;
+				case 'InvalidEmailaddress':
+					showSweetAlert('warning', 'Invalid', 'Invalid email address!');
+					break;
+				case 'PleaseTryAgain':
+					showSweetAlert('warning', 'Oops...', 'Please try again!');
+					break;
+				case 'Legal':
+					showSweetAlert('warning', 'AgeRestriction', 'User should be greater than 18 yrs old!');
+					break;
 				case 'InvalidEmail':
 					showSweetAlert('error', 'Not Registered', 'Pls Register To Continue!');
 					break;
-        }
-    });
+			}
+		});
 
-    function showSweetAlert(icon, title, text) {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            text: text,
-            showConfirmButton: false,
-            timer: 1500 // Adjust the timer as needed
-        });
-    }
-</script>
+		function showSweetAlert(icon, title, text) {
+			Swal.fire({
+				icon: icon,
+				title: title,
+				text: text,
+				showConfirmButton: false,
+				timer: 1500 // Adjust the timer as needed
+			});
+		}
+	</script>
 	<script>
 		(function () {
 			'use strict'
@@ -233,6 +220,11 @@
 				})
 		})()
 	</script>
-
+	<script>
+		document.getElementById('phonenumber').addEventListener('input', function (e) {
+			var value = e.target.value;
+			e.target.value = value.replace(/\D/, ''); // Remove non-digit characters
+		});
+	</script>
 </body>
 </html>

@@ -34,11 +34,11 @@ using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
-
 using System.Runtime.Intrinsics.X86;
-using Google.Apis.Auth;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Google;
+using NuGet.Protocol;
 
 namespace Zencareservice.Controllers
 {
@@ -56,7 +56,7 @@ namespace Zencareservice.Controllers
 
         private int _regeneratedOtp;
 
-        private string? ResetEmail;
+       
 
         private readonly DataAccess _dataaccess;
 
@@ -119,6 +119,8 @@ namespace Zencareservice.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+
+        
         [HttpGet("/Account/PatientRegister/")]
         public IActionResult PatientRegister()
         {
@@ -150,8 +152,12 @@ namespace Zencareservice.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+
+        [Authorize(Roles = "Admin, Patient, Doctor")]
         public IActionResult ResetPassword()
         {
+            string returnUrl = "/Account/ResetPassword";
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -202,7 +208,7 @@ namespace Zencareservice.Controllers
         }
         public IActionResult VerifyOtp()
         {
-            string gotp = Request.Cookies["OTP"];
+            string ?gotp = Request.Cookies["OTP"];
 
             ViewBag.Message = gotp;
 
@@ -354,13 +360,13 @@ namespace Zencareservice.Controllers
                                 if (Status == 1)
                                 {
 
-                                    string UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
+                                    string ?UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
 
-                                    string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
+                                    string ?UserName = ds.Tables[0].Rows[0]["Username"].ToString();
 
                                     TempData["Username"] = UserName;
 
-                                    string Email = ds.Tables[0].Rows[0]["Email"].ToString();
+                                    string ? Email = ds.Tables[0].Rows[0]["Email"].ToString();
 
                                     TempData["Email"] = Email;
 
@@ -368,11 +374,11 @@ namespace Zencareservice.Controllers
 
                                     TempData["Role"] = Role;
 
-                                    string Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
+                                    string? Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
 
                                     TempData["FirstName"] = Fname;
 
-                                    string RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
+                                    string ?RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
 
                                     TempData["RCode"] = RCode;
 
@@ -479,6 +485,7 @@ namespace Zencareservice.Controllers
             return RedirectToAction("VerifyOtp", "Account");
         }
 
+        [Authorize(Roles = "Admin, Patient, Doctor")]
         [HttpPost]
         public IActionResult ResetPassword(Signup Obj)
         {
@@ -487,9 +494,7 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("MyEmail", out var resetEmailObj) && resetEmailObj != null)
             {
-
-
-                string email = resetEmailObj.ToString();
+                string? email = resetEmailObj.ToString();
 
 
                 if (!string.IsNullOrEmpty(ResetPassword) && !string.IsNullOrEmpty(ConfirmResetPassword))
@@ -498,28 +503,34 @@ namespace Zencareservice.Controllers
                     DataSet ds = new DataSet();
                     ds = Obj_DataAccess.ResetPassword(Obj, email);
 
-                }
-                HttpContext.Session.Clear();
+                    HttpContext.Session.Clear();
 
-                // Delete cookies
-                foreach (var cookie in Request.Cookies.Keys)
+                    // Delete cookies
+                    foreach (var cookie in Request.Cookies.Keys)
+                    {
+                        Response.Cookies.Delete(cookie);
+                    }
+                    HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    ViewBag.Message = "UpdatedPassword";
+                    TempData["SwalMessage"] = "Successfully Updated";
+                    TempData["SwalType"] = "success";
+                    return RedirectToAction("PatientLogin", "Account");
+                }
+                else
                 {
-                    Response.Cookies.Delete(cookie);
+                    return View();
                 }
 
-                // Sign out the user to remove authorization
-                HttpContext.SignOutAsync().Wait();
-                ViewBag.Message = "UpdatedPassword";
-                TempData["SwalMessage"] = "Successfully Updated";
-                TempData["SwalType"] = "success";
-                return RedirectToAction("Login", "Account");
             }
             else
             {
 
                 return View();
             }
+
         }
+
 
         [Authorize(Roles = "Admin, Patient, Doctor")]
         [HttpPost]
@@ -530,7 +541,7 @@ namespace Zencareservice.Controllers
 
             if (TempData.TryGetValue("MyEmail", out var resetEmailObj) && resetEmailObj != null)
             {
-                string email = resetEmailObj.ToString();
+                string ?email = resetEmailObj.ToString();
 
 
                 if (!string.IsNullOrEmpty(ResetPassword) && !string.IsNullOrEmpty(ConfirmResetPassword))
@@ -567,58 +578,7 @@ namespace Zencareservice.Controllers
 
         }
 
-        [HttpPost]
-        public IActionResult ForgotPassword(Signup Obj)
-        {
-            string ResetEmail = Obj.Email;
-            if (ResetEmail != null)
-            {
-                var gMail = IsEmailAccountValid("gmail-smtp-in.l.google.com", Obj.Email);
-
-                if (gMail == true)
-                {
-                    DataAccess Obj_DataAccess = new DataAccess();
-                    DataSet ds = new DataSet();
-                    ds = Obj_DataAccess.CheckEmail(Obj);
-                    if (ds.Tables[0].Rows.Count > 0)
-                    {
-                        string validemail = Obj.Email;
-                        TempData["MyEmail"] = validemail;
-                        if (!String.IsNullOrEmpty(validemail))
-                        {
-                            string generatedCode = Codegenerator();
-                            _generatedOtp = Convert.ToInt32(generatedCode);
-                            // Store OTP in TempData for verification
-                            TempData["OTP"] = generatedCode;
-                            SendingResetEmail(Obj);
-                            TempData.Keep("OTP");
-
-                            ViewBag.Message = "VerificationOTP";
-                            TempData["SwalMessage"] = "OTP sent";
-                            TempData["SwalType"] = "success";
-                        }
-                        return RedirectToAction("OTPVerification", "Account");
-                    }
-                    else
-                    {
-                        ViewBag.Message = "InvalidEmail";
-                        return RedirectToAction("Register", "Account");
-                    }
-                }
-                else
-                {
-                    ViewBag.Message = "Please enter your registered email to continue!";
-                    return RedirectToAction("ForgotPassword", "Account");
-                }
-            }
-            else
-            {
-                ViewBag.Message = "Please enter your registered email to continue!";
-                return RedirectToAction("ForgotPassword", "Account");
-            }
-
-
-        }
+       
 
       
 
@@ -666,55 +626,7 @@ namespace Zencareservice.Controllers
             return age;
         }
 
-        public static bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return false;
-            }
-
-            else
-            {
-
-                try
-                {
-                    // Normalize the domain
-                    email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-                                          RegexOptions.None, TimeSpan.FromMilliseconds(200));
-
-                    // Examines the domain part of the email and normalizes it.
-                    string DomainMapper(Match match)
-                    {
-                        // Use IdnMapping class to convert Unicode domain names.
-                        var idn = new IdnMapping();
-
-                        // Pull out and process domain name (throws ArgumentException on invalid)
-                        string domainName = idn.GetAscii(match.Groups[2].Value);
-
-                        return match.Groups[1].Value + domainName;
-                    }
-                }
-                catch (RegexMatchTimeoutException e)
-                {
-                    return false;
-                }
-                catch (ArgumentException e)
-                {
-                    return false;
-                }
-
-                try
-                {
-                    return Regex.IsMatch(email,
-                        @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-                        RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-                }
-                catch (RegexMatchTimeoutException)
-                {
-                    return false;
-                }
-            }
-        }
+      
 
         private string Codegenerator()
         {
@@ -742,32 +654,7 @@ namespace Zencareservice.Controllers
             return int.Parse(responseString.Substring(0, 3));
         }
 
-        public bool IsValidEmail3(string source)
-        {
-            EmailAddressAttribute e = new EmailAddressAttribute();
-            if (e.IsValid(source))
-                return true;
-            else
-                return false;
-        }
-        public bool IsValidEmail2(string email)
-        {
-            var trimmedEmail = email.Trim();
-
-            if (trimmedEmail.EndsWith("."))
-            {
-                return false; // suggested by @TK-421
-            }
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == trimmedEmail;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+  
         private static bool IsEmailAccountValid(string smtpServer, string emailAddress)
         {
             try
@@ -865,17 +752,17 @@ namespace Zencareservice.Controllers
                                     int agreeterms = Convert.ToInt32(Obj.agreeterm);
 
                                     string fname = Obj.Firstname;
-                                    string lname = Obj.Lastname;
+                                    string ?lname = Obj.Lastname;
 
-                                    string password = Obj.Password;
+                                    string ?password = Obj.Password;
 
                                     TempData["Password"] = password;
 
-                                    string confirmpassword = Obj.Confirmpassword;
+                                    string ?confirmpassword = Obj.Confirmpassword;
 
-                                    string username = Obj.Username;
+                                    string ?username = Obj.Username;
                                     TempData["User"] = username;
-                                    string phoneno = Obj.Phonenumber;
+                                    string ?phoneno = Obj.Phonenumber;
 
 
                                     DateTime Dob = Obj.Dob;
@@ -1016,7 +903,6 @@ namespace Zencareservice.Controllers
                                     Obj.RoleId = "Doctor";
                                     Obj.RCategory = "Employee";
                                     Obj.Username = "";
-
                                     Obj.Age = userAge;
                                     int agreeterms = Convert.ToInt32(Obj.agreeterm);
                                     string fname = Obj.Firstname;
@@ -1024,11 +910,7 @@ namespace Zencareservice.Controllers
                                     string password = Obj.Password;
                                     TempData["Password"] = password;
                                     string confirmpassword = Obj.Confirmpassword;
-
-
                                     string phoneno = Obj.Phonenumber;
-
-
                                     DateTime Dob = Obj.Dob;
                                     Obj.Status = 1;
 
@@ -1204,11 +1086,11 @@ namespace Zencareservice.Controllers
                                         Obj.Username = "Employee";
                                     }
                                     int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                    string fname = Obj.Firstname;
-                                    string lname = Obj.Lastname;
-                                    string password = Obj.Password;
-                                    string confirmpassword = Obj.Confirmpassword;
-                                    string phoneno = Obj.Phonenumber;
+                                    string ?fname = Obj.Firstname;
+                                    string ?lname = Obj.Lastname;
+                                    string ?password = Obj.Password;
+                                    string ?confirmpassword = Obj.Confirmpassword;
+                                    string ?phoneno = Obj.Phonenumber;
 
                                     DateTime Dob = Obj.Dob;
                                     Obj.Status = 1;
@@ -1351,12 +1233,12 @@ namespace Zencareservice.Controllers
 
                                 Obj.Age = userAge;
                                 int agreeterms = Convert.ToInt32(Obj.agreeterm);
-                                string fname = Obj.Firstname;
-                                string lname = Obj.Lastname;
-                                string password = Obj.Password;
-                                string confirmpassword = Obj.Confirmpassword;
-                                string username = Obj.Username;
-                                string phoneno = Obj.Phonenumber;
+                                string ?fname = Obj.Firstname;
+                                string ?lname = Obj.Lastname;
+                                string ?password = Obj.Password;
+                                string ?confirmpassword = Obj.Confirmpassword;
+                                string ?username = Obj.Username;
+                                string ?phoneno = Obj.Phonenumber;
 
                                 DateTime Dob = Obj.Dob;
                                 Obj.Status = 1;
@@ -1435,7 +1317,7 @@ namespace Zencareservice.Controllers
 
         private string SendingEmail(Signup Obj)
         {
-            string FName = Obj.Firstname;
+            string ?FName = Obj.Firstname;
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
@@ -1518,7 +1400,7 @@ namespace Zencareservice.Controllers
 
         private string SendingOTPEmail(OTPLoginModel Obj)
         {
-            string FName = Obj.OTPEmail;
+            string ?FName = Obj.OTPEmail;
             SendMail sendMail = new SendMail();
             SmtpClient client = new SmtpClient();
 
@@ -1715,9 +1597,9 @@ namespace Zencareservice.Controllers
         public async Task<IActionResult> Login(Login Obj)
         {
 
-            string username = Obj.Username;
+            string ?username = Obj.Username;
 
-            string password = Obj.Password;
+            string ?password = Obj.Password;
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
@@ -1736,26 +1618,26 @@ namespace Zencareservice.Controllers
                     if (Status == 1)
                     {
 
-                        string UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
+                        string ?UsrId = ds.Tables[0].Rows[0]["RId"].ToString();
 
-                        string UserName = ds.Tables[0].Rows[0]["Username"].ToString();
+                        string ?UserName = ds.Tables[0].Rows[0]["Username"].ToString();
 
                         TempData["Username"] = Obj.Username;
 
 
-                        string Email = ds.Tables[0].Rows[0]["Email"].ToString();
+                        string ?Email = ds.Tables[0].Rows[0]["Email"].ToString();
 
                         TempData["Email"] = Email;
 
-                        string Role = ds.Tables[0].Rows[0]["Role"].ToString();
+                        string ?Role = ds.Tables[0].Rows[0]["Role"].ToString();
 
                         TempData["Role"] = Role;
 
-                        string Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
+                        string ?Fname = ds.Tables[0].Rows[0]["Fname"].ToString();
 
                         TempData["FirstName"] = Fname;
 
-                        string RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
+                        string ?RCode = ds.Tables[0].Rows[0]["RCode"].ToString();
 
                         TempData["RCode"] = RCode;
 
@@ -1863,56 +1745,65 @@ namespace Zencareservice.Controllers
 
         }
 
-        [HttpGet("/Account/GoogleSignInCallback")]
-        public async Task<IActionResult> GoogleSignInCallback(string idToken)
+        [HttpGet("/Account/GoogleLogin")]
+        public IActionResult GoogleLogin()
         {
-            // Validate ID token and get email
-            var email = await DecodeIdTokenAndGetEmailAsync(idToken);
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleSignInCallback") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
 
-            if (email == null)
-            {
-                return BadRequest("Invalid ID token.");
-            }
+        [HttpGet("GoogleSignInCallback", Name = "GoogleSignInCallback")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleSignInCallback()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            // Check if email exists and fetch user data
-            var userData = await GetUserDataByEmailAsync(email);
+            if (!authenticateResult.Succeeded)
+                return BadRequest("Authentication failed.");
 
-            if (userData == null)
-            {
+            var claims = authenticateResult.Principal.Identities.FirstOrDefault()?.Claims;
+            var emailClaim = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+
+            if (emailClaim == null)
+                return BadRequest("Invalid login attempt.");
+
+            var email = emailClaim.Value;
+            var userDataResult = await GetUserDataByEmailAsync(email);
+
+            if (userDataResult == null || userDataResult.UserData == null)
                 return RedirectToAction("ShowRegisterAlert");
-            }
 
-            var userDataJson = JsonConvert.SerializeObject(userData);
+            var userDataJson = JsonConvert.SerializeObject(userDataResult.UserData);
             var protectedData = _dataProtector.Protect(userDataJson);
 
             var cookieOptions = new CookieOptions
             {
-                Expires = DateTime.Now.AddDays(1), // Set the expiration date
-                HttpOnly = true, // Makes the cookie accessible only to the server-side code
+                Expires = DateTime.Now.AddDays(1),
+                HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None
             };
 
             Response.Cookies.Append("EncryptCookie", protectedData, cookieOptions);
-            Response.Cookies.Append("UserId", userData.UserId, cookieOptions);
-            Response.Cookies.Append("UsrName", userData.Firstname, cookieOptions);
-            Response.Cookies.Append("Role", userData.RoleName, cookieOptions);
-            Response.Cookies.Append("RCode", userData.Rcode, cookieOptions);
+            Response.Cookies.Append("UsrId", userDataResult.UserData.UserId, cookieOptions);
+            Response.Cookies.Append("UsrName", userDataResult.UserData.Firstname, cookieOptions);
+            Response.Cookies.Append("Role", userDataResult.UserData.RoleName, cookieOptions);
+            Response.Cookies.Append("RCode", userDataResult.UserData.Rcode, cookieOptions);
 
-            HttpContext.Session.SetString("UsrId", userData.UserId);
-            HttpContext.Session.SetString("FirstName", userData.Firstname);
+            HttpContext.Session.SetString("MenuList", userDataResult.JsonString) ;
+            HttpContext.Session.SetString("UsrId", userDataResult.UserData.UserId);
+            HttpContext.Session.SetString("FirstName", userDataResult.UserData.Firstname);
 
-            var claims = new[]
+            var identity = new ClaimsIdentity(new[]
             {
-            new Claim(ClaimTypes.Name, userData.Firstname),
-            new Claim(ClaimTypes.Role, userData.RoleName),
-            new Claim("UserId", userData.UserId)
-        };
+        new Claim(ClaimTypes.Name, userDataResult.UserData.Firstname),
+        new Claim(ClaimTypes.Role, userDataResult.UserData.RoleName),
+        new Claim("UsrId", userDataResult.UserData.UserId)
+    }, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var identity = new ClaimsIdentity(claims, "login");
             var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync(principal);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             TempData["SwalMessage"] = "Login Successful";
             TempData["SwalType"] = "success";
@@ -1920,21 +1811,9 @@ namespace Zencareservice.Controllers
             return RedirectToAction("Dashboard", "Report");
         }
 
-        private async Task<string> DecodeIdTokenAndGetEmailAsync(string idToken)
-        {
-            try
-            {
-                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
-                return payload.Email;
-            }
-            catch (Exception ex)
-            {
-                // Handle validation errors
-                return null;
-            }
-        }
 
-        public async Task<Signup?> GetUserDataByEmailAsync(string email)
+
+        public async Task<UserDataResult?> GetUserDataByEmailAsync(string email)
         {
             return await Task.Run(() =>
             {
@@ -1954,13 +1833,43 @@ namespace Zencareservice.Controllers
                             Rcode = row["RCode"].ToString(),
                             Email = email
                         };
+                        string jsonString = JsonConvert.SerializeObject(ds.Tables[1]);
 
-                        return userData;
+                        return new UserDataResult
+                        {
+                            UserData = userData,
+                            JsonString = jsonString
+                        };
                     }
                 }
                 return null;
             });
         }
+
+
+
+        public class UserDataResult
+        {
+            public Signup? UserData { get; set; }
+            public string? JsonString { get; set; }
+        }
+
+
+        private async Task<string> DecodeIdTokenAndGetEmailAsync(string idToken)
+        {
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken);
+                return payload.Email;
+            }
+            catch (Exception ex)
+            {
+                // Handle validation errors
+                return null;
+            }
+        }
+
+     
 
         public IActionResult ShowRegisterAlert()
         {
@@ -2031,16 +1940,76 @@ namespace Zencareservice.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult DocForgot(Signup Obj)
+        {
+            string ResetEmail = Obj.Email;
+            if (ResetEmail != null)
+            {
 
+
+                var gMail = true;
+
+                if (gMail == true)
+                {
+                    DataAccess Obj_DataAccess = new DataAccess();
+                    DataSet ds = new DataSet();
+                    ds = Obj_DataAccess.CheckEmail(Obj);
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        string validemail = Obj.Email;
+
+                        TempData["OTPEmail"] = validemail;
+                        TempData["Source"] = "DocForgot";
+                        TempData["Title"] = "DocForgot";
+
+                        if (!String.IsNullOrEmpty(validemail))
+                        {
+                            string generatedCode = Codegenerator();
+                            _generatedOtp = Convert.ToInt32(generatedCode);
+                            // Store OTP in TempData for verification
+                            TempData["OTP"] = generatedCode;
+                            SendingResetEmail(Obj);
+                            TempData.Keep("OTP");
+
+                            ViewBag.Message = "VerificationOTP";
+                            TempData["SwalMessage"] = "OTP sent";
+                            TempData["SwalType"] = "success";
+                            DataAccess Obj_DataAccess1 = new DataAccess();
+                            DataSet dse = Obj_DataAccess1.SaveOTP(Obj.Email, generatedCode);
+
+                        }
+                        return RedirectToAction("OTPVerification", "Account");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "InvalidEmail";
+                        TempData["SwalMessage"] = "Invalid";
+                        TempData["SwalType"] = "error";
+                        return RedirectToAction("Register", "Account");
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "Please enter your registered email to continue!";
+                    return RedirectToAction("ForgotPassword", "Account");
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Please enter your registered email to continue!";
+                return RedirectToAction("ForgotPassword", "Account");
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> OTPLogin(OTPLoginModel Obj, string returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                string email = Obj.OTPEmail;
-                TempData["OTPEmail"] = email;
-                TempData["Source"] = "OTPLogin"; // Indicate the source of the request
+                string ?email = Obj.OTPEmail;
+
+                
 
                 bool isEmailValid = await _emailVerifier.VerifyEmailAsync(email);
                 if (isEmailValid)
@@ -2061,7 +2030,7 @@ namespace Zencareservice.Controllers
 
                                 if (int.TryParse(generatedCode, out int generatedOtp))
                                 {
-                                    _generatedOtp = generatedOtp; // Store the generated OTP
+                                    _generatedOtp = generatedOtp; 
                                     SendingOTPEmail(Obj);
 
                                     ViewBag.Message = "otpgenerated";
@@ -2070,6 +2039,10 @@ namespace Zencareservice.Controllers
 
                                     DataAccess Obj_DataAccess1 = new DataAccess();
                                     DataSet ds = Obj_DataAccess1.SaveOTP(Obj.OTPEmail, generatedCode);
+
+                                    TempData["OTPEmail"] = email;
+                                    TempData["Source"] = "OTPLogin";                              
+                                    TempData["Title"] = "OTPLogin";
 
                                     return RedirectToAction("OTPVerification", "Account");
                                 }
@@ -2110,7 +2083,7 @@ namespace Zencareservice.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClearCookies()
+        public IActionResult ClearCookies()
         {
             foreach (var cookie in Request.Cookies.Keys)
             {
@@ -2166,7 +2139,7 @@ namespace Zencareservice.Controllers
         [HttpPost]
         public async Task<IActionResult> VerifyOtp([FromBody] OtpVerificationModel model)
         {
-            string source = model.Source;
+            string source = model.Source ?? "OTPLogin";
             
             if (model == null || string.IsNullOrEmpty(model.Source))
             {
@@ -2315,8 +2288,11 @@ namespace Zencareservice.Controllers
                 public IActionResult Logout()
                 {
                     HttpContext.Session.Clear();
-                    // Clear authentication cookies
-                    HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    foreach (var cookie in Request.Cookies.Keys)
+                    {
+                        Response.Cookies.Delete(cookie);
+                    }
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     ViewBag.Message = "Logout";
                     TempData["SwalMessage"] = "User Logged out";
                     TempData["SwalType"] = "success";

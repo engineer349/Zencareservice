@@ -24,7 +24,7 @@ namespace Zencareservice.Controllers
 		[Authorize(Roles = "Doctor")]
 		public IActionResult Prescrt()
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
@@ -50,9 +50,9 @@ namespace Zencareservice.Controllers
         }
 
 		[Authorize(Roles = "Doctor")]
-		public async Task<IActionResult> Prscedit(Prescs psc, string Id)
+		public  IActionResult Prscedit(Prescs psc, string Id)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
 			string decodedId = HttpUtility.UrlDecode(Id);
 
@@ -87,7 +87,7 @@ namespace Zencareservice.Controllers
                     var item = new Prescs
                     {
                         SlNo = Convert.ToInt32(row["Slno"]),
-                        Prescription = row["PrscItem"].ToString(),
+                        Prescription = row["PrscItem"].ToString() ?? string.Empty,
                         Dosage = Convert.ToInt32(row["PrscDosage"]),
                         NoOfDays = Convert.ToInt32(row["Prscdays"])
                     };
@@ -143,7 +143,7 @@ namespace Zencareservice.Controllers
 		[HttpPost]
         public IActionResult Prescedit( [FromBody] Prescs[] medications)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
             TempData["UserId"] = UsrId;
 
             if (string.IsNullOrEmpty(UsrId))
@@ -183,7 +183,7 @@ namespace Zencareservice.Controllers
 
         public bool Prescdropdown()
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
             TempData["UserId"] = UsrId;
 
             DataAccess Obj_DataAccess = new DataAccess();
@@ -269,7 +269,7 @@ namespace Zencareservice.Controllers
                 string prescription = medication.Prescription;
                 int dosage = medication.Dosage;
                 int noofdays = medication.NoOfDays;
-                string aptcode = medication.AptCode;
+                string ?aptcode = medication.AptCode;
  
                 DataAccess Obj_DataAccess = new DataAccess();
                 DataSet ds = Obj_DataAccess.SaveItemPrescription(slno, prescription, dosage, noofdays, aptcode);
@@ -329,20 +329,20 @@ namespace Zencareservice.Controllers
             // Store the appointment code in TempData to check for duplicates in subsequent requests
             TempData["aptcode"] = Obj.AptCode;
 
-            string aptcode = Obj.AptCode;
+            string ?aptcode = Obj.AptCode;
 
             TempData["aptcode"] = aptcode;
 
-            string pfname = Obj.PatientFirstName;
-            string plname = Obj.PatientLastName;
-            string patphoneno = Obj.Patientphoneno;
-            string patemail = Obj.PatientEmail;
-            string patage = Obj.PatientAge;
-            string patbloodgroup = Obj.PatBloodgroup;
-            string patweight = Obj.PatWeight;
-            string dfname = Obj.DoctorFirstName;
-            string Appointmentcode = Obj.AptCode;
-            string PrsCode = Obj.PrsCode;
+            string pfname = Obj.PatientFirstName ?? string.Empty;
+            string plname = Obj.PatientLastName ?? string.Empty;
+            string patphoneno = Obj.Patientphoneno ?? string.Empty;
+            string patemail = Obj.PatientEmail ?? string.Empty;
+            string patage = Obj.PatientAge ?? string.Empty;
+            string patbloodgroup = Obj.PatBloodgroup ?? string.Empty;
+            string patweight = Obj.PatWeight ?? string.Empty;
+            string dfname = Obj.DoctorFirstName ?? string.Empty;
+            string Appointmentcode = Obj.AptCode ?? string.Empty;
+            string PrsCode = Obj.PrsCode ?? string.Empty;
 
 
             DataSet ds = new DataSet();
@@ -361,11 +361,11 @@ namespace Zencareservice.Controllers
 		[Authorize(Roles = "Patient,Doctor")]
 		public IActionResult Presclist(Prescs prescs)
         {
-            string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
             TempData["UserId"] = UsrId;
 
-            string Role = Request.Cookies["Role"];
+            string Role = Request.Cookies["Role"] ?? string.Empty;
 
             if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
             {
@@ -409,11 +409,11 @@ namespace Zencareservice.Controllers
 		[Authorize(Roles = "Patient")]
 		public IActionResult DPresclist(Prescs prescs)
 		{
-			string UsrId = Request.Cookies["UsrId"];
+            string UsrId = Request.Cookies["UsrId"] ?? string.Empty;
 
 			TempData["UserId"] = UsrId;
 
-			string Role = Request.Cookies["Role"];
+            string Role = Request.Cookies["Role"] ?? string.Empty;
 
 			if (string.IsNullOrEmpty(UsrId) || string.IsNullOrEmpty(Role))
 			{

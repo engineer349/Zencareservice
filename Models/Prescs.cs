@@ -34,7 +34,7 @@
         public string? PrescriptionDetail { get; set; }
 
         public int SlNo { get; set; }
-        public string Prescription { get; set; }
+        public string ?Prescription { get; set; }
         public int Dosage { get; set; }
         public int NoOfDays { get; set; }
 
