@@ -1,20 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>3e3f6d54-448b-44b2-8cc9-c052b6b3ebfd</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>.</DockerfileContext>
-		<OutputType>Exe</OutputType>
+		<OutputType>WinExe</OutputType>
 		<AspNetCoreHostingModel>OutofProcess</AspNetCoreHostingModel>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>zencare-logo.png</PackageIcon>
+		<NeutralLanguage>en</NeutralLanguage>
+		<AssemblyVersion>5.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.1</FileVersion>
 	</PropertyGroup>
 	
 
 
 	<ItemGroup>
     <None Include="wwwroot\forms\Contact.php" />
+    <None Include="wwwroot\images\zencare-logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
@@ -92,6 +101,14 @@
   <ItemGroup>
     <Folder Include="scripts\" />
     <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 

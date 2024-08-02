@@ -10,9 +10,9 @@ namespace Zencareservice.Data
 
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public DbSet<Event> Events { get; set; }
+		public DbSet<Event> Events { get; set; }
 
 
-    }
+	}
 
 }

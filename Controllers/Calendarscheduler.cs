@@ -2,17 +2,17 @@
 
 namespace Zencareservice.Controllers
 {
-    public class Calendarscheduler : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
+	public class Calendarscheduler : Controller
+	{
+		public IActionResult Index()
+		{
+			return View();
+		}
 
-        public IActionResult Calendar()
-        {
+		public IActionResult Calendar()
+		{
 
-            return View();
-        }
-    }
+			return View();
+		}
+	}
 }

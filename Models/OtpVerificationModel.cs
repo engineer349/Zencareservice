@@ -2,19 +2,19 @@
 
 namespace Zencareservice.Models
 {
-    public class OtpVerificationModel
-    {
-        [Required]
-        [EmailAddress]
-        public string ? OTPEmail { get; set; }
+	public class OtpVerificationModel
+	{
+		[Required]
+		[EmailAddress]
+		public string? OTPEmail { get; set; }
 
-        [Required]
-        [MaxLength(6)]
-        public string ? OTP { get; set; }
+		[Required]
+		[MaxLength(6)]
+		public string? OTP { get; set; }
 
-        public string ? Source { get; set; }
+		public string? Source { get; set; }
 
-        [MaxLength(6)]
-        public string? ResendOTP { get; set; }
-    }
+		[MaxLength(6)]
+		public string? ResendOTP { get; set; }
+	}
 }
