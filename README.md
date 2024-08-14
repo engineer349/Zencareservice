@@ -1,5 +1,5 @@
 #Zencareservice
--  Zencare is an effort to make up Healthcare oriented service to make Online Appointments of speciality available Doctors in Registered Hospital for Remote Patients.
+-  Zencareservice is an effort to make up Healthcare oriented service to make Online Appointments of speciality available Doctors in Registered Hospital for Remote Patients.
 -  Doctors effortlessly consult the patient  through  Video call and to follow up daily schedules and also make an effort to create an online prescription.
   
 
