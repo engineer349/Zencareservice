@@ -1,6 +1,6 @@
 #Zencareservice
-•	Zencareservice is an effort to make up an oriented service to make online appointment appointments of specialty available to doctors in registered hospitals for remote patients.
-•	Doctors effortlessly consult patients through video calls, follow up on daily schedules, and make an effort to create online prescriptions.
+• Zencareservice is an effort to make up an oriented service to make online appointment appointments of specialty available to doctors in registered hospitals for remote patients.
+• Doctors effortlessly consult patients through video calls, follow up on daily schedules, and make an effort to create online prescriptions.
 Specification Requirements: .NET 6.0, SQL Database
 Development: -Using ASP.NET Core MVC Web
 Roles: 1. Patient 
