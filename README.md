@@ -1,23 +1,17 @@
 #Zencareservice
--  Zencareservice is an effort to make up Healthcare oriented service to make Online Appointments of speciality available Doctors in Registered Hospital for Remote Patients.
--  Doctors effortlessly consult the patient  through  Video call and to follow up daily schedules and also make an effort to create an online prescription.
-  
-
-Specification Requirements:
-.NET 6.0, SQL Database
-
-Development:
--Using ASP.NET Core MVC Web  
-
-Roles:
-1.Patient, Doctor, Admin
-
-Functions of Zencareservice Webapplication:
-1. Patient can book online appointments of available doctors in a Hospital.
-2. Doctor can confirm or reschedule  Online appointments as per daily schedules.
-3. After physical consultation in Hospital or Online consulation through Gmet/Videocall, doctors can able to Write Prescriptions for confirmed appointments through Zencareservice webapplication.
-4. Patients can able to view prescribed reports using zencareservice web application of confirmed appointment of particular date by selecting AppointmentCode.
-5. Doctors can able to  view confirmed appointmentlist, prescriptionlist and edit the prescription as per confirmed appointment respectively.
+•	Zencareservice is an effort to make up an oriented service to make online appointment appointments of specialty available to doctors in registered hospitals for remote patients.
+•	Doctors effortlessly consult patients through video calls, follow up on daily schedules, and make an effort to create online prescriptions.
+Specification Requirements: .NET 6.0, SQL Database
+Development: -Using ASP.NET Core MVC Web
+Roles: 1. Patient 
+            2. Doctor
+            3. Admin
+Functions of Zencareservice Web application:
+1.	Patients can book online appointments with available doctors in a hospital.
+2.	Doctor can confirm or reschedule Online appointments as per daily schedules.
+3.	After physical consultation in a hospital or Online consultation through Gmet/Videocall, doctors can Write Prescriptions for confirmed appointments through the Zencareservice web application.
+4.	By selecting the Appointment Code, Patients can view prescribed reports using the Zencareservice web application of confirmed appointments on a particular date.
+5.	Doctors can view the confirmed appointment list, and prescription list and edit the prescription as per the confirmed appointment.
 
 
 
